@@ -1,6 +1,86 @@
 # csa-lab4
-SImple model of a processor and a languafe
+
+# CSA lab4
+
 вариант -> alg | cisc | harv | hw | tick | binary | trap | port | pstr | prob2 | vector
+
+```
+<program>         ::= <stmt_list>
+
+<stmt_list>       ::= <stmt> | <stmt> <stmt_list>
+
+<letter>          ::= [a-z] | [A-Z]
+
+<digit>           ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+<number>          ::= [-2^31; 2^31 - 1]
+
+<string>          ::= "\"" { <character> } "\""
+
+<stmt>            ::= <expr_stmt>
+                    | <var_decl>
+                    | <if_stmt>
+                    | <while_stmt>
+                    | <block>
+                    | <func_decl>
+                    | <return_stmt>
+
+<expr_stmt>       ::= <expression> ";"
+
+<var_decl>        ::= "var" <identifier> [ "=" <expression> ] ";"
+
+<if_stmt>         ::= "if" "(" <expression> ")" <stmt> [ "else" <stmt> ]
+
+<while_stmt>      ::= "while" "(" <expression> ")" <stmt>
+
+<block>           ::= "{" <stmt_list> "}"
+
+<func_decl>       ::= "fn" <identifier> "(" [ <param_list> ] ")" <block>
+
+<param_list>      ::= <identifier> | <identifier> "," <param_list>
+
+<return_stmt>     ::= "return" [ <expression> ] ";"
+
+<expression>      ::= <assignment>
+
+<assignment>      ::= <identifier> "=" <assignment>
+                    | <logic_or>
+
+<logic_or>        ::= <logic_and> | <logic_or> "||" <logic_and>
+
+<logic_and>       ::= <equality> | <logic_and> "&&" <equality>
+
+<equality>        ::= <comparison>
+                    | <equality> ( "==" | "!=" ) <comparison>
+
+<comparison>      ::= <term>
+                    | <comparison> ( "<" | ">" | "<=" | ">=" ) <term>
+
+<term>            ::= <factor>
+                    | <term> ( "+" | "-" ) <factor>
+
+<factor>          ::= <unary>
+                    | <factor> ( "*" | "/" | "%" ) <unary>
+
+<unary>           ::= ( "!" | "-" ) <unary>
+                    | <primary>
+
+<primary>         ::= <number>
+                    | <string>
+                    | "true"
+                    | "false"
+                    | "null"
+                    | <identifier>
+                    | "(" <expression> ")"
+
+<identifier>      ::= <letter> { <letter_or_digit> }
+
+
+<letter_or_digit> ::= <letter> | <digit>
+
+
+<character>       ::= любой символ, кроме "\"" и перевода строки
+```
 
 - alg: java, lua, go like syntax
 
@@ -11,6 +91,8 @@ SImple model of a processor and a languafe
   Арифметические операции, работающие с регистрами и памятью за одну операцию.
   Работа со специальными регистрами.
   Инструкции с переменным числом аргументов и, соответственно, с переменным количеством машинных слов для кодирования (к примеру, расчёт многочлена: с0+c1x1+c2x2+...+cnxnс_0 + c_1x_1 + c_2x_2 + ... + c_nx_nс0​+c1​x1​+c2​x2​+...+cn​xn​). Выборка инструкции должна явно производить смену машинного слова.
+
+  считается ли разбиение ассемблерной команды (add [0x8], ACC) внутри процессора на выполнение нескольких команд (get from mem [0x8] подставить )
 
 - harv -- Гарвардская архитектура:
 
@@ -25,7 +107,8 @@ SImple model of a processor and a languafe
   Требуются настоящие бинарные файлы, а не текстовые файлы с 0 и 1.
 
   Требуется отладочный вывод в текстовый файл вида:
-    <address> - <HEXCODE> - <mnemonic>
+
+  <address> - <HEXCODE> - <mnemonic>
     20 - 03340301 - add #01 <- 34 + #03
 
 - trap
