@@ -14,13 +14,8 @@ func main() {
 		os.Exit(1)
 	}
 	line := scanner.Text()
-	fmt.Println(line)
-	l := "1+2*3^4-(5)"
-	// parser := NewMathParser(line)
-	// ast := parser.ParseMath()
-	fmt.Println(l)
-	parser := NewMathParser(l)
-	ast := parser.ParseMathExpr(l)
+	parser := NewMathParser(line)
+	ast := parser.ParseMath()
 	fmt.Println("\nAST:")
 	fmt.Print(ast.String(""))
 }
