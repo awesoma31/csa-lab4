@@ -1,0 +1,32 @@
+var a: num = 1
+var b: str = "hui"
+var c: bool = true
+
+c = input(str)
+print(c)
+
+fn main() {
+    var x = readInt()       // Чтение целого числа (ввод через trap)
+    var y = readInt()       
+    var sum = x + y         // Арифметическая операция (составная инструкция CISC)
+
+    var d = (3 + a - 0) / 2
+
+    if (sum > 10) {
+        print("Сумма больше 10", sum)
+    } else {
+        print("Сумма меньше или равна 10", sum)
+    }
+
+    var i = 0
+    while (i < 5) {
+        print("Итерация", i)
+        i = i + 1
+    }
+    
+    return 0
+}
+
+fn hello_world() {
+    print("Привет, мир!")
+}
