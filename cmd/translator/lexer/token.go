@@ -1,5 +1,7 @@
 package lexer
 
+import "slices"
+
 import "fmt"
 
 type Token struct {
@@ -96,13 +98,7 @@ var reserved_lu map[string]TokenKind = map[string]TokenKind{
 }
 
 func (tk Token) IsOneOfMany(expectedTokens ...TokenKind) bool {
-	for _, expected := range expectedTokens {
-		if expected == tk.Kind {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(expectedTokens, tk.Kind)
 }
 
 func (token Token) Debug() {

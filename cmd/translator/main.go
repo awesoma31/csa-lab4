@@ -1,11 +1,19 @@
 package main
 
 import (
+	"os"
+
 	"github.com/awesoma31/csa-lab4/cmd/translator/lexer"
 )
 
 func main() {
-	t := lexer.Tokenize("1 + 2 -  -3")
+	bytes, err := os.ReadFile("examples/00.lang")
+	if err != nil {
+		panic(err)
+	}
+	text := string(bytes)
+
+	t := lexer.Tokenize(text)
 
 	for _, tok := range t {
 		tok.Debug()

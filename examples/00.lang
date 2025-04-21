@@ -1,9 +1,6 @@
-var a: num = 1
-var b: str = "hui"
-var c: bool = true
-
-c = input(str)
-print(c)
+var a = 1
+var b = "hui"
+var c = true
 
 fn main() {
     var x = readInt()       // Чтение целого числа (ввод через trap)
