@@ -8,7 +8,7 @@ print(c)
 fn main() {
     var x = readInt()       // Чтение целого числа (ввод через trap)
     var y = readInt()       
-    var sum = x + y         // Арифметическая операция (составная инструкция CISC)
+    var sum = x + y         // ADD [x], [y] Арифметическая операция (составная инструкция CISC)
 
     var d = (3 + a - 0) / 2
 
