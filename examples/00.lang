@@ -1,29 +1,38 @@
-var a = 1
-var b = "hui"
-var c = true
+class DirectoryReader {
+  let directoryPath: string;
+
+  fn mount(directoryPath: string) {
+    this.directoryPath = directoryPath;
+  }
+
+  fn readRecentFiles() {
+    let allFiles: []string = fs.readDir(this.directoryPath);
+    let recentFiles: []string = [];
+
+    foreach file in allFiles {
+      let fullPath: string = path.join(this.directoryPath, file);
+      let fileInfo: FileInfo = fs.stat(fullPath);
+      if this.isFileRecent(fileInfo.creationTime) {
+        recentFiles.push(fullPath);
+      }
+    }
+
+    foreach file in recentFiles {
+      println(file, fs.stat(file).creationTime);
+    }
+  }
+
+  fn isFileRecent(creationTime: Time): boolean {
+    let twentyFourHoursAgo: Time = time.now() - time.hours(24);
+    creationTime > twentyFourHoursAgo;
+  }
+}
 
 fn main() {
-    var x = readInt()       // Чтение целого числа (ввод через trap)
-    var y = readInt()       
-    var sum = x + y         // ADD [x], [y] Арифметическая операция (составная инструкция CISC)
-
-    var d = (3 + a - 0) / 2
-
-    if (sum > 10) {
-        print("Сумма больше 10", sum)
-    } else {
-        print("Сумма меньше или равна 10", sum)
-    }
-
-    var i = 0
-    while (i < 5) {
-        print("Итерация", i)
-        i = i + 1
-    }
-    
-    return 0
+  const directory: string = "/path/to/directory";
+  const reader = new DirectoryReader();
+  reader.mount(directory);
+  reader.readRecentFiles();
 }
 
-fn hello_world() {
-    print("Привет, мир!")
-}
+main();

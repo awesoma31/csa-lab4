@@ -38,7 +38,7 @@ func Tokenize(source string) []Token {
 		}
 	}
 
-	lex.pushToken(newUniqueToken(EOF, "EOF"))
+	lex.push(newUniqueToken(EOF, "EOF"))
 	return lex.Tokens
 }
 
@@ -58,7 +58,7 @@ func (lex *lexer) remainder() string {
 	return lex.source[lex.pos:]
 }
 
-func (lex *lexer) pushToken(token Token) {
+func (lex *lexer) push(token Token) {
 	lex.Tokens = append(lex.Tokens, token)
 }
 
@@ -98,22 +98,29 @@ func createLexer(source string) *lexer {
 			{regexp.MustCompile(`\.`), defaultHandler(DOT, ".")},
 			{regexp.MustCompile(`;`), defaultHandler(SEMI_COLON, ";")},
 			{regexp.MustCompile(`:`), defaultHandler(COLON, ":")},
+			{regexp.MustCompile(`\?\?=`), defaultHandler(NULLISH_ASSIGNMENT, "??=")},
 			{regexp.MustCompile(`\?`), defaultHandler(QUESTION, "?")},
 			{regexp.MustCompile(`,`), defaultHandler(COMMA, ",")},
+			{regexp.MustCompile(`\+\+`), defaultHandler(PLUS_PLUS, "++")},
+			{regexp.MustCompile(`--`), defaultHandler(MINUS_MINUS, "--")},
+			{regexp.MustCompile(`\+=`), defaultHandler(PLUS_EQUALS, "+=")},
+			{regexp.MustCompile(`-=`), defaultHandler(MINUS_EQUALS, "-=")},
 			{regexp.MustCompile(`\+`), defaultHandler(PLUS, "+")},
 			{regexp.MustCompile(`-`), defaultHandler(DASH, "-")},
 			{regexp.MustCompile(`/`), defaultHandler(SLASH, "/")},
 			{regexp.MustCompile(`\*`), defaultHandler(STAR, "*")},
+			{regexp.MustCompile(`%`), defaultHandler(PERCENT, "%")},
 		},
 	}
 }
 
 type regexHandler func(lex *lexer, regex *regexp.Regexp)
 
+// Created a default handler which will simply create a token with the matched contents. This handler is used with most simple tokens.
 func defaultHandler(kind TokenKind, value string) regexHandler {
 	return func(lex *lexer, _ *regexp.Regexp) {
 		lex.advanceN(len(value))
-		lex.pushToken(newUniqueToken(kind, value))
+		lex.push(newUniqueToken(kind, value))
 	}
 }
 
@@ -121,13 +128,13 @@ func stringHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindStringIndex(lex.remainder())
 	stringLiteral := lex.remainder()[match[0]:match[1]]
 
-	lex.pushToken(newUniqueToken(STRING, stringLiteral))
+	lex.push(newUniqueToken(STRING, stringLiteral))
 	lex.advanceN(len(stringLiteral))
 }
 
 func numberHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindString(lex.remainder())
-	lex.pushToken(newUniqueToken(NUMBER, match))
+	lex.push(newUniqueToken(NUMBER, match))
 	lex.advanceN(len(match))
 }
 
@@ -135,9 +142,9 @@ func symbolHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindString(lex.remainder())
 
 	if kind, found := reserved_lu[match]; found {
-		lex.pushToken(newUniqueToken(kind, match))
+		lex.push(newUniqueToken(kind, match))
 	} else {
-		lex.pushToken(newUniqueToken(IDENTIFIER, match))
+		lex.push(newUniqueToken(IDENTIFIER, match))
 	}
 
 	lex.advanceN(len(match))

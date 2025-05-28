@@ -7,8 +7,8 @@ type BlockStmt struct {
 func (b BlockStmt) stmt() {}
 
 type VarDeclarationStmt struct {
-	Identifier    string
-	Constant      bool
+	Identifier string
+	// Constant bool
 	AssignedValue Expr
 	ExplicitType  Type
 }
@@ -34,6 +34,12 @@ type FunctionDeclarationStmt struct {
 }
 
 func (n FunctionDeclarationStmt) stmt() {}
+
+type ReturnStmt struct {
+	Expr Expr
+}
+
+func (n ReturnStmt) stmt() {}
 
 type IfStmt struct {
 	Condition  Expr

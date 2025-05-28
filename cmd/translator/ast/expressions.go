@@ -1,6 +1,8 @@
 package ast
 
-import "github.com/awesoma31/csa-lab4/cmd/translator/lexer"
+import (
+	"github.com/awesoma31/csa-lab4/cmd/translator/lexer"
+)
 
 // --------------------
 // Literal Expressions
@@ -50,12 +52,12 @@ type PrefixExpr struct {
 
 func (n PrefixExpr) expr() {}
 
-// type MemberExpr struct {
-// 	Member Expr
-// 	Property string
-// }
-//
-// func (n MemberExpr) expr () {}
+type MemberExpr struct {
+	Member   Expr
+	Property string
+}
+
+func (n MemberExpr) expr() {}
 
 type CallExpr struct {
 	Method    Expr
@@ -71,12 +73,12 @@ type ComputedExpr struct {
 
 func (n ComputedExpr) expr() {}
 
-// type RangeExpr struct {
-// 	Lower Expr
-// 	Upper Expr
-// }
-//
-// func (n RangeExpr) expr () {}
+type RangeExpr struct {
+	Lower Expr
+	Upper Expr
+}
+
+func (n RangeExpr) expr() {}
 
 type FunctionExpr struct {
 	Parameters []Parameter
@@ -86,14 +88,14 @@ type FunctionExpr struct {
 
 func (n FunctionExpr) expr() {}
 
-// type ArrayLiteral struct {
-// 	Contents []Expr
-// }
-//
-// func (n ArrayLiteral) expr () {}
+type ArrayLiteral struct {
+	Contents []Expr
+}
 
-// type NewExpr struct {
-// 	Instantiation CallExpr
-// }
-//
-// func (n NewExpr) expr () {}
+func (n ArrayLiteral) expr() {}
+
+type NewExpr struct {
+	Instantiation CallExpr
+}
+
+func (n NewExpr) expr() {}

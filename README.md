@@ -4,95 +4,50 @@
 
 вариант -> alg | cisc | harv | hw | tick | binary | trap | port | pstr | prob2 | vector
 
-```
-<program>         ::= <stmt_list>
-
-<stmt_list>       ::= <stmt> | <stmt> <stmt_list>
-
-<letter>          ::= [a-z] | [A-Z]
-
-<digit>           ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-
-<number>          ::= [-2^31; 2^31 - 1]
-
-<string>          ::= "\"" { <character> } "\""
-
-<stmt>            ::= <expr_stmt>
-                    | <var_decl>
-                    | <if_stmt>
-                    | <while_stmt>
-                    | <block>
-                    | <func_decl>
-                    | <return_stmt>
-
-<expr_stmt>       ::= <expression> ";"
-
-<var_decl>        ::= "var" <identifier> [ "=" <expression> ] ";"
-
-<if_stmt>         ::= "if" "(" <expression> ")" <stmt> [ "else" <stmt> ]
-
-<while_stmt>      ::= "while" "(" <expression> ")" <stmt>
-
-<block>           ::= "{" <stmt_list> "}"
-
-<func_decl>       ::= "fn" <identifier> "(" [ <param_list> ] ")" <block>
-
-<param_list>      ::= <identifier> | <identifier> "," <param_list>
-
-<return_stmt>     ::= "return" [ <expression> ] ";"
-
-<expression>      ::= <assignment>
-
-<assignment>      ::= <identifier> "=" <assignment>
-                    | <logic_or>
-
-<logic_or>        ::= <logic_and> | <logic_or> "||" <logic_and>
-
-<logic_and>       ::= <equality> | <logic_and> "&&" <equality>
-
-<equality>        ::= <comparison>
-                    | <equality> ( "==" | "!=" ) <comparison>
-
-<comparison>      ::= <term>
-                    | <comparison> ( "<" | ">" | "<=" | ">=" ) <term>
-
-<term>            ::= <factor>
-                    | <term> ( "+" | "-" ) <factor>
-
-<factor>          ::= <unary>
-                    | <factor> ( "*" | "/" | "%" ) <unary>
-
-<unary>           ::= ( "!" | "-" ) <unary>
-                    | <primary>
-
-<primary>         ::= <number>
-                    | <string>
-                    | "true"
-                    | "false"
-                    | "null"
-                    | <identifier>
-                    | "(" <expression> ")"
-
-<identifier>      ::= <letter> { <letter_or_digit> }
-
-
-<letter_or_digit> ::= <letter> | <digit>
-
-
-<character>       ::= любой символ, кроме "\"" и перевода строки
-```
-
 - alg: java, lua, go like syntax
 
   add В тестах необходимо осуществить проверку AST (абстрактного синтаксического дерева, полученного в процессе трансляции).
 
 - cisc -- система команд должна содержать сложные инструкции:
+  Кодировка ключевых опкодов (OPC)
 
   Арифметические операции, работающие с регистрами и памятью за одну операцию.
   Работа со специальными регистрами.
   Инструкции с переменным числом аргументов и, соответственно, с переменным количеством машинных слов для кодирования (к примеру, расчёт многочлена: с0+c1x1+c2x2+...+cnxnс_0 + c_1x_1 + c_2x_2 + ... + c_nx_nс0​+c1​x1​+c2​x2​+...+cn​xn​). Выборка инструкции должна явно производить смену машинного слова.
 
-  считается ли разбиение ассемблерной команды (add [0x8], ACC) внутри процессора на выполнение нескольких команд (get from mem [0x8] подставить )
+  instr format - [<prefix?> <opcode> <addr-mode> <imm/disp>] - 1-4 bytes
+
+| OPC (hex) | Операция     | `SZ` применимо? | `NARGS` типично | Краткое описание / пример                             |
+| --------- | ------------ | --------------- | --------------- | ----------------------------------------------------- |
+| **0x00**  | **ADDN**     | ✅              | 2 – 15          | `ADDN R0, op1, op2, …` — суммирует _N_ операндов      |
+| **0x01**  | **MULN**     | ✅              | 2 – 15          | `MULN R0, …` — произведение _N_ операндов             |
+| **0x02**  | **POLY**     | ✅              | 3 – 15          | `POLY R0, X, c0, c1, …, cn` — свёртка Горнера         |
+| **0x03**  | **SUB**      | ✅              | 2               | `SUB  R0, src` — вычитание (_dst ← dst − src_)        |
+| **0x04**  | **DIV**      | ✅              | 2               | `DIV  R0, src` — целочисленное деление (многотактное) |
+| **0x05**  | **MOD**      | ✅              | 2               | `MOD  R0, src` — остаток от деления                   |
+| **0x08**  | **LD**       | ✅              | 1               | `LD   R0, [addr]` — загрузка из памяти                |
+| **0x09**  | **ST**       | ✅              | 1               | `ST   R0, [addr]` — запись в память                   |
+| **0x0A**  | **IN**       | —               | 1               | `IN   R0, port#` — ввод (port-mapped I/O)             |
+| **0x0B**  | **OUT**      | —               | 1               | `OUT  R0, port#` — вывод                              |
+| **0x0C**  | **VADD**     | vec-4           | 2               | `VADD V0, Vs, Vt, #len` — векторное сложение          |
+| **0x0D**  | **VCMP**     | vec-4           | 2               | векторное сравнение, формирует маску-флаги            |
+| **0x0E**  | **VSUB**     | vec-4           | 2               | векторное вычитание                                   |
+| **0x0F**  | **VMUL**     | vec-4           | 2               | векторное умножение                                   |
+| **0x10**  | **VDIV**     | vec-4           | 2               | векторное деление (по элементам)                      |
+| **0x1F**  | **TRAP_RET** | —               | 0               | возврат из обработчика прерывания                     |
+| **0x20**  | **JMP**      | —               | 1               | безусловный переход                                   |
+| **0x21**  | **JCC**      | —               | 1               | условный переход по флагам                            |
+
+var b = 1+1+1+1+1
+
+| Addr | Word (hex)    | Расшифровка                          |
+| ---- | ------------- | ------------------------------------ |
+| 0000 | `00 05 01 00` | `OPC=ADDN, NARGS=5, DST=R1, SZ=word` |
+| 0001 | `40 00 00 01` | ImmSmall 1                           |
+| 0002 | `40 00 00 01` | ImmSmall 1                           |
+| 0003 | `40 00 00 01` | …                                    |
+| 0004 | `40 00 00 01` | …                                    |
+| 0005 | `40 00 00 01` | …                                    |
 
 - harv -- Гарвардская архитектура:
 

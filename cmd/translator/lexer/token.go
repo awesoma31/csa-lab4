@@ -1,18 +1,12 @@
 package lexer
 
-import "slices"
-
 import "fmt"
-
-type Token struct {
-	Kind  TokenKind
-	Value string
-}
 
 type TokenKind int
 
 const (
 	EOF TokenKind = iota
+	NULL
 	TRUE
 	FALSE
 	NUMBER
@@ -52,53 +46,76 @@ const (
 	COMMA
 
 	// Shorthand
-	//PLUS_PLUS
-	//MINUS_MINUS
-	//PLUS_EQUALS
-	//MINUS_EQUALS
-	// NULLISH_ASSIGNMENT // ??=
+	PLUS_PLUS
+	MINUS_MINUS
+	PLUS_EQUALS
+	MINUS_EQUALS
+	NULLISH_ASSIGNMENT // ??=
 
 	//Maths
-	PLUS  // +
-	DASH  // -
-	SLASH // /
-	STAR  // *
-	// PERCENT // %
+	PLUS
+	DASH
+	SLASH
+	STAR
+	PERCENT
 
 	// Reserved Keywords
-	VAR
-	//CONST
-	//CLASS
-	//NEW
-	//IMPORT
-	//FROM
+	LET
+	CONST
+	CLASS
+	NEW
+	IMPORT
+	FROM
 	FN
 	IF
 	ELSE
-	//FOREACH
+	FOREACH
 	WHILE
 	FOR
-	//EXPORT
-	//TYPEOF
-	//IN
+	EXPORT
+	TYPEOF
+	IN
+
+	RETURN
 
 	// Misc
 	NUM_TOKENS
 )
 
 var reserved_lu map[string]TokenKind = map[string]TokenKind{
-	"true":  TRUE,
-	"false": FALSE,
-	"var":   VAR,
-	"fn":    FN,
-	"if":    IF,
-	"else":  ELSE,
-	"while": WHILE,
-	"for":   FOR,
+	"true":    TRUE,
+	"false":   FALSE,
+	"null":    NULL,
+	"let":     LET,
+	"const":   CONST,
+	"class":   CLASS,
+	"new":     NEW,
+	"import":  IMPORT,
+	"from":    FROM,
+	"fn":      FN,
+	"if":      IF,
+	"else":    ELSE,
+	"foreach": FOREACH,
+	"while":   WHILE,
+	"for":     FOR,
+	"export":  EXPORT,
+	"typeof":  TYPEOF,
+	"in":      IN,
+}
+
+type Token struct {
+	Kind  TokenKind
+	Value string
 }
 
 func (tk Token) IsOneOfMany(expectedTokens ...TokenKind) bool {
-	return slices.Contains(expectedTokens, tk.Kind)
+	for _, expected := range expectedTokens {
+		if expected == tk.Kind {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (token Token) Debug() {
@@ -113,6 +130,8 @@ func TokenKindString(kind TokenKind) string {
 	switch kind {
 	case EOF:
 		return "eof"
+	case NULL:
+		return "null"
 	case NUMBER:
 		return "number"
 	case STRING:
@@ -167,6 +186,16 @@ func TokenKindString(kind TokenKind) string {
 		return "question"
 	case COMMA:
 		return "comma"
+	case PLUS_PLUS:
+		return "plus_plus"
+	case MINUS_MINUS:
+		return "minus_minus"
+	case PLUS_EQUALS:
+		return "plus_equals"
+	case MINUS_EQUALS:
+		return "minus_equals"
+	case NULLISH_ASSIGNMENT:
+		return "nullish_assignment"
 	case PLUS:
 		return "plus"
 	case DASH:
@@ -175,18 +204,36 @@ func TokenKindString(kind TokenKind) string {
 		return "slash"
 	case STAR:
 		return "star"
-	case VAR:
-		return "VAR"
+	case PERCENT:
+		return "percent"
+	case LET:
+		return "let"
+	case CONST:
+		return "const"
+	case CLASS:
+		return "class"
+	case NEW:
+		return "new"
+	case IMPORT:
+		return "import"
+	case FROM:
+		return "from"
 	case FN:
 		return "fn"
 	case IF:
 		return "if"
 	case ELSE:
 		return "else"
+	case FOREACH:
+		return "foreach"
 	case FOR:
 		return "for"
 	case WHILE:
 		return "while"
+	case EXPORT:
+		return "export"
+	case IN:
+		return "in"
 	default:
 		return fmt.Sprintf("unknown(%d)", kind)
 	}
