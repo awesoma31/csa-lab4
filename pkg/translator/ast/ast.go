@@ -1,5 +1,7 @@
 package ast
 
+///SHIIIIIIIIIIIIIIIIIIIT
+
 import "github.com/awesoma31/csa-lab4/pkg/translator/helpers"
 
 type Stmt interface {
