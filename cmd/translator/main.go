@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/awesoma31/csa-lab4/cmd/translator/parser"
+	"github.com/awesoma31/csa-lab4/pkg/translator/parser"
 )
 
 func main() {

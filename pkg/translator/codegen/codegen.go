@@ -3,7 +3,7 @@ package codegen
 import (
 	"fmt"
 
-	"github.com/awesoma31/csa-lab4/cmd/translator/ast"
+	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 )
 
 type CodeGen struct {

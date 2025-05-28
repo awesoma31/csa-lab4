@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"github.com/awesoma31/csa-lab4/cmd/translator/lexer"
+	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
 )
 
 // --------------------

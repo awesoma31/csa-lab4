@@ -2,7 +2,7 @@ package parser
 
 import (
 	"fmt"
-	"github.com/awesoma31/csa-lab4/cmd/translator/lexer"
+	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
 )
 
 func (p *parser) currentToken() lexer.Token {

@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"github.com/awesoma31/csa-lab4/cmd/translator/ast"
-	"github.com/awesoma31/csa-lab4/cmd/translator/lexer"
+	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
+	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
 )
 
 type binding_power int
