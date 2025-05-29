@@ -1,25 +1,33 @@
 package ast
 
-///SHIIIIIIIIIIIIIIIIIIIT
+import (
+	"bytes"
+)
 
-import "github.com/awesoma31/csa-lab4/pkg/translator/helpers"
-
-type Stmt interface {
-	stmt()
+// The base Node interface
+type Node interface {
+	TokenLiteral() string
+	String() string
 }
 
-type Expr interface {
-	expr()
+type Program struct {
+	Statements []Statement
 }
 
-type Type interface {
-	_type()
+func (p *Program) TokenLiteral() string {
+	if len(p.Statements) > 0 {
+		return p.Statements[0].TokenLiteral()
+	} else {
+		return ""
+	}
 }
 
-func ExpectExpr[T Expr](expr Expr) T {
-	return helpers.ExpectType[T](expr)
-}
+func (p *Program) String() string {
+	var out bytes.Buffer
 
-func ExpectStmt[T Stmt](expr Stmt) T {
-	return helpers.ExpectType[T](expr)
+	for _, s := range p.Statements {
+		out.WriteString(s.String())
+	}
+
+	return out.String()
 }

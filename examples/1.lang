@@ -1,15 +1,8 @@
-fn main() {
-    let a = 3 + 2 * 5-3;
-    let b = 3 + 2 * (2 / 2);
-    
-    if (a == 1) {
-        b = f();
-    }
+let x = 10;
+let y = 15;
 
+lat add = fn(a, b) {
+    return a + b;
 }
 
-fn f() {
-    return (1);
-}
 
-main();

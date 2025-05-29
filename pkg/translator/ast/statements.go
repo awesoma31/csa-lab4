@@ -1,73 +1,92 @@
 package ast
 
-type BlockStmt struct {
-	Body []Stmt
+import (
+	"bytes"
+
+	"github.com/awesoma31/csa-lab4/pkg/translator/token"
+)
+
+// All statement nodes implement this
+type Statement interface {
+	Node
+	statementNode()
 }
 
-func (b BlockStmt) stmt() {}
-
-type VarDeclarationStmt struct {
-	Identifier string
-	// Constant bool
-	AssignedValue Expr
-	ExplicitType  Type
+// Statements
+type LetStatement struct {
+	Token token.Token // the token.LET token
+	Name  *Identifier
+	Value Expression
 }
 
-func (n VarDeclarationStmt) stmt() {}
+func (ls *LetStatement) statementNode() {}
 
-type ExpressionStmt struct {
-	Expression Expr
+func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
+
+func (ls *LetStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ls.TokenLiteral() + " ")
+	out.WriteString(ls.Name.String())
+	out.WriteString(" = ")
+
+	if ls.Value != nil {
+		out.WriteString(ls.Value.String())
+	}
+
+	out.WriteString(";")
+
+	return out.String()
 }
 
-func (n ExpressionStmt) stmt() {}
-
-type Parameter struct {
-	Name string
-	Type Type
+type ReturnStatement struct {
+	Token       token.Token // the 'return' token
+	ReturnValue Expression
 }
 
-type FunctionDeclarationStmt struct {
-	Parameters []Parameter
-	Name       string
-	Body       []Stmt
-	ReturnType Type
+func (rs *ReturnStatement) statementNode()       {}
+func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
+func (rs *ReturnStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(rs.TokenLiteral() + " ")
+
+	if rs.ReturnValue != nil {
+		out.WriteString(rs.ReturnValue.String())
+	}
+
+	out.WriteString(";")
+
+	return out.String()
 }
 
-func (n FunctionDeclarationStmt) stmt() {}
-
-type ReturnStmt struct {
-	Expr Expr
+type ExpressionStatement struct {
+	Token      token.Token // the first token of the expression
+	Expression Expression
 }
 
-func (n ReturnStmt) stmt() {}
-
-type IfStmt struct {
-	Condition  Expr
-	Consequent Stmt
-	Alternate  Stmt
+func (es *ExpressionStatement) statementNode()       {}
+func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
+func (es *ExpressionStatement) String() string {
+	if es.Expression != nil {
+		return es.Expression.String()
+	}
+	return ""
 }
 
-func (n IfStmt) stmt() {}
-
-type ImportStmt struct {
-	Name string
-	From string
+type BlockStatement struct {
+	Token      token.Token // the { token
+	Statements []Statement
 }
 
-func (n ImportStmt) stmt() {}
+func (bs *BlockStatement) statementNode()       {}
+func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
+func (bs *BlockStatement) String() string {
+	var out bytes.Buffer
 
-type ForeachStmt struct {
-	Value    string
-	Index    bool
-	Iterable Expr
-	Body     []Stmt
+	for _, s := range bs.Statements {
+		out.WriteString(s.String())
+	}
+
+	return out.String()
 }
-
-func (n ForeachStmt) stmt() {}
-
-type ClassDeclarationStmt struct {
-	Name string
-	Body []Stmt
-}
-
-func (n ClassDeclarationStmt) stmt() {}
