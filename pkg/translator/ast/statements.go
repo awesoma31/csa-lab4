@@ -6,11 +6,12 @@ type BlockStmt struct {
 
 func (b BlockStmt) stmt() {}
 
+// Var declare
 type VarDeclarationStmt struct {
 	Identifier string
 	// Constant bool
 	AssignedValue Expr
-	ExplicitType  Type
+	// ExplicitType  Type
 }
 
 func (n VarDeclarationStmt) stmt() {}
@@ -26,9 +27,10 @@ type Parameter struct {
 	Type Type
 }
 
+// Function
 type FunctionDeclarationStmt struct {
-	Parameters []Parameter
 	Name       string
+	Parameters []Parameter
 	Body       []Stmt
 	ReturnType Type
 }

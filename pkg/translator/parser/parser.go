@@ -8,6 +8,8 @@ import (
 type parser struct {
 	tokens []lexer.Token
 	pos    int
+
+	errors []string
 }
 
 func createParser(tokens []lexer.Token) *parser {

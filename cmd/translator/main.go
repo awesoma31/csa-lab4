@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/parser"
+	"github.com/sanity-io/litter"
 )
 
 func main() {
@@ -29,9 +30,11 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	a, _ := getPrettyJson(astJson)
+	// prettyJsonAst, _ := getPrettyJson(astJson)
 	// fmt.Println(string(astJson))
-	fmt.Println(a)
+	// fmt.Println(prettyJsonAst)
+	litter.Dump(astTree)
+	// fmt.Println(astTree)
 	// fmt.Println(string(prettyJson.String()))
 }
 

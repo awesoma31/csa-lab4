@@ -2,6 +2,7 @@ package codegen
 
 type Word = uint32
 
+// OPCODES
 const (
 	OPC_ADDN = 0x00
 	OPC_MULN = 0x01

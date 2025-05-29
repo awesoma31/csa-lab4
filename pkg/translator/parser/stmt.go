@@ -70,7 +70,7 @@ func parse_var_decl_stmt(p *parser) ast.Stmt {
 		// Constant:      isConstant,
 		Identifier:    symbolName.Value,
 		AssignedValue: assignmentValue,
-		ExplicitType:  explicitType,
+		// ExplicitType:  explicitType,
 	}
 }
 
