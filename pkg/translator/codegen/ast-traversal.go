@@ -2,7 +2,6 @@ package codegen
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
@@ -81,7 +80,6 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 		return
 	}
 
-	// sizeInBytes := WORD_SIZE_BYTES // Default size for an integer or pointer
 	symbolEntry := SymbolEntry{
 		Name: s.Identifier,
 	}
@@ -110,38 +108,41 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			}
 
 			cg.addSymbolToScope(symbolEntry)
-			cg.dataMemory[symbolEntry.AbsAddress] = byte(symbolEntry.NumberValue)
 			return
-		case ast.StringExpr:
-			asVal.Value = strings.Trim(asVal.Value, `"`)
-			symbolEntry.Type = ast.StringType
-			// symbolEntry.SizeInBytes = len(asVal.Value)
-			symbolEntry.StringValue = asVal.Value
-			fmt.Println("str size - ", symbolEntry.SizeInBytes, asVal.Value)
 
-			if len(cg.scopeStack) == 1 { // if global
+		case ast.StringExpr:
+			// in word store ptr, in word stored len and in bytes stored chars
+			symbolEntry.Type = ast.IntType // Default type, consider type inference later (could be string, bool etc.)
+			symbolEntry.SizeInBytes = WORD_SIZE_BYTES
+			symbolEntry.NumberValue = int32(cg.nextDataAddr) + int32(symbolEntry.SizeInBytes)
+
+			//store as pointer
+			if len(cg.scopeStack) == 1 { // Global
 				symbolEntry.MemoryArea = "data"
-				// reserveSpaceInDataMem(cg, &symbolEntry)
-				symbolEntry.AbsAddress = cg.addString(asVal.Value)
-				symbolEntry.SizeInBytes = WORD_SIZE_BYTES // The variable itself holds a pointer/address
-			} else { // It's a local variable (on the stack)
-				//TODO:
+				symbolEntry.AbsAddress = cg.addNumberData(uint32(symbolEntry.NumberValue))
+			} else { // Local (on stack)
 				symbolEntry.MemoryArea = "stack"
-				// Stack allocation (offset calculation) - local variable holds a pointer to the string
 				alignmentPadding := (WORD_SIZE_BYTES - (cg.currentFrameOffset % WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
 				cg.currentFrameOffset += alignmentPadding
 				symbolEntry.FPOffset = cg.currentFrameOffset
-				symbolEntry.SizeInBytes = WORD_SIZE_BYTES // Stack variable holds a pointer (4 bytes)
 				cg.currentFrameOffset += symbolEntry.SizeInBytes
 			}
-
 			cg.addSymbolToScope(symbolEntry)
-			// cg.dataMemory[symbolEntry.AbsAddress] = byte(symbolEntry.NumberValue)
-			return
+
+			// Generate code to assign the initial value. This happens after symbol is added.
+			assignExpr := ast.AssignmentExpr{
+				Assigne:       ast.SymbolExpr{Value: s.Identifier},
+				AssignedValue: s.AssignedValue,
+			}
+			cg.generateAssignExpr(assignExpr)
+
 		case ast.AssignmentExpr:
-			//TODO:
-		default:
-			symbolEntry.Type = ast.IntType // Default type, consider type inference later
+			//TODO: Handle cases like `let x = y = 5;` or `let x = (y = 5);` properly if needed.
+			// Currently, this should be handled by the default case below.
+			cg.addError("Nested assignment expressions in declaration are not directly supported yet via specific case.")
+			return
+		default: // This will now handle StringExpr and other expressions
+			symbolEntry.Type = ast.IntType // Default type, consider type inference later (could be string, bool etc.)
 			symbolEntry.SizeInBytes = WORD_SIZE_BYTES
 
 			if len(cg.scopeStack) == 1 { // Global
@@ -149,7 +150,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 				allignDataMem(cg)
 				symbolEntry.AbsAddress = cg.nextDataAddr // Assign before reserving
 				for range symbolEntry.SizeInBytes {
-					cg.dataMemory = append(cg.dataMemory, 0) // Initialize with zeros
+					cg.dataMemory = append(cg.dataMemory, 0) // Initialize with zeros (reserving space for the pointer/value)
 					cg.nextDataAddr++
 				}
 				allignDataMem(cg) // Align after reserving

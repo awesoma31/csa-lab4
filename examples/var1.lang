@@ -1,5 +1,5 @@
-let a = 1;
-let c = 2; 
-let b = "biba";
+let a = 123;
+let b = 456; 
+let stroka = "biba";
 
 
