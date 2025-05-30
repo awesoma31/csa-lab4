@@ -50,13 +50,14 @@ func main() {
 	}
 
 	fmt.Println("-------------------instructionMemory----------------------")
-	for _, instr := range instructionMemory {
-		fmt.Println(instr)
+	for i, instr := range instructionMemory {
+		// fmt.Println(instr)
+		fmt.Println(fmt.Sprintf("[0x%X]:", i), instr)
 	}
 
 	fmt.Println("-------------------dataMemory----------------------")
-	for _, val := range dataMemory {
-		fmt.Println(val)
+	for i, val := range dataMemory {
+		fmt.Println(fmt.Sprintf("[0x%X]:", i), val)
 	}
 }
 

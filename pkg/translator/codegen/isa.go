@@ -48,6 +48,7 @@ const (
 	OP_DIV  uint32 = 0x05
 	OP_NEG  uint32 = 0x06
 	OP_NOT  uint32 = 0x07
+	OP_NOP  uint32 = 0x08
 
 	OP_PUSH uint32 = 0x10
 	OP_POP  uint32 = 0x11
@@ -68,7 +69,6 @@ var opcodeMnemonics = map[uint32]string{}
 var amMnemonics = map[uint32]string{}
 var registerMnemonics = map[int]string{}
 
-// init function is called automatically when the package is initialized.
 func init() {
 	// OPCODE MNEMONIC
 	opcodeMnemonics[OP_HALT] = "HALT"
@@ -79,6 +79,7 @@ func init() {
 	opcodeMnemonics[OP_DIV] = "DIV"
 	opcodeMnemonics[OP_NEG] = "NEG"
 	opcodeMnemonics[OP_NOT] = "NOT"
+	opcodeMnemonics[OP_NOP] = "NO_OP"
 
 	opcodeMnemonics[OP_PUSH] = "PUSH"
 	opcodeMnemonics[OP_POP] = "POP"

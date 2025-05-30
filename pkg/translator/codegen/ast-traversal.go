@@ -2,9 +2,10 @@ package codegen
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
-	"github.com/awesoma31/csa-lab4/pkg/translator/lexer" // Lexer might not be directly used here if only AST is traversed
+	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
 )
 
 // =============================================================================
@@ -28,7 +29,7 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 		cg.generateReturnStmt(s)
 	case ast.IfStmt:
 		cg.generateIfStmt(s)
-	// case ast.WhileStmt: // Добавил обработку WhileStmt
+	// case ast.WhileStmt: // Added WhileStmt handling
 	// 	cg.generateWhileStmt(s)
 	// Add other statement types as needed (Loop, etc.)
 	default:
@@ -51,7 +52,7 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr) {
 		cg.generateUnaryExpr(e)
 	case ast.CallExpr:
 		cg.generateCallExpr(e)
-	case ast.AssignmentExpr: // Добавил обработку AssignmentExpr
+	case ast.AssignmentExpr: // Added AssignmentExpr handling
 		cg.generateAssignExpr(e)
 	default:
 		cg.addError(fmt.Sprintf("Unsupported expression type: %T", e))
@@ -69,48 +70,126 @@ func (cg *CodeGenerator) VisitProgram(p *ast.BlockStmt) {
 
 	cg.emitInstruction(OP_HALT, AM_NO_OPERANDS, -1, -1, -1)
 
-	cg.popScope() // Pop global scope
+	// cg.popScope() // Pop global scope
 }
 
+// generateVarDeclStmt generates code for a variable declaration.
 func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
-	if _, found := cg.lookupSymbol(s.Identifier); found {
-		cg.addError(fmt.Sprintf("Variable '%s' already declared.", s.Identifier))
+	// Check if the variable is already declared in the current scope
+	if _, found := cg.currentScope().symbols[s.Identifier]; found {
+		cg.addError(fmt.Sprintf("Variable '%s' already declared in this scope.", s.Identifier))
 		return
 	}
 
-	//TODO: complete math ion declaration
-	sizeInWords := 1
+	// sizeInBytes := WORD_SIZE_BYTES // Default size for an integer or pointer
+	symbolEntry := SymbolEntry{
+		Name: s.Identifier,
+	}
 
+	// Determine the type and size based on the assigned value (simple inference)
 	if s.AssignedValue != nil {
-		// Basic type inference (e.g., if it's a NumberExpr, assume int)
-		switch s.AssignedValue.(type) {
+		switch asVal := s.AssignedValue.(type) {
 		case ast.NumberExpr:
-			s.ExplicitType = ast.IntType
+			symbolEntry.Type = ast.IntType
+			symbolEntry.SizeInBytes = WORD_SIZE_BYTES
+			//TODO: big numbers go to 0
+			symbolEntry.NumberValue = int32(asVal.Value)
+
+			if len(cg.scopeStack) == 1 { // if global
+				symbolEntry.MemoryArea = "data"
+				allignDataMem(cg)
+				// Reserve the space for the variable itself in data memory (e.g., a 4-byte word)
+				for range symbolEntry.SizeInBytes {
+					cg.dataMemory = append(cg.dataMemory, 0) // Initialize with zeros
+					cg.nextDataAddr++
+				}
+
+			} else { // It's a local variable (on the stack)
+				//TODO:
+				symbolEntry.MemoryArea = "stack"
+				// Ensure the offset is aligned for stack variables
+				alignmentPadding := (WORD_SIZE_BYTES - (cg.currentFrameOffset % WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
+				cg.currentFrameOffset += alignmentPadding // Add padding to the offset
+
+				symbolEntry.FPOffset = cg.currentFrameOffset     // Assign current aligned offset
+				cg.currentFrameOffset += symbolEntry.SizeInBytes // Increment offset for the next local variable
+			}
+
+			cg.addSymbolToScope(symbolEntry)
+			cg.dataMemory[symbolEntry.AbsAddress] = byte(symbolEntry.NumberValue)
+			return
 		case ast.StringExpr:
-			s.ExplicitType = ast.StringType
+			//TODO:
+			// write addr to symtable
+			// write val to mem
+
+			// A variable storing a string holds its address, so it's a pointer size
+			symbolEntry.Type = ast.IntType
+			asVal.Value = strings.Trim(asVal.Value, `"`)
+			symbolEntry.SizeInBytes = len(asVal.Value)
+			fmt.Println("str size - ", symbolEntry.SizeInBytes, asVal.Value)
+
+			if len(cg.scopeStack) == 1 { // if global
+				symbolEntry.MemoryArea = "data"
+				allignDataMem(cg)
+				// Reserve the space for the variable itself in data memory (e.g., a 4-byte word)
+				for range symbolEntry.SizeInBytes {
+					cg.dataMemory = append(cg.dataMemory, 0) // Initialize with zeros
+					cg.nextDataAddr++
+				}
+
+			} else { // It's a local variable (on the stack)
+				//TODO:
+				symbolEntry.MemoryArea = "stack"
+				// Ensure the offset is aligned for stack variables
+				alignmentPadding := (WORD_SIZE_BYTES - (cg.currentFrameOffset % WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
+				cg.currentFrameOffset += alignmentPadding // Add padding to the offset
+
+				symbolEntry.FPOffset = cg.currentFrameOffset     // Assign current aligned offset
+				cg.currentFrameOffset += symbolEntry.SizeInBytes // Increment offset for the next local variable
+			}
+
+			cg.addSymbolToScope(symbolEntry)
+			cg.dataMemory[symbolEntry.AbsAddress] = byte(symbolEntry.NumberValue)
+			return
+		case ast.AssignmentExpr:
+			//TODO:
 		default:
-			s.ExplicitType = ast.IntType // Default to int if no clear type or assignment
+			symbolEntry.Type = ast.IntType
+			symbolEntry.SizeInBytes = WORD_SIZE_BYTES
 		}
 	} else {
-		cg.addError(fmt.Sprintf("All variables should be initialised: %s", s.Identifier))
+		cg.addError(fmt.Sprintf("All variables should be initialized: %s", s.Identifier))
+		return // Stop code generation for this incorrect declaration
 	}
 
-	symbolEntry := SymbolEntry{
-		Name:       s.Identifier,
-		Address:    cg.nextDataAddr,
-		Type:       s.ExplicitType,
-		MemoryArea: "data", // Global variables are in data
-		Size:       sizeInWords,
-	}
-	cg.addSymbol(s.Identifier, symbolEntry)
-	cg.nextDataAddr += uint32(sizeInWords)
+	// reserve value space to mem
+	// global or local
+	if len(cg.scopeStack) == 1 { // if global
+		symbolEntry.MemoryArea = "data"
+		allignDataMem(cg)
+		// Reserve the space for the variable itself in data memory (e.g., a 4-byte word)
+		for range symbolEntry.SizeInBytes {
+			cg.dataMemory = append(cg.dataMemory, 0) // Initialize with zeros
+			cg.nextDataAddr++
+		}
 
-	// Ensure dataMemory has enough capacity or append zeros
-	for range sizeInWords {
-		cg.dataMemory = append(cg.dataMemory, 0)
+	} else { // It's a local variable (on the stack)
+		//TODO:
+		symbolEntry.MemoryArea = "stack"
+		// Ensure the offset is aligned for stack variables
+		alignmentPadding := (WORD_SIZE_BYTES - (cg.currentFrameOffset % WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
+		cg.currentFrameOffset += alignmentPadding // Add padding to the offset
+
+		symbolEntry.FPOffset = cg.currentFrameOffset     // Assign current aligned offset
+		cg.currentFrameOffset += symbolEntry.SizeInBytes // Increment offset for the next local variable
 	}
 
-	// Create a dummy AssignmentExpr to reuse existing logic
+	cg.addSymbolToScope(symbolEntry)
+
+	cg.dataMemory[symbolEntry.AbsAddress] = byte(symbolEntry.NumberValue)
+
+	// Generate code to assign the initial value to the variable
 	assignExpr := ast.AssignmentExpr{
 		Assigne:       ast.SymbolExpr{Value: s.Identifier},
 		AssignedValue: s.AssignedValue,
@@ -120,28 +199,29 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 
 // generateAssignExpr generates code for assignment expressions.
 func (cg *CodeGenerator) generateAssignExpr(e ast.AssignmentExpr) {
-	// Evaluate the right-hand side expression, result in R0
-	//TODO: check
+	// Evaluate the right-hand side expression, result is left in R0
 	cg.generateExpr(e.AssignedValue)
 
 	switch target := e.Assigne.(type) {
 	case ast.SymbolExpr: // Assignment to a simple variable
-		symbol, found := cg.lookupSymbol(target.Value)
+		symbol, found := cg.lookupSymbol(target.Value) // lookupSymbol searches through the entire scope stack
 		if !found {
 			cg.addError(fmt.Sprintf("Undeclared variable '%s' used in assignment.", target.Value))
 			return
 		}
 
-		// Store the value from R0 into the variable's memory location.
-		//TODO: not check for global but check for scope
-		if symbol.IsGlobal {
-			cg.emitInstruction(OP_MOV, AM_REG_MEM_ABS, -1, R0, -1) // MOV [target_addr], R0
-			cg.emitImmediate(symbol.Address)                       // Absolute address operand
+		// Store the value from R0 into the variable's memory location based on MemoryArea
+		if symbol.MemoryArea == "data" { // Global variable
+			// MOV [absolute_byte_address], R0
+			cg.emitInstruction(OP_MOV, AM_REG_MEM_ABS, -1, R0, -1)
+			cg.emitImmediate(symbol.AbsAddress) // Absolute byte-address operand (must be word-aligned)
+		} else if symbol.MemoryArea == "stack" { // Local variable (on the stack)
+			// MOV [FP+offset_in_bytes], R0
+			cg.emitInstruction(OP_MOV, AM_REG_MEM_FP, -1, R0, -1)
+			cg.emitImmediate(uint32(symbol.FPOffset)) // Byte-offset from FP as operand (must be word-aligned)
 		} else {
-			// Local variable, store to FP+offset
-			// offset := symbol.Address - cg.scopeStack[0][symbol.Name].Address // This logic needs to be revisited for true FP-relative offsets
-			cg.emitInstruction(OP_MOV, AM_REG_MEM_FP, -1, R0, -1) // MOV [FP+offset], R0
-			cg.emitImmediate(uint32(symbol.Offset))               // Using symbol.Offset directly
+			cg.addError(fmt.Sprintf("Unknown memory area for symbol '%s': %s", symbol.Name, symbol.MemoryArea))
+			return
 		}
 	default:
 		cg.addError(fmt.Sprintf("Unsupported assignment target type: %T", target))
@@ -149,14 +229,14 @@ func (cg *CodeGenerator) generateAssignExpr(e ast.AssignmentExpr) {
 }
 
 // VisitExpressionStmt handles statements that are just expressions (e.g., function calls).
-func (cg *CodeGenerator) VisitExpressionStmt(s ast.ExpressionStmt) { // Changed to value receiver
+func (cg *CodeGenerator) VisitExpressionStmt(s ast.ExpressionStmt) {
 	cg.generateExpr(s.Expression)
 }
 
 // generateBlockStmt handles code blocks (scopes).
-func (cg *CodeGenerator) generateBlockStmt(s ast.BlockStmt) { // Changed to value receiver
+func (cg *CodeGenerator) generateBlockStmt(s ast.BlockStmt) {
 	cg.pushScope() // Create a new scope for the block
-	// TODO: Handle local variable allocation/deallocation on stack here
+	// TODO: Handle local variable allocation/deallocation on stack here for block-scoped variables
 	for _, stmt := range s.Body {
 		cg.generateStmt(stmt)
 	}
@@ -164,17 +244,14 @@ func (cg *CodeGenerator) generateBlockStmt(s ast.BlockStmt) { // Changed to valu
 }
 
 // generateIfStmt handles if-else statements.
-func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) { // Changed to value receiver
+func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) {
 	// Evaluate condition (result in R0, 0 for false, non-zero for true)
 	cg.generateExpr(s.Condition)
 
-	// JUMP IF FALSE: JMPF R0, else_label (if R0 is 0, jump to else_label)
-	// We'll use a JMP instruction followed by a conditional check.
-	// Current instruction set might need a dedicated JMPF or use compare/jump.
-	// For simplicity, assuming JMP opcode can handle conditional branching if R0 is 0.
-	// This will jump if R0 == 0.
+	// JUMP IF FALSE: JMP R0, else_label (if R0 is 0, jump to else_label)
+	// We assume OP_JMP with AM_REG_REG implies a conditional jump if RegD (R0) is 0.
 	cg.emitInstruction(OP_JMP, AM_REG_REG, R0, -1, -1) // JMP if R0 is 0 (false)
-	jumpToFalseTargetPlaceholder := cg.ReserveWord()   // Reserve space for jump target address
+	jumpToFalseTargetPlaceholder := cg.ReserveWord()   // Reserve space for jump target word-address
 
 	// Visit 'then' block
 	cg.generateStmt(s.Consequent)
@@ -182,9 +259,9 @@ func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) { // Changed to value rece
 	if s.Alternate != nil {
 		// After 'then' block, jump over 'else' block
 		cg.emitInstruction(OP_JMP, AM_ABS_ADDR, -1, -1, -1)
-		jumpToEndIfTargetPlaceholder := cg.ReserveWord() // Reserve space for jump target address after else
+		jumpToEndIfTargetPlaceholder := cg.ReserveWord() // Reserve space for jump target word-address after else
 
-		// Patch the jump target for the 'if' condition (if false, jump here)
+		// Patch the jump target for the 'if' condition (if R0 was false, jump here)
 		cg.PatchWord(jumpToFalseTargetPlaceholder, cg.nextInstructionAddr)
 
 		// Visit 'else' block
@@ -193,69 +270,52 @@ func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) { // Changed to value rece
 		// Patch the jump target for the jump after 'then' block
 		cg.PatchWord(jumpToEndIfTargetPlaceholder, cg.nextInstructionAddr)
 	} else {
-		// Patch the jump target for the 'if' condition (if false, jump here)
+		// Patch the jump target for the 'if' condition (if R0 was false, jump here)
 		cg.PatchWord(jumpToFalseTargetPlaceholder, cg.nextInstructionAddr)
 	}
 }
 
-// generateWhileStmt handles while loops.
-// func (cg *CodeGenerator) generateWhileStmt(s ast.WhileStmt) { // Changed to value receiver
-//
-//		loopStartAddr := cg.nextInstructionAddr // Mark the start of the loop
-//
-//		cg.generateExpr(s.Condition) // Evaluate condition (result in R0)
-//
-//		// JMPF R0, loop_end_label (jump if R0 is 0)
-//		cg.emitInstruction(OP_JMP, AM_REG_REG, R0, -1, -1) // JMP if R0 is 0 (false)
-//		jumpToEndLoopTargetPlaceholder := cg.ReserveWord() // Reserve space for jump target address
-//
-//		cg.generateBlockStmt(ast.BlockStmt{Body: s.Body}) // Visit loop body, treating it as a block
-//
-//		// Jump back to the start of the loop
-//		cg.emitInstruction(OP_JMP, AM_ABS_ADDR, -1, -1, -1)
-//		cg.emitImmediate(loopStartAddr)
-//
-//		// Patch the jump target for the 'while' condition (if false, jump here)
-//		cg.PatchWord(jumpToEndLoopTargetPlaceholder, cg.nextInstructionAddr)
-//	}
-//
 // generateNumberExpr generates code for number literals.
-func (cg *CodeGenerator) generateNumberExpr(e ast.NumberExpr) { // Changed to value receiver
-	// Move the immediate value into R0 (accumulator)
+func (cg *CodeGenerator) generateNumberExpr(e ast.NumberExpr) {
+	// Move the immediate value (number literal) into R0 (accumulator)
 	cg.emitInstruction(OP_MOV, AM_IMM_REG, R0, -1, -1)
-	cg.emitImmediate(uint32(e.Value))
+	cg.emitImmediate(uint32(e.Value)) // Emit the numeric literal directly as an immediate operand
 }
 
 // generateStringExpr generates code for string literals.
-func (cg *CodeGenerator) generateStringExpr(e ast.StringExpr) { // Changed to value receiver
-	// Store string in data memory and load its address into R0.
-	stringAddr := cg.addString(e.Value) // This function handles writing string to dataMemory
+func (cg *CodeGenerator) generateStringExpr(e ast.StringExpr) {
+	// Store string in data memory and load its byte-address (pointer) into R0.
+	stringAddr := cg.addString(e.Value) // addString handles writing string to dataMemory (bytes) and alignment
 
-	cg.emitInstruction(OP_MOV, AM_IMM_REG, R0, -1, -1) // MOV R0, #string_address
-	cg.emitImmediate(stringAddr)
+	cg.emitInstruction(OP_MOV, AM_IMM_REG, R0, -1, -1) // MOV R0, #string_byte_address
+	cg.emitImmediate(stringAddr)                       // Emit the byte-address as an immediate word
 }
 
 // generateIdentifierExpr generates code for identifier (variable) access.
-func (cg *CodeGenerator) generateIdentifierExpr(e ast.SymbolExpr) { // Changed to value receiver
-	symbol, found := cg.lookupSymbol(e.Value) // e.Name -> e.Value
+func (cg *CodeGenerator) generateIdentifierExpr(e ast.SymbolExpr) {
+	symbol, found := cg.lookupSymbol(e.Value)
 	if !found {
 		cg.addError(fmt.Sprintf("Undeclared variable '%s' used in expression.", e.Value))
 		return
 	}
 
-	if symbol.IsGlobal {
-		cg.emitInstruction(OP_MOV, AM_MEM_ABS_REG, R0, -1, -1) // MOV R0, [target_addr]
-		cg.emitImmediate(symbol.Address)                       // Absolute address operand
+	// Load the value from memory into R0 based on MemoryArea and its byte-address/offset
+	if symbol.MemoryArea == "data" { // Global variable
+		// MOV R0, [absolute_byte_address] - CPU will fetch 4 bytes (one word)
+		cg.emitInstruction(OP_MOV, AM_MEM_ABS_REG, R0, -1, -1)
+		cg.emitImmediate(symbol.AbsAddress) // Absolute byte-address operand (must be word-aligned)
+	} else if symbol.MemoryArea == "stack" { // Local variable (on the stack)
+		// MOV R0, [FP+offset_in_bytes] - CPU will fetch 4 bytes (one word)
+		cg.emitInstruction(OP_MOV, AM_MEM_FP_REG, R0, -1, -1)
+		cg.emitImmediate(uint32(symbol.FPOffset)) // Byte-offset from FP as operand (must be word-aligned)
 	} else {
-		// Local variable, load from FP+offset
-		// offset := symbol.Address - cg.scopeStack[0][symbol.Name].Address // This logic needs to be revisited for true FP-relative offsets
-		cg.emitInstruction(OP_MOV, AM_MEM_FP_REG, R0, -1, -1) // MOV R0, [FP+offset]
-		cg.emitImmediate(uint32(symbol.Offset))               // Using symbol.Offset directly
+		cg.addError(fmt.Sprintf("Unknown memory area for symbol '%s': %s", symbol.Name, symbol.MemoryArea))
+		return
 	}
 }
 
 // generateBinaryExpr generates code for binary operations.
-func (cg *CodeGenerator) generateBinaryExpr(e ast.BinaryExpr) { // Changed to value receiver
+func (cg *CodeGenerator) generateBinaryExpr(e ast.BinaryExpr) {
 	// Evaluate left-hand side, result in R0
 	cg.generateExpr(e.Left)
 	cg.emitInstruction(OP_PUSH, AM_SINGLE_REG, R0, -1, -1) // Push R0 to stack
@@ -286,7 +346,7 @@ func (cg *CodeGenerator) generateBinaryExpr(e ast.BinaryExpr) { // Changed to va
 }
 
 // generateUnaryExpr generates code for unary operations.
-func (cg *CodeGenerator) generateUnaryExpr(e ast.PrefixExpr) { // Changed to value receiver (PrefixExpr)
+func (cg *CodeGenerator) generateUnaryExpr(e ast.PrefixExpr) {
 	cg.generateExpr(e.Right) // Evaluate operand, result in R0
 
 	switch e.Operator.Kind { // Access Kind from lexer.Token
@@ -300,12 +360,11 @@ func (cg *CodeGenerator) generateUnaryExpr(e ast.PrefixExpr) { // Changed to val
 }
 
 // generateCallExpr generates code for function calls.
-func (cg *CodeGenerator) generateCallExpr(e ast.CallExpr) { // Changed to value receiver
+func (cg *CodeGenerator) generateCallExpr(e ast.CallExpr) {
 	// Example: Handling built-in 'print' and 'input' functions.
 	// For actual function calls, you'd push arguments, then CALL instruction,
 	// and handle return values.
 
-	// Assuming e.Method is an IdentifierExpr for simplicity
 	calleeName := ""
 	if symbolExpr, ok := e.Method.(ast.SymbolExpr); ok {
 		calleeName = symbolExpr.Value
@@ -320,7 +379,7 @@ func (cg *CodeGenerator) generateCallExpr(e ast.CallExpr) { // Changed to value 
 			cg.addError("Print function expects exactly one argument.")
 			return
 		}
-		cg.generateExpr(e.Arguments[0])                         // Evaluate argument, result in R0
+		cg.generateExpr(e.Arguments[0])                         // Evaluate argument, result in R0 (should contain value or string address)
 		cg.emitInstruction(OP_OUT, AM_REG_PORT_IMM, -1, R0, -1) // OUT #0, R0 (assuming port 0 for console output)
 		cg.emitImmediate(0)                                     // Port address for output
 	case "input":
