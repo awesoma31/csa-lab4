@@ -32,7 +32,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	println("-------------------AST----------------------")
+	fmt.Println("-------------------AST----------------------")
 	litter.Dump(program)
 
 	cg := codegen.NewCodeGenerator()
@@ -44,17 +44,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	println("-------------------debugAssembly----------------------")
+	fmt.Println("-------------------debugAssembly----------------------")
 	for _, val := range debugAssembly {
 		fmt.Println(val)
 	}
 
-	println("-------------------instructionMemory----------------------")
+	fmt.Println("-------------------instructionMemory----------------------")
 	for _, instr := range instructionMemory {
 		fmt.Println(instr)
 	}
 
-	println("-------------------dataMemory----------------------")
+	fmt.Println("-------------------dataMemory----------------------")
 	for _, val := range dataMemory {
 		fmt.Println(val)
 	}

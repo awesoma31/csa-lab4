@@ -64,6 +64,86 @@ const (
 	// ...
 )
 
+var opcodeMnemonics = map[uint32]string{}
+var amMnemonics = map[uint32]string{}
+var registerMnemonics = map[int]string{}
+
+// init function is called automatically when the package is initialized.
+func init() {
+	// OPCODE MNEMONIC
+	opcodeMnemonics[OP_HALT] = "HALT"
+	opcodeMnemonics[OP_MOV] = "MOV"
+	opcodeMnemonics[OP_ADD] = "ADD"
+	opcodeMnemonics[OP_SUB] = "SUB"
+	opcodeMnemonics[OP_MUL] = "MUL"
+	opcodeMnemonics[OP_DIV] = "DIV"
+	opcodeMnemonics[OP_NEG] = "NEG"
+	opcodeMnemonics[OP_NOT] = "NOT"
+
+	opcodeMnemonics[OP_PUSH] = "PUSH"
+	opcodeMnemonics[OP_POP] = "POP"
+
+	opcodeMnemonics[OP_JMP] = "JMP"
+	opcodeMnemonics[OP_CALL] = "CALL"
+	opcodeMnemonics[OP_RET] = "RET"
+
+	opcodeMnemonics[OP_IN] = "IN"
+	opcodeMnemonics[OP_OUT] = "OUT"
+
+	// ADDRESS MODE MNEMONIC
+	amMnemonics[AM_REG_REG] = "REG_REG"
+	amMnemonics[AM_IMM_REG] = "IMM_REG"
+	amMnemonics[AM_MEM_ABS_REG] = "MEM_ABS_REG"
+	amMnemonics[AM_REG_MEM_ABS] = "REG_MEM_ABS"
+	amMnemonics[AM_MEM_FP_REG] = "MEM_FP_REG"
+	amMnemonics[AM_REG_MEM_FP] = "REG_MEM_FP"
+	amMnemonics[AM_SINGLE_REG] = "SINGLE_REG"
+	amMnemonics[AM_IMM_PORT_REG] = "IMM_PORT_REG"
+	amMnemonics[AM_REG_PORT_IMM] = "REG_PORT_IMM"
+	amMnemonics[AM_ABS_ADDR] = "ABS_ADDR"
+	amMnemonics[AM_NO_OPERANDS] = "NO_OPERANDS"
+
+	// REGISTER MNEMONIC
+	registerMnemonics[R0] = "R0"
+	registerMnemonics[R1] = "R1"
+	registerMnemonics[R2] = "R2"
+	registerMnemonics[R3] = "R3"
+	registerMnemonics[R4] = "R4"
+	registerMnemonics[R5] = "R5"
+	registerMnemonics[R6] = "R6"
+	registerMnemonics[R7] = "R7"
+	registerMnemonics[SP_REG] = "SP_REG"
+	registerMnemonics[FP_REG] = "FP_REG"
+}
+
+// GetMnemonic returns the string mnemonic for a given opcode.
+// If the opcode is not found, it returns "UNKNOWN".
+func GetMnemonic(opcode uint32) string {
+	if mnemonic, ok := opcodeMnemonics[opcode]; ok {
+		return mnemonic
+	}
+	return "UNKNOWN"
+}
+
+// GetAMnemonic returns the string mnemonic for a given addressing mode.
+// If the mode is not found, it returns "UNKNOWN_AM".
+func GetAMnemonic(mode uint32) string {
+	if mnemonic, ok := amMnemonics[mode]; ok {
+		return mnemonic
+	}
+	return "UNKNOWN_AM"
+}
+
+func GetRegisterMnemonic(reg int) string {
+	if reg == -1 {
+		return "" // Represents an unused register field
+	}
+	if mnemonic, ok := registerMnemonics[reg]; ok {
+		return mnemonic
+	}
+	return "UNKNOWN_REG"
+}
+
 // Addressing Mode / Operand Type constants (4 bits: 0x0 - 0xF)
 // Эти биты будут идти сразу за опкодом в первом слове инструкции.
 const (

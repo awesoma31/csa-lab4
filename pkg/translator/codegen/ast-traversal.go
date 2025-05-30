@@ -78,32 +78,9 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 		return
 	}
 
+	//TODO: complete math ion declaration
 	sizeInWords := 1
 
-	//TODO: remove ExplicitType
-
-	// Determine size based on type
-	// if s.ExplicitType != nil {
-	// 	switch t := s.ExplicitType.(type) {
-	// 	case ast.SymbolType: // For "int", "string", "bool" etc.
-	// 		switch t.Kind {
-	// 		case ast.TypeString:
-	// 			sizeInWords = 1 // Assuming string reference or pointer takes one word
-	// 		case ast.TypeInt, ast.TypeBool:
-	// 			sizeInWords = 1
-	// 		default:
-	// 			cg.addError(fmt.Sprintf("Unsupported type kind for variable declaration: %s", t.Kind.String()))
-	// 			return
-	// 		}
-	// 	// case ast.ListType: // For "[]int" etc.
-	// 	// 	// For simplicity, lists might be treated as pointers to allocated memory.
-	// 	// 	// Or you might need to determine actual size if fixed-size arrays.
-	// 	// 	sizeInWords = 1 // Assuming list reference/pointer takes one word
-	// 	default:
-	// 		cg.addError(fmt.Sprintf("Unsupported explicit type for variable declaration: %T (%s)", s.ExplicitType, s.ExplicitType.String()))
-	// 		return
-	// 	}
-	// } else {
 	if s.AssignedValue != nil {
 		// Basic type inference (e.g., if it's a NumberExpr, assume int)
 		switch s.AssignedValue.(type) {
@@ -111,49 +88,42 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			s.ExplicitType = ast.IntType
 		case ast.StringExpr:
 			s.ExplicitType = ast.StringType
-		// Add more inference rules as needed
 		default:
 			s.ExplicitType = ast.IntType // Default to int if no clear type or assignment
 		}
 	} else {
 		cg.addError(fmt.Sprintf("All variables should be initialised: %s", s.Identifier))
-		// s.ExplicitType = ast.IntType // Default to int if no explicit type and no assignment
 	}
-	// }
 
 	symbolEntry := SymbolEntry{
 		Name:       s.Identifier,
 		Address:    cg.nextDataAddr,
 		Type:       s.ExplicitType,
-		MemoryArea: "data",          // Global variables are in data
-		Size:       sizeInWords * 4, // Assuming 1 word = 4 bytes
+		MemoryArea: "data", // Global variables are in data
+		Size:       sizeInWords,
 	}
 	cg.addSymbol(s.Identifier, symbolEntry)
-
-	// Allocate space in data memory
 	cg.nextDataAddr += uint32(sizeInWords)
+
 	// Ensure dataMemory has enough capacity or append zeros
 	for range sizeInWords {
 		cg.dataMemory = append(cg.dataMemory, 0)
 	}
 
-	// If there's an assigned value, generate code for assignment
-	if s.AssignedValue != nil {
-		// Create a dummy AssignmentExpr to reuse existing logic
-		assignExpr := ast.AssignmentExpr{
-			Assigne:       ast.SymbolExpr{Value: s.Identifier}, // Use SymbolExpr for assignment target
-			AssignedValue: s.AssignedValue,
-		}
-		cg.generateAssignExpr(assignExpr)
+	// Create a dummy AssignmentExpr to reuse existing logic
+	assignExpr := ast.AssignmentExpr{
+		Assigne:       ast.SymbolExpr{Value: s.Identifier},
+		AssignedValue: s.AssignedValue,
 	}
+	cg.generateAssignExpr(assignExpr)
 }
 
 // generateAssignExpr generates code for assignment expressions.
-func (cg *CodeGenerator) generateAssignExpr(e ast.AssignmentExpr) { // Changed to value receiver
+func (cg *CodeGenerator) generateAssignExpr(e ast.AssignmentExpr) {
 	// Evaluate the right-hand side expression, result in R0
+	//TODO: check
 	cg.generateExpr(e.AssignedValue)
 
-	// Determine the target of the assignment (identifier, member expression, etc.)
 	switch target := e.Assigne.(type) {
 	case ast.SymbolExpr: // Assignment to a simple variable
 		symbol, found := cg.lookupSymbol(target.Value)
@@ -163,6 +133,7 @@ func (cg *CodeGenerator) generateAssignExpr(e ast.AssignmentExpr) { // Changed t
 		}
 
 		// Store the value from R0 into the variable's memory location.
+		//TODO: not check for global but check for scope
 		if symbol.IsGlobal {
 			cg.emitInstruction(OP_MOV, AM_REG_MEM_ABS, -1, R0, -1) // MOV [target_addr], R0
 			cg.emitImmediate(symbol.Address)                       // Absolute address operand
@@ -172,9 +143,6 @@ func (cg *CodeGenerator) generateAssignExpr(e ast.AssignmentExpr) { // Changed t
 			cg.emitInstruction(OP_MOV, AM_REG_MEM_FP, -1, R0, -1) // MOV [FP+offset], R0
 			cg.emitImmediate(uint32(symbol.Offset))               // Using symbol.Offset directly
 		}
-	// case ast.MemberExpr: // For assignments like `obj.field = value` or `arr[index] = value`
-	// 	// This requires more complex code generation for addressing.
-	// 	cg.addError("Assignment to member expressions not yet supported.")
 	default:
 		cg.addError(fmt.Sprintf("Unsupported assignment target type: %T", target))
 	}

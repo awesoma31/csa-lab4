@@ -27,7 +27,7 @@ type SymbolEntry struct {
 type CodeGenerator struct {
 	// Output segments
 	instructionMemory []uint32 // Machine words for instruction memory
-	dataMemory        []uint32 // Machine words for data memory
+	dataMemory        []byte   // Machine words for data memory
 	// For debug output
 	debugAssembly []string // Assembly mnemonics with addresses
 
@@ -42,7 +42,7 @@ type CodeGenerator struct {
 func NewCodeGenerator() *CodeGenerator {
 	cg := &CodeGenerator{
 		instructionMemory:   make([]uint32, 0),
-		dataMemory:          make([]uint32, 0),
+		dataMemory:          make([]byte, 0),
 		debugAssembly:       make([]string, 0),
 		scopeStack:          make([]map[string]SymbolEntry, 0),
 		nextInstructionAddr: 0,
@@ -52,7 +52,7 @@ func NewCodeGenerator() *CodeGenerator {
 	return cg
 }
 
-func (cg *CodeGenerator) Generate(program ast.BlockStmt) ([]uint32, []uint32, []string, []string) {
+func (cg *CodeGenerator) Generate(program ast.BlockStmt) ([]uint32, []byte, []string, []string) {
 	cg.VisitProgram(&program)
 
 	return cg.instructionMemory, cg.dataMemory, cg.debugAssembly, cg.errors
@@ -64,7 +64,7 @@ func (cg *CodeGenerator) GetMachineCode() []uint32 {
 }
 
 // GetDataMemory returns the generated data memory.
-func (cg *CodeGenerator) GetDataMemory() []uint32 {
+func (cg *CodeGenerator) GetDataMemory() []byte {
 	return cg.dataMemory
 }
 
@@ -135,14 +135,25 @@ func (cg *CodeGenerator) addSymbol(name string, entry SymbolEntry) {
 func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, regD, regS1, regS2 int) {
 	instructionWord := encodeInstructionWord(opcode, mode, regD, regS1, regS2)
 	cg.instructionMemory = append(cg.instructionMemory, instructionWord)
-	cg.debugAssembly = append(cg.debugAssembly, fmt.Sprintf("%08X - %08X - (Opcode: %02X, Mode: %X, D:%d, S1:%d, S2:%d)", cg.nextInstructionAddr, instructionWord, opcode, mode, regD, regS1, regS2))
+	cg.debugAssembly = append(
+		cg.debugAssembly,
+		fmt.Sprintf("[0x%08X] - %08X - (Opc: %02s, Mode: %s, D:%s, S1:%s, S2:%s)",
+			cg.nextInstructionAddr,
+			instructionWord,
+			GetMnemonic(opcode),
+			GetAMnemonic(mode),
+			GetRegisterMnemonic(regD),
+			GetRegisterMnemonic(regS1),
+			GetRegisterMnemonic(regS2),
+		),
+	)
 	cg.nextInstructionAddr++
 }
 
 // emitImmediate adds an immediate value as an operand to the instruction memory.
 func (cg *CodeGenerator) emitImmediate(value uint32) {
 	cg.instructionMemory = append(cg.instructionMemory, value)
-	cg.debugAssembly = append(cg.debugAssembly, fmt.Sprintf("%08X - %08X - (Immediate)", cg.nextInstructionAddr, value))
+	cg.debugAssembly = append(cg.debugAssembly, fmt.Sprintf("[%08X] - %08X - (Imm)", cg.nextInstructionAddr, value))
 	cg.nextInstructionAddr++
 }
 
@@ -170,17 +181,13 @@ func (cg *CodeGenerator) addString(s string) uint32 {
 	stringAddr := cg.nextDataAddr
 	strBytes := []byte(s)
 
-	// Pascal string format: length (1 word) + characters (N words)
-	// For simplicity, assume 1 char per word for now. Adjust as needed.
-	length := uint32(len(strBytes)) // Number of characters
+	length := byte(len(strBytes))
 
-	// Emit length as the first word
 	cg.dataMemory = append(cg.dataMemory, length)
 	cg.nextDataAddr++
 
-	// Emit characters, one per word (adjust if you pack multiple chars into a word)
 	for _, char := range strBytes {
-		cg.dataMemory = append(cg.dataMemory, uint32(char))
+		cg.dataMemory = append(cg.dataMemory, byte(char))
 		cg.nextDataAddr++
 	}
 	return stringAddr
