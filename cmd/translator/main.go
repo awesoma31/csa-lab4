@@ -52,13 +52,25 @@ func main() {
 	fmt.Println("-------------------instructionMemory----------------------")
 	for i, instr := range instructionMemory {
 		// fmt.Println(instr)
-		fmt.Println(fmt.Sprintf("[0x%X]:", i), instr)
+		fmt.Println(fmt.Sprintf("[0x%X|%d]:", i, i), instr)
 	}
 
 	fmt.Println("-------------------dataMemory----------------------")
 	for i, val := range dataMemory {
-		fmt.Println(fmt.Sprintf("[0x%X]:", i), val)
+		if i%4 == 0 {
+			fmt.Println("_____")
+		}
+		fmt.Println(fmt.Sprintf("[0x%X|%d]:", i, i), val)
 	}
+
+	fmt.Println("-------------------SymTable--------------------------")
+	scopeStack := cg.ScopeStack()
+
+	for k, v := range scopeStack[0].Symbols() {
+		fmt.Print(k, " ")
+		fmt.Println(v.AbsAddress)
+	}
+
 }
 
 type flags struct {

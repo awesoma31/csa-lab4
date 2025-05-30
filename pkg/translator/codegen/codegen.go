@@ -29,6 +29,14 @@ type SymbolEntry struct {
 
 }
 
+type Scope struct {
+	symbols map[string]SymbolEntry
+}
+
+func (sc *Scope) Symbols() map[string]SymbolEntry {
+	return sc.symbols
+}
+
 // CodeGenerator: Main code generator structure
 type CodeGenerator struct {
 	// Output segments
@@ -44,10 +52,6 @@ type CodeGenerator struct {
 	currentFrameOffset  int
 }
 
-type Scope struct {
-	symbols map[string]SymbolEntry
-}
-
 func NewCodeGenerator() *CodeGenerator {
 	cg := &CodeGenerator{
 		instructionMemory:   make([]uint32, 0),
@@ -59,6 +63,10 @@ func NewCodeGenerator() *CodeGenerator {
 		errors:              make([]string, 0),
 	}
 	return cg
+}
+
+func (cg *CodeGenerator) ScopeStack() []Scope {
+	return cg.scopeStack
 }
 
 func (cg *CodeGenerator) Generate(program ast.BlockStmt) ([]uint32, []byte, []string, []string) {

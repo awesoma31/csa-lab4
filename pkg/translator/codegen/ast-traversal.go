@@ -97,9 +97,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 
 			if len(cg.scopeStack) == 1 { // if global
 				symbolEntry.MemoryArea = "data"
-				// symbolEntry.AbsAddress = cg.nextDataAddr
-				reserveSpaceInDataMem(cg, &symbolEntry)
-
+				symbolEntry.AbsAddress = cg.addNumberData(uint32(asVal.Value))
 			} else { // It's a local variable (on the stack)
 				//TODO:
 				symbolEntry.MemoryArea = "stack"
@@ -115,30 +113,26 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			cg.dataMemory[symbolEntry.AbsAddress] = byte(symbolEntry.NumberValue)
 			return
 		case ast.StringExpr:
-			//TODO:
-			// write addr to symtable
-			// write val to mem
-
-			// A variable storing a string holds its address, so it's a pointer size
 			asVal.Value = strings.Trim(asVal.Value, `"`)
 			symbolEntry.Type = ast.StringType
-			symbolEntry.SizeInBytes = len(asVal.Value)
+			// symbolEntry.SizeInBytes = len(asVal.Value)
 			symbolEntry.StringValue = asVal.Value
 			fmt.Println("str size - ", symbolEntry.SizeInBytes, asVal.Value)
 
 			if len(cg.scopeStack) == 1 { // if global
 				symbolEntry.MemoryArea = "data"
-				reserveSpaceInDataMem(cg, &symbolEntry)
-
+				// reserveSpaceInDataMem(cg, &symbolEntry)
+				symbolEntry.AbsAddress = cg.addString(asVal.Value)
+				symbolEntry.SizeInBytes = WORD_SIZE_BYTES // The variable itself holds a pointer/address
 			} else { // It's a local variable (on the stack)
 				//TODO:
 				symbolEntry.MemoryArea = "stack"
-				// Ensure the offset is aligned for stack variables
+				// Stack allocation (offset calculation) - local variable holds a pointer to the string
 				alignmentPadding := (WORD_SIZE_BYTES - (cg.currentFrameOffset % WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
-				cg.currentFrameOffset += alignmentPadding // Add padding to the offset
-
-				symbolEntry.FPOffset = cg.currentFrameOffset     // Assign current aligned offset
-				cg.currentFrameOffset += symbolEntry.SizeInBytes // Increment offset for the next local variable
+				cg.currentFrameOffset += alignmentPadding
+				symbolEntry.FPOffset = cg.currentFrameOffset
+				symbolEntry.SizeInBytes = WORD_SIZE_BYTES // Stack variable holds a pointer (4 bytes)
+				cg.currentFrameOffset += symbolEntry.SizeInBytes
 			}
 
 			cg.addSymbolToScope(symbolEntry)
@@ -147,35 +141,28 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 		case ast.AssignmentExpr:
 			//TODO:
 		default:
-			symbolEntry.Type = ast.IntType
+			symbolEntry.Type = ast.IntType // Default type, consider type inference later
 			symbolEntry.SizeInBytes = WORD_SIZE_BYTES
-			// reserve value space to mem
-			// global or local
-			if len(cg.scopeStack) == 1 { // if global
+
+			if len(cg.scopeStack) == 1 { // Global
 				symbolEntry.MemoryArea = "data"
 				allignDataMem(cg)
-				// Reserve the space for the variable itself in data memory (e.g., a 4-byte word)
+				symbolEntry.AbsAddress = cg.nextDataAddr // Assign before reserving
 				for range symbolEntry.SizeInBytes {
 					cg.dataMemory = append(cg.dataMemory, 0) // Initialize with zeros
 					cg.nextDataAddr++
 				}
-
-			} else { // It's a local variable (on the stack)
-				//TODO:
+				allignDataMem(cg) // Align after reserving
+			} else { // Local (on stack)
 				symbolEntry.MemoryArea = "stack"
-				// Ensure the offset is aligned for stack variables
 				alignmentPadding := (WORD_SIZE_BYTES - (cg.currentFrameOffset % WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
-				cg.currentFrameOffset += alignmentPadding // Add padding to the offset
-
-				symbolEntry.FPOffset = cg.currentFrameOffset     // Assign current aligned offset
-				cg.currentFrameOffset += symbolEntry.SizeInBytes // Increment offset for the next local variable
+				cg.currentFrameOffset += alignmentPadding
+				symbolEntry.FPOffset = cg.currentFrameOffset
+				cg.currentFrameOffset += symbolEntry.SizeInBytes
 			}
-
 			cg.addSymbolToScope(symbolEntry)
 
-			cg.dataMemory[symbolEntry.AbsAddress] = byte(symbolEntry.NumberValue)
-
-			// Generate code to assign the initial value to the variable
+			// Generate code to assign the initial value. This happens after symbol is added.
 			assignExpr := ast.AssignmentExpr{
 				Assigne:       ast.SymbolExpr{Value: s.Identifier},
 				AssignedValue: s.AssignedValue,
@@ -187,19 +174,6 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 		return
 	}
 
-}
-
-func reserveSpaceInDataMem(cg *CodeGenerator, symbolEntry *SymbolEntry) {
-	allignDataMem(cg)
-	// Reserve the space for the variable itself in data memory (e.g., a 4-byte word)
-
-	symbolEntry.AbsAddress = cg.nextDataAddr
-
-	for range symbolEntry.SizeInBytes {
-		cg.dataMemory = append(cg.dataMemory, 0) // Initialize with zeros
-		cg.nextDataAddr++
-	}
-	allignDataMem(cg)
 }
 
 // generateAssignExpr generates code for assignment expressions.
@@ -355,10 +329,10 @@ func (cg *CodeGenerator) generateUnaryExpr(e ast.PrefixExpr) {
 	cg.generateExpr(e.Right) // Evaluate operand, result in R0
 
 	switch e.Operator.Kind { // Access Kind from lexer.Token
-	case lexer.MINUS: // Unary negation
+	case lexer.MINUS: // Unary negation (minus sign)
 		cg.emitInstruction(OP_NEG, AM_SINGLE_REG, R0, -1, -1)
-	// case lexer.BANG: // Logical NOT
-	// 	cg.emitInstruction(OP_NOT, AM_SINGLE_REG, R0, -1, -1)
+	case lexer.NOT: // Logical NOT
+		cg.emitInstruction(OP_NOT, AM_SINGLE_REG, R0, -1, -1)
 	default:
 		cg.addError(fmt.Sprintf("Unsupported unary operator: %s", e.Operator.Value)) // Use Operator.Value
 	}
