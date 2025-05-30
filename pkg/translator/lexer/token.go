@@ -54,9 +54,9 @@ const (
 
 	//Maths
 	PLUS
-	DASH
+	MINUS // -
 	SLASH
-	STAR
+	ASTERISK
 	PERCENT
 
 	// Reserved Keywords
@@ -200,11 +200,11 @@ func TokenKindString(kind TokenKind) string {
 		return "nullish_assignment"
 	case PLUS:
 		return "plus"
-	case DASH:
+	case MINUS:
 		return "dash"
 	case SLASH:
 		return "slash"
-	case STAR:
+	case ASTERISK:
 		return "star"
 	case PERCENT:
 		return "percent"

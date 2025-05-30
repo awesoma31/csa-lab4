@@ -101,11 +101,11 @@ func createTokenLookups() {
 
 	// Additive Operators (Left-Associative)
 	led(lexer.PLUS, additive, parse_binary_expr)
-	led(lexer.DASH, additive, parse_binary_expr) // For binary minus
+	led(lexer.MINUS, additive, parse_binary_expr) // For binary minus
 
 	// Multiplicative Operators (Left-Associative)
 	led(lexer.SLASH, multiplicative, parse_binary_expr)
-	led(lexer.STAR, multiplicative, parse_binary_expr)
+	led(lexer.ASTERISK, multiplicative, parse_binary_expr)
 	led(lexer.PERCENT, multiplicative, parse_binary_expr)
 
 	// Literals & Symbols (NUDs - they start expressions)
@@ -119,7 +119,7 @@ func createTokenLookups() {
 	// The `unary` binding power is typically higher than binary operators,
 	// ensuring `!x + y` parses as `(!x) + y`.
 	nud(lexer.TYPEOF, parse_prefix_expr)
-	nud(lexer.DASH, parse_prefix_expr) // For unary minus (e.g., -5)
+	nud(lexer.MINUS, parse_prefix_expr) // For unary minus (e.g., -5)
 	nud(lexer.NOT, parse_prefix_expr)
 
 	// Member / Computed Access / Call Operators (LEDs - they bind to a left expression)

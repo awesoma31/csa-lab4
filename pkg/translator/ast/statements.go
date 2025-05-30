@@ -8,10 +8,9 @@ func (b BlockStmt) stmt() {}
 
 // Var declare
 type VarDeclarationStmt struct {
-	Identifier string
-	// Constant bool
+	Identifier    string
 	AssignedValue Expr
-	ExplicitType  Type
+	ExplicitType  Type // Используем новый интерфейс Type
 }
 
 func (n VarDeclarationStmt) stmt() {}

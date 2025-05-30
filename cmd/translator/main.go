@@ -2,130 +2,94 @@ package main
 
 import (
 	"bytes"
+	"encoding/binary"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/codegen"
 	"github.com/awesoma31/csa-lab4/pkg/translator/parser"
+	"github.com/sanity-io/litter"
 )
 
 func main() {
-	// var codeFile string
-	// if len(os.Args) > 1 {
-	// 	codeFile = os.Args[1]
-	// }
-	// sourceBytes, err := os.ReadFile(codeFile)
-	// if err != nil {
-	// 	sourceBytes, _ = os.ReadFile("examples/00.lang")
-	// }
-	// source := string(sourceBytes)
-	// astTree := parser.Parse(source)
-	//
-	// astJson, _ := json.Marshal(astTree)
-	// var prettyJson bytes.Buffer
-	// err = json.Indent(&prettyJson, []byte(astJson), "", " ")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// prettyJsonAst, _ := getPrettyJson(astJson)
-	// // fmt.Println(string(astJson))
-	// fmt.Println(prettyJsonAst)
-	// litter.Dump(astTree)
-	// fmt.Println(astTree)
-	// fmt.Println(string(prettyJson.String()))
-	// }
+	flags := &flags{}
+	flags.parseFlags()
 
-	source := `
-        let a = 10;
-        let b = "hello_world";
-        let c = a + 5;
-        if (c > 10) {
-            let d = 20;
-            c = c + d;
-        } else {
-            c = c - 5;
-        }
-        // print(c); // Assuming 'print' is a built-in function or external call
-        // let s = "test_string";
-        // func my_func(x, y) {
-        //     let z = x + y;
-        //     return z;
-        // }
-        // let result = my_func(c, 100);
-    `
+	sourceBytes, err := os.ReadFile(flags.InPath)
+	if err != nil {
+		fmt.Printf("couldn't resolve %s: %v\n", flags.InPath, err)
+		os.Exit(1)
+	}
 
-	// 1. Парсинг AST
-	program, parseErrors := parser.Parse(source)
+	program, parseErrors := parser.Parse(string(sourceBytes))
 	if len(parseErrors) > 0 {
-		fmt.Println("Parser Errors:")
+		fmt.Println("Ошибки парсера:")
 		for _, err := range parseErrors {
 			fmt.Println("-", err)
 		}
 		os.Exit(1)
 	}
 
-	// 2. Кодогенерация
+	println("-------------------AST----------------------")
+	litter.Dump(program)
+
 	cg := codegen.NewCodeGenerator()
 	instructionMemory, dataMemory, debugAssembly, cgErrors := cg.Generate(program)
-
 	if len(cgErrors) > 0 {
-		fmt.Println("Code Generation Errors:")
-		for _, err := range cgErrors {
-			fmt.Println("-", err)
+		for _, e := range cgErrors {
+			fmt.Println(e)
 		}
 		os.Exit(1)
 	}
 
-	// 3. Вывод результатов
-	outputDir := "output"
-	os.MkdirAll(outputDir, os.ModePerm) // Создаем директорию, если ее нет
-
-	// Сохраняем отладочный ассемблер
-	debugAsmPath := filepath.Join(outputDir, "output.asm")
-	err := os.WriteFile(debugAsmPath, []byte(strings.Join(debugAssembly, "\n")), 0644)
-	if err != nil {
-		fmt.Println("Error writing debug assembly:", err)
-	} else {
-		fmt.Printf("Debug assembly saved to %s\n", debugAsmPath)
+	println("-------------------debugAssembly----------------------")
+	for _, val := range debugAssembly {
+		fmt.Println(val)
 	}
 
-	// Сохраняем бинарные файлы памяти инструкций
-	instrBinPath := filepath.Join(outputDir, "instruction_memory.bin")
-	err = writeBinaryFile(instrBinPath, instructionMemory)
-	if err != nil {
-		fmt.Println("Error writing instruction memory binary:", err)
-	} else {
-		fmt.Printf("Instruction memory binary saved to %s\n", instrBinPath)
+	println("-------------------instructionMemory----------------------")
+	for _, instr := range instructionMemory {
+		fmt.Println(instr)
 	}
 
-	// Сохраняем бинарные файлы памяти данных
-	dataBinPath := filepath.Join(outputDir, "data_memory.bin")
-	err = writeBinaryFile(dataBinPath, dataMemory)
-	if err != nil {
-		fmt.Println("Error writing data memory binary:", err)
-	} else {
-		fmt.Printf("Data memory binary saved to %s\n", dataBinPath)
+	println("-------------------dataMemory----------------------")
+	for _, val := range dataMemory {
+		fmt.Println(val)
 	}
 }
 
-// writeBinaryFile helper function (copied from previous response for completeness)
+type flags struct {
+	InPath     string
+	OutDirPath string
+}
+
+func (f *flags) parseFlags() {
+	flag.StringVar(&f.InPath, "in", "", "файл исходной программы (*.lang)")
+	flag.StringVar(&f.OutDirPath, "out", "out", "каталог с результатами компиляции")
+	flag.Parse()
+
+	if f.InPath == "" {
+		fmt.Println("usage: translator -in=source.lang [-out dir]")
+		os.Exit(1)
+	}
+}
+
+// writeBinaryFile записывает слайс uint32 в бинарный файл.
+// Использует LittleEndian для записи, что является распространенным выбором для большинства систем.
 func writeBinaryFile(filename string, data []uint32) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
+	// Гарантируем закрытие файла при выходе из функции
 	defer file.Close()
 
-	// Используйте LittleEndian или BigEndian в зависимости от вашей ISA
-	// Для большинства современных систем LittleEndian
-	writer := binary.NewWriter(file)
 	for _, word := range data {
-		// Записываем 32-битное слово (4 байта)
-		err := writer.WriteUint32(word, binary.LittleEndian) // Предположим Little-Endian
+		// Записываем каждое 32-битное слово (4 байта)
+		// Используем binary.Write и указываем порядок байтов (LittleEndian)
+		err := binary.Write(file, binary.LittleEndian, word)
 		if err != nil {
 			return err
 		}
@@ -133,6 +97,7 @@ func writeBinaryFile(filename string, data []uint32) error {
 	return nil
 }
 
+// getPrettyJson форматирует JSON байты в удобочитаемую строку с отступами.
 func getPrettyJson(in []byte) (string, error) {
 	var prettyJson bytes.Buffer
 	err := json.Indent(&prettyJson, []byte(in), "", " ")

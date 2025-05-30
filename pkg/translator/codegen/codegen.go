@@ -2,26 +2,39 @@ package codegen
 
 import (
 	"fmt"
-	"github.com/awesoma31/csa-lab4/pkg/translator/ast" // Assume ast package is in this path
+
+	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 )
 
-// SymbolEntry represents an entry in the symbol table.
+// =============================================================================
+// CodeGenerator Structure and Core Methods
+// =============================================================================
+
 type SymbolEntry struct {
-	Name     string
-	Address  uint32 // Memory address or stack offset
-	IsConst  bool
-	Type     ast.Type
-	IsGlobal bool // Indicates if the symbol is global
+	Name       string
+	Type       ast.Type // Changed to ast.Type interface
+	MemoryArea string   // "data", "stack", "code" (for functions)
+	Address    uint32   // Absolute address in data memory or code memory (word-address)
+	Offset     int      // Offset from FP for stack variables (in bytes, negative)
+	Size       int      // Size in bytes (4 for int, length + 4 for string)
+	IsGlobal   bool     // Global or local variable
+	// For functions:
+	NumParams     int
+	LocalVarCount int // Total size of local variables in bytes
 }
 
-// CodeGenerator is responsible for translating AST into machine code.
+// CodeGenerator: Main code generator structure
 type CodeGenerator struct {
-	instructionMemory   []uint32                 // Generated machine code instructions
-	dataMemory          []uint32                 // Allocated data memory
-	debugAssembly       []string                 // Human-readable assembly for debugging
-	scopeStack          []map[string]SymbolEntry // Stack of symbol tables for scopes (local and nested)
-	nextInstructionAddr uint32
-	nextDataAddr        uint32
+	// Output segments
+	instructionMemory []uint32 // Machine words for instruction memory
+	dataMemory        []uint32 // Machine words for data memory
+	// For debug output
+	debugAssembly []string // Assembly mnemonics with addresses
+
+	// State of the code generator
+	scopeStack          []map[string]SymbolEntry // Stack of symbol tables for scopes
+	nextInstructionAddr uint32                   // Next free address in instruction memory (word-addresses)
+	nextDataAddr        uint32                   // Next free address in data memory (word-addresses)
 	errors              []string
 }
 
@@ -36,8 +49,13 @@ func NewCodeGenerator() *CodeGenerator {
 		nextDataAddr:        0,
 		errors:              make([]string, 0),
 	}
-	cg.pushScope() // Push the initial global scope
 	return cg
+}
+
+func (cg *CodeGenerator) Generate(program ast.BlockStmt) ([]uint32, []uint32, []string, []string) {
+	cg.VisitProgram(&program)
+
+	return cg.instructionMemory, cg.dataMemory, cg.debugAssembly, cg.errors
 }
 
 // GetMachineCode returns the generated machine code.
@@ -64,18 +82,33 @@ func (cg *CodeGenerator) addError(msg string) {
 	cg.errors = append(cg.errors, msg)
 }
 
-// pushScope creates a new scope.
+// pushScope adds a new scope to the scope stack.
 func (cg *CodeGenerator) pushScope() {
 	cg.scopeStack = append(cg.scopeStack, make(map[string]SymbolEntry))
 }
 
-// popScope removes the current scope.
+// popScope removes the current scope from the scope stack.
+// It also generates code to deallocate local variables from the stack.
 func (cg *CodeGenerator) popScope() {
-	if len(cg.scopeStack) <= 1 { // Ensure we don't pop the global scope
-		cg.addError("Attempted to pop global scope (or no scope exists).")
-		return
+	// TODO:
+	// if len(cg.scopeStack) <= 1 {
+	// 	cg.addError("Attempted to pop global scope.")
+	// 	return
+	// }
+
+	// Calculate total size of locals in this scope
+	currentScope := cg.scopeStack[len(cg.scopeStack)-1]
+	// localBytesDeallocated := 0 // We'll manage currentStackOffset instead
+	for _, entry := range currentScope {
+		if entry.MemoryArea == "stack" {
+			// localBytesDeallocated += entry.Size // Sum up sizes
+		}
 	}
+	// cg.emitInstruction(encodeInstructionWord(OP_ADD, AM_IMM_REG, int(SP_REG), -1, -1), fmt.Sprintf("ADD SP, #%d (pop scope)\n", localBytesDeallocated))\n\t// cg.emitImmediate(uint32(localBytesDeallocated))\n
+
 	cg.scopeStack = cg.scopeStack[:len(cg.scopeStack)-1]
+	// When popping a scope, restore the stack offset to what it was before this scope
+	// This requires tracking the offset *per scope*. For simplicity
 }
 
 // lookupSymbol searches for a symbol in the current scope stack (from innermost to outermost).
@@ -90,10 +123,6 @@ func (cg *CodeGenerator) lookupSymbol(name string) (SymbolEntry, bool) {
 
 // addSymbol adds a symbol to the current (innermost) scope.
 func (cg *CodeGenerator) addSymbol(name string, entry SymbolEntry) {
-	// For simplicity, we add to the current scope.
-	// If you want to differentiate global/local at declaration, you'd check len(cg.scopeStack)
-	// and add to scopeStack[0] for global, or scopeStack[len-1] for local.
-	// Given your current AST, VarDeclarationStmt is visited globally first.
 	currentScope := cg.scopeStack[len(cg.scopeStack)-1]
 	if _, exists := currentScope[name]; exists {
 		cg.addError(fmt.Sprintf("Symbol '%s' already declared in this scope.", name))
@@ -110,24 +139,24 @@ func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, regD, regS1, regS2
 	cg.nextInstructionAddr++
 }
 
-// emitOperand adds an operand (e.g., immediate value, address) to the instruction memory.
-func (cg *CodeGenerator) emitOperand(operand uint32) {
-	cg.instructionMemory = append(cg.instructionMemory, operand)
-	cg.debugAssembly = append(cg.debugAssembly, fmt.Sprintf("%08X - %08X - (Operand)", cg.nextInstructionAddr, operand))
+// emitImmediate adds an immediate value as an operand to the instruction memory.
+func (cg *CodeGenerator) emitImmediate(value uint32) {
+	cg.instructionMemory = append(cg.instructionMemory, value)
+	cg.debugAssembly = append(cg.debugAssembly, fmt.Sprintf("%08X - %08X - (Immediate)", cg.nextInstructionAddr, value))
 	cg.nextInstructionAddr++
 }
 
-// ReserveWord reserves space for a word and returns its address.
+// ReserveWord reserves space for a word in instruction memory and returns its address.
 func (cg *CodeGenerator) ReserveWord() uint32 {
 	addr := cg.nextInstructionAddr
-	cg.emitInstruction(0, 0, -1, -1, -1) // Emit a NOP or 0-filled word as a placeholder
+	cg.emitInstruction(0, 0, -1, -1, -1) // Emit a NOP (0x00) as a placeholder
 	return addr
 }
 
-// PatchWord updates a previously emitted word at a given address.
+// PatchWord updates a previously emitted word at a given address in instruction memory.
 func (cg *CodeGenerator) PatchWord(address, value uint32) {
 	if address >= uint32(len(cg.instructionMemory)) {
-		cg.addError(fmt.Sprintf("Attempted to patch address %d out of bounds.", address))
+		cg.addError(fmt.Sprintf("Attempted to patch address %d out of bounds (instruction memory size %d).", address, len(cg.instructionMemory)))
 		return
 	}
 	cg.instructionMemory[address] = value
