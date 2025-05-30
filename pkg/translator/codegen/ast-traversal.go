@@ -97,12 +97,8 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 
 			if len(cg.scopeStack) == 1 { // if global
 				symbolEntry.MemoryArea = "data"
-				allignDataMem(cg)
-				// Reserve the space for the variable itself in data memory (e.g., a 4-byte word)
-				for range symbolEntry.SizeInBytes {
-					cg.dataMemory = append(cg.dataMemory, 0) // Initialize with zeros
-					cg.nextDataAddr++
-				}
+				// symbolEntry.AbsAddress = cg.nextDataAddr
+				reserveSpaceInDataMem(cg, &symbolEntry)
 
 			} else { // It's a local variable (on the stack)
 				//TODO:
@@ -124,11 +120,37 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			// write val to mem
 
 			// A variable storing a string holds its address, so it's a pointer size
-			symbolEntry.Type = ast.IntType
 			asVal.Value = strings.Trim(asVal.Value, `"`)
+			symbolEntry.Type = ast.StringType
 			symbolEntry.SizeInBytes = len(asVal.Value)
+			symbolEntry.StringValue = asVal.Value
 			fmt.Println("str size - ", symbolEntry.SizeInBytes, asVal.Value)
 
+			if len(cg.scopeStack) == 1 { // if global
+				symbolEntry.MemoryArea = "data"
+				reserveSpaceInDataMem(cg, &symbolEntry)
+
+			} else { // It's a local variable (on the stack)
+				//TODO:
+				symbolEntry.MemoryArea = "stack"
+				// Ensure the offset is aligned for stack variables
+				alignmentPadding := (WORD_SIZE_BYTES - (cg.currentFrameOffset % WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
+				cg.currentFrameOffset += alignmentPadding // Add padding to the offset
+
+				symbolEntry.FPOffset = cg.currentFrameOffset     // Assign current aligned offset
+				cg.currentFrameOffset += symbolEntry.SizeInBytes // Increment offset for the next local variable
+			}
+
+			cg.addSymbolToScope(symbolEntry)
+			// cg.dataMemory[symbolEntry.AbsAddress] = byte(symbolEntry.NumberValue)
+			return
+		case ast.AssignmentExpr:
+			//TODO:
+		default:
+			symbolEntry.Type = ast.IntType
+			symbolEntry.SizeInBytes = WORD_SIZE_BYTES
+			// reserve value space to mem
+			// global or local
 			if len(cg.scopeStack) == 1 { // if global
 				symbolEntry.MemoryArea = "data"
 				allignDataMem(cg)
@@ -150,51 +172,34 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			}
 
 			cg.addSymbolToScope(symbolEntry)
+
 			cg.dataMemory[symbolEntry.AbsAddress] = byte(symbolEntry.NumberValue)
-			return
-		case ast.AssignmentExpr:
-			//TODO:
-		default:
-			symbolEntry.Type = ast.IntType
-			symbolEntry.SizeInBytes = WORD_SIZE_BYTES
+
+			// Generate code to assign the initial value to the variable
+			assignExpr := ast.AssignmentExpr{
+				Assigne:       ast.SymbolExpr{Value: s.Identifier},
+				AssignedValue: s.AssignedValue,
+			}
+			cg.generateAssignExpr(assignExpr)
 		}
 	} else {
 		cg.addError(fmt.Sprintf("All variables should be initialized: %s", s.Identifier))
-		return // Stop code generation for this incorrect declaration
+		return
 	}
 
-	// reserve value space to mem
-	// global or local
-	if len(cg.scopeStack) == 1 { // if global
-		symbolEntry.MemoryArea = "data"
-		allignDataMem(cg)
-		// Reserve the space for the variable itself in data memory (e.g., a 4-byte word)
-		for range symbolEntry.SizeInBytes {
-			cg.dataMemory = append(cg.dataMemory, 0) // Initialize with zeros
-			cg.nextDataAddr++
-		}
+}
 
-	} else { // It's a local variable (on the stack)
-		//TODO:
-		symbolEntry.MemoryArea = "stack"
-		// Ensure the offset is aligned for stack variables
-		alignmentPadding := (WORD_SIZE_BYTES - (cg.currentFrameOffset % WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
-		cg.currentFrameOffset += alignmentPadding // Add padding to the offset
+func reserveSpaceInDataMem(cg *CodeGenerator, symbolEntry *SymbolEntry) {
+	allignDataMem(cg)
+	// Reserve the space for the variable itself in data memory (e.g., a 4-byte word)
 
-		symbolEntry.FPOffset = cg.currentFrameOffset     // Assign current aligned offset
-		cg.currentFrameOffset += symbolEntry.SizeInBytes // Increment offset for the next local variable
+	symbolEntry.AbsAddress = cg.nextDataAddr
+
+	for range symbolEntry.SizeInBytes {
+		cg.dataMemory = append(cg.dataMemory, 0) // Initialize with zeros
+		cg.nextDataAddr++
 	}
-
-	cg.addSymbolToScope(symbolEntry)
-
-	cg.dataMemory[symbolEntry.AbsAddress] = byte(symbolEntry.NumberValue)
-
-	// Generate code to assign the initial value to the variable
-	assignExpr := ast.AssignmentExpr{
-		Assigne:       ast.SymbolExpr{Value: s.Identifier},
-		AssignedValue: s.AssignedValue,
-	}
-	cg.generateAssignExpr(assignExpr)
+	allignDataMem(cg)
 }
 
 // generateAssignExpr generates code for assignment expressions.

@@ -22,6 +22,7 @@ type SymbolEntry struct {
 	FPOffset    int    // Offset from FP for stack variables (in bytes, negative)
 	SizeInBytes int
 	NumberValue int32
+	StringValue string
 
 	NumParams     int
 	LocalVarCount int // Total size of local variables in bytes
@@ -182,16 +183,16 @@ func (cg *CodeGenerator) addString(s string) uint32 {
 	strBytes := []byte(strings.Trim(s, `"`))
 
 	// Store length as a uint32 (4 bytes)
-	length := uint32(len(strBytes))
-	// length := byte(len(strBytes))
+	length := byte(len(strBytes))
 	buf := make([]byte, WORD_SIZE_BYTES)
-	binary.LittleEndian.PutUint32(buf, length) // Using LittleEndian for byte order
+	// binary.LittleEndian.PutUint32(buf, length) // Using LittleEndian for byte order
+	buf = append(buf, length)
 
 	cg.dataMemory = append(cg.dataMemory, buf...)
-	cg.nextDataAddr += WORD_SIZE_BYTES
+	cg.nextDataAddr += 1
 
 	// The address of the actual string characters starts now (this is what the variable will point to)
-	// charStartAddr := cg.nextDataAddr
+	// charStartAddr := cg.nextDataAddr // This might be needed if you want the pointer to point AFTER the length
 
 	// Store string characters (byte by byte)
 	cg.dataMemory = append(cg.dataMemory, strBytes...)

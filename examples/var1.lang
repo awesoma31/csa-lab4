@@ -1,3 +1,5 @@
-let a = "baba";
+let a = 1;
+let c = 2; 
+let b = "biba";
 
 
