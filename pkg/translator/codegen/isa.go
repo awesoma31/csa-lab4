@@ -1,23 +1,83 @@
 package codegen
 
-type Word = uint32
+// =============================================================================
+// ISA Definition
+// =============================================================================
 
-// OPCODES
-const (
-	OPC_ADDN = 0x00
-	OPC_MULN = 0x01
-	OPC_SUB  = 0x02
-	OPC_LD   = 0x08
-	OPC_ST   = 0x09
-	OPC_IMM  = 0x3F // псевдо, эмитится как дескриптор
-)
-
-// helper to pack Word0
-func Pack(opc, nargs, dst, sz, ext Word) Word {
-	return (opc << 26) | (nargs << 22) | (dst << 19) | (sz << 16) | ext
+// Helper function to combine opcode and addressing mode into the first instruction word
+// Format: [Opcode (8 bits)][Addressing Mode (4 bits)][RegD (3 bits)][RegS1 (3 bits)][RegS2 (3 bits)][Unused (11 bits)]
+// Note: Actual bit packing depends on the mode. Not all fields are always used.
+func encodeInstructionWord(opcode, mode uint32, regD, regS1, regS2 int) uint32 {
+	word := opcode << 24 // Opcode in bits 31-24
+	word |= mode << 20   // Addressing mode in bits 23-20
+	if regD != -1 {
+		word |= uint32(regD) << 17 // RegD in bits 19-17
+	}
+	if regS1 != -1 {
+		word |= uint32(regS1) << 14 // RegS1 in bits 16-14
+	}
+	if regS2 != -1 {
+		word |= uint32(regS2) << 11 // RegS2 in bits 13-11
+	}
+	return word
 }
 
-// дескриптор операнда
-func ImmDescriptor(val Word) Word  { return 0x40000000 | (val & 0xFFFFFF) }
-func RegDescriptor(r Word) Word    { return 0x00000000 | (r << 24) }
-func MemDescriptor(addr Word) Word { return 0x80000000 | (addr & 0xFFFFFF) }
+const (
+	R0 = 0 // General purpose register, often used as accumulator
+	R1 = 1 // General purpose register
+	R2 = 2
+	R3 = 3
+	R4 = 4
+	R5 = 5
+	R6 = 6
+	R7 = 7
+
+	// Special purpose registers (conceptual, might not be directly addressable by instructions)
+	SP_REG = 8 // Stack Pointer
+	FP_REG = 9 // Frame Pointer
+	PC_REG     // Program Counter is usually implicit
+)
+
+// Opcode constants (1 byte: 0x00 - 0xFF)
+const (
+	OP_HALT uint32 = 0x00
+	OP_MOV  uint32 = 0x01
+	OP_ADD  uint32 = 0x02
+	OP_SUB  uint32 = 0x03
+	OP_MUL  uint32 = 0x04
+	OP_DIV  uint32 = 0x05
+	OP_NEG  uint32 = 0x06
+	OP_NOT  uint32 = 0x07
+
+	OP_PUSH uint32 = 0x10
+	OP_POP  uint32 = 0x11
+
+	OP_JMP  uint32 = 0x20
+	OP_CALL uint32 = 0x21
+	OP_RET  uint32 = 0x22
+
+	OP_IN  uint32 = 0x30
+	OP_OUT uint32 = 0x31
+
+	//TODO: For vector operations
+	// OP_VADD           uint32 = 0x40 // Vector Add
+	// ...
+)
+
+// Addressing Mode / Operand Type constants (4 bits: 0x0 - 0xF)
+// Эти биты будут идти сразу за опкодом в первом слове инструкции.
+const (
+	AM_REG_REG      uint32 = 0x0 // Register to Register (e.g., ADD R0, R1)
+	AM_IMM_REG      uint32 = 0x1 // Immediate to Register (e.g., MOV R0, #123)
+	AM_MEM_ABS_REG  uint32 = 0x2 // Absolute Memory to Register (e.g., MOV R0, [0x1000])
+	AM_REG_MEM_ABS  uint32 = 0x3 // Register to Absolute Memory (e.g., MOV [0x1000], R0)
+	AM_MEM_FP_REG   uint32 = 0x4 // FP+Offset Memory to Register (e.g., MOV R0, [FP+8])
+	AM_REG_MEM_FP   uint32 = 0x5 // Register to FP+Offset Memory (e.g., MOV [FP+8], R0)
+	AM_SINGLE_REG   uint32 = 0x6 // Single Register operand (e.g., PUSH R0, NEG R0)
+	AM_IMM_PORT_REG uint32 = 0x7 // Immediate (port number) to Register (e.g., IN R0, #PORT_ID)
+	AM_REG_PORT_IMM uint32 = 0x8 // Register to Immediate (port number) (e.g., OUT #PORT_ID, R0)
+	AM_ABS_ADDR     uint32 = 0x9 // Absolute Address (for JMP, CALL)
+	AM_NO_OPERANDS  uint32 = 0xA // No operands (e.g., HALT, RET)
+
+	// Добавьте больше, если нужны другие режимы адресации (например, индексная, косвенная через регистр)
+)

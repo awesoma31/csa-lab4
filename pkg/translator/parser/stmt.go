@@ -57,7 +57,8 @@ func parse_var_decl_stmt(p *parser) ast.Stmt {
 		p.expect(lexer.ASSIGNMENT)
 		assignmentValue = parse_expr(p, assignment)
 	} else if explicitType == nil {
-		panic("Missing explicit type for variable declaration.")
+		// panic("Missing explicit type for variable declaration.")
+		p.addError("Missing explicit type for variable declaration without initial assignment.")
 	}
 
 	p.expect(lexer.SEMI_COLON)

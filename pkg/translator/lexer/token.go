@@ -78,6 +78,8 @@ const (
 
 	RETURN
 
+	UNKNOWN
+
 	// Misc
 	NUM_TOKENS
 )

@@ -7,7 +7,7 @@ import (
 )
 
 type type_nud_handler func(p *parser) ast.Type
-type type_led_handler func(p *parser, left ast.Type, bp binding_power) ast.Type
+type type_led_handler func(p *parser, left ast.Type) ast.Type
 
 type type_nud_lookup map[lexer.TokenKind]type_nud_handler
 type type_led_lookup map[lexer.TokenKind]type_led_handler
@@ -22,21 +22,21 @@ func type_led(kind lexer.TokenKind, bp binding_power, led_fn type_led_handler) {
 	type_led_lu[kind] = led_fn
 }
 
-func type_nud(kind lexer.TokenKind, bp binding_power, nud_fn type_nud_handler) {
-	type_bp_lu[kind] = primary
+func type_nud(kind lexer.TokenKind, nud_fn type_nud_handler) {
+	// type_bp_lu[kind] = primary
 	type_nud_lu[kind] = nud_fn
 }
 
 func createTypeTokenLookups() {
 
-	type_nud(lexer.IDENTIFIER, primary, func(p *parser) ast.Type {
+	type_nud(lexer.IDENTIFIER, func(p *parser) ast.Type {
 		return ast.SymbolType{
 			Value: p.advance().Value,
 		}
 	})
 
 	// []number
-	type_nud(lexer.OPEN_BRACKET, member, func(p *parser) ast.Type {
+	type_nud(lexer.OPEN_BRACKET, func(p *parser) ast.Type {
 		p.advance()
 		p.expect(lexer.CLOSE_BRACKET)
 		insideType := parse_type(p, defalt_bp)
@@ -47,25 +47,28 @@ func createTypeTokenLookups() {
 	})
 }
 
-func parse_type(p *parser, bp binding_power) ast.Type {
+// parse_type is the Pratt parser for type expressions.
+func parse_type(p *parser, rbp binding_power) ast.Type {
 	tokenKind := p.currentTokenKind()
 	nud_fn, exists := type_nud_lu[tokenKind]
 
 	if !exists {
-		panic(fmt.Sprintf("type: NUD Handler expected for token %s\n", lexer.TokenKindString(tokenKind)))
+		p.addError(fmt.Sprintf("type: NUD Handler expected for token %s\n", lexer.TokenKindString(tokenKind)))
+		panic(p.errors[len(p.errors)-1])
 	}
 
 	left := nud_fn(p)
 
-	for type_bp_lu[p.currentTokenKind()] > bp {
+	for type_bp_lu[p.currentTokenKind()] > rbp {
 		tokenKind = p.currentTokenKind()
 		led_fn, exists := type_led_lu[tokenKind]
 
 		if !exists {
-			panic(fmt.Sprintf("type: LED Handler expected for token %s\n", lexer.TokenKindString(tokenKind)))
+			p.addError(fmt.Sprintf("type: LED Handler expected for token %s\n", lexer.TokenKindString(tokenKind)))
+			panic(p.errors[len(p.errors)-1])
 		}
 
-		left = led_fn(p, left, bp)
+		left = led_fn(p, left) // Removed bp argument
 	}
 
 	return left
