@@ -36,14 +36,11 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 	}
 }
 
-// generateExpr generates code for a given expression, leaving its result in R0.
+// generateExpr generates code for a given expression, leaving its result in specified register.
 func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 	switch e := expr.(type) {
 	case ast.NumberExpr:
-		// Для числового литерала просто загружаем его в R0.
-		// OP_MOV AM_IMM_REG R0, -1, -1, value
 		cg.emitInstruction(OP_MOV, AM_IMM_REG, rd, int(e.Value), -1)
-		// Предполагаем, что числа умещаются в uint32
 
 	case ast.BinaryExpr:
 		// cg.generateExpr(e.Left)

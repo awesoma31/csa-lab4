@@ -51,14 +51,14 @@
 | **JMP**  | addr   | -    | -    | JMP addr     | PC ← addr               | [opc+AM_JMP_ABS][addr]  | 2       |
 |          | reg    | -    | -    | JMP reg      | PC ← reg                | [opc+AM_JMP_REG+reg]    | 1       |
 |          | [addr] | -    | -    | JMP [addr]   | PC ← mem[addr]          | [opc+AM_JMP_MEM][addr]  | 2       |
-|          |        | -    | -    |              |                         |                         |         |
+|          |        |      |      |              |                         |                         |         |
 | **CMP**  |        | rs1  | rs2  | CMP rs1, rs2 | NZVC                    | [opc+rd1+rs2]           | 1       |
 |          |        | -    | -    |              |                         |                         |         |
 | **CALL** | addr   | -    | -    | CALL addr    | PUSH PC; PC ← addr      | [opc+AM_CALL_ABS][addr] | 2       |
 |          | reg    | -    | -    | CALL reg     | PUSH PC; PC ← reg       | [opc+AM_CALL_REG+reg]   | 1       |
 |          | [addr] | -    | -    | CALL [addr]  | PUSH PC; PC ← mem[addr] | [opc+AM_CALL_MEM][addr] | 2       |
-|          |        | -    | -    |              |                         |                         |         |
+|          |        |      |      |              |                         |                         |         |
 | **RET**  | -      | -    | -    | RET          | PC ← POP()              | [opc+AM_RET]            | 1       |
 |          | imm    | -    | -    | RET imm      | PC ← POP(); SP += imm   | [opc+AM_RET_IMM][imm]   | 2       |
 | **HALT** |        | -    | -    | HALT         |                         | [opc]                   | 1       |
-|          |        | -    | -    |              |                         |                         |         |
+|          |        |      |      |              |                         |                         |         |

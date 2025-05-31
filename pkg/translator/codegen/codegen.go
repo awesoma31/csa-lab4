@@ -128,8 +128,8 @@ func (cg *CodeGenerator) addSymbolToScope(entry SymbolEntry) {
 }
 
 // emitInstruction adds an instruction to the instruction memory.
-func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, regD, regS1, regS2 int) {
-	instructionWord := encodeInstructionWord(opcode, mode, regD, regS1, regS2)
+func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) {
+	instructionWord := encodeInstructionWord(opcode, mode, dest, s1, s2)
 	cg.instructionMemory = append(cg.instructionMemory, instructionWord)
 	cg.debugAssembly = append(
 		cg.debugAssembly,
@@ -138,13 +138,36 @@ func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, regD, regS1, regS2
 			instructionWord,
 			GetMnemonic(opcode),
 			GetAMnemonic(mode),
-			GetRegisterMnemonic(regD),
-			GetRegisterMnemonic(regS1),
-			GetRegisterMnemonic(regS2),
+			GetRegisterMnemonic(dest),
+			GetRegisterMnemonic(s1),
+			GetRegisterMnemonic(s2),
 		),
 	)
 	cg.nextInstructionAddr++
 }
+
+func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
+	// var instructionWord uint32
+	switch mode {
+	case AM_REG_REG: // reg to reg
+		cg.emitInstruction(OP_MOV, AM_REG_REG, dest, s1, s2)
+	case AM_IMM_REG: // imm to reg; s1=imm
+		cg.emitInstruction(OP_MOV, AM_IMM_REG, dest, -1, -1)
+		cg.emitImmediate(uint32(s1))
+	case AM_MEM_REG: // mem to reg; s1=addr
+		cg.emitInstruction(OP_MOV, mode, dest, -1, -1)
+		cg.emitImmediate(uint32(s1))
+	}
+	// cg.nextInstructionAddr++
+}
+
+// [opc+AM_REG_REG+rd+rs]
+// [opc+AM_IMM_REG+rd][imm]           	// instructionWord := encodeInstructionWord(OP_MOV, mode, dest, s1, s2)
+// [opc+AM_MEM_REG+rd][addr]
+// [opc+AM_SPOFFS_REG+rd+offs(17bits)]	// cg.instructionMemory = append(cg.instructionMemory, instructionWord)
+// [                                  	// cg.debugAssembly = append(
+// [opc+AM_MEM_MEM][d_addr][s_addr]   	// 	cg.debugAssembly,
+// [opc+AM_REG_MEM+rs][d_addr]        	// 	fmt.Sprintf("[0x%08X] - %08X - (Opc: %02s, Mode: %s, D:%s, S1:%s, S2:%s)",
 
 // emitImmediate adds an immediate value as an operand to the instruction memory.
 func (cg *CodeGenerator) emitImmediate(value uint32) {
@@ -157,6 +180,7 @@ func (cg *CodeGenerator) emitImmediate(value uint32) {
 func (cg *CodeGenerator) ReserveWord() uint32 {
 	addr := cg.nextInstructionAddr
 	cg.emitInstruction(OP_NOP, AM_NO_OPERANDS, -1, -1, -1) // Emit a NOP
+	//   TODO: should it nextInstructionAddr++?
 	return addr
 }
 
@@ -173,7 +197,7 @@ func (cg *CodeGenerator) PatchWord(address, value uint32) {
 }
 
 // addString adds a string literal to data memory.
-// It stores: [length_uint32 (4 bytes)][string_bytes...][padding_bytes_to_align_next_word].
+// It stores: [len(4 bytes)][string_bytes...][padding].
 // The entire block must start at a word-aligned byte-address.
 // TODO: return start of str(len).
 func (cg *CodeGenerator) addString(s string) uint32 {
