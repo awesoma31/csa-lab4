@@ -105,7 +105,7 @@ func createTokenLookups() {
 
 	// Multiplicative Operators (Left-Associative)
 	led(lexer.SLASH, multiplicative, parse_binary_expr)
-	led(lexer.ASTERISK, multiplicative, parse_binary_expr)
+	led(lexer.STAR, multiplicative, parse_binary_expr)
 	led(lexer.PERCENT, multiplicative, parse_binary_expr)
 
 	// Literals & Symbols (NUDs - they start expressions)

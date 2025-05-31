@@ -40,30 +40,32 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 	switch e := expr.(type) {
 	case ast.NumberExpr:
-		cg.emitInstruction(OP_MOV, AM_IMM_REG, rd, -1, -1)
-		cg.emitImmediate(uint32(e.Value))
+		// cg.emitInstruction(OP_MOV, AM_IMM_REG, rd, -1, -1)
+		// cg.emitImmediate(uint32(e.Value))
+		cg.emitMov(AM_IMM_REG, rd, -1, -1)
 
 	case ast.BinaryExpr:
 		// 1. Вычисляем левый операнд, результат в R1.
 		cg.generateExpr(e.Left, R1)
 		// 2. Сохраняем результат левого операнда на стек (PUSH R1).
+		//TODO: check push
 		cg.emitInstruction(OP_PUSH, AM_SINGLE_REG, R1, -1, -1)
 
-		// 3. Вычисляем правый операнд, результат в R0.
-		cg.generateExpr(e.Right, R0)
+		// 3. Вычисляем правый операнд, результат в R2.
+		cg.generateExpr(e.Right, R2)
 
 		// 4. Загружаем результат левого операнда со стека в R1 (POP R1).
 		cg.emitInstruction(OP_POP, AM_SINGLE_REG, R1, -1, -1)
 
-		// 5. Выполняем операцию между R1 (левый операнд) и R0 (правый операнд),
-		// результат помещаем в R0. (R0 = R1 op R0)
+		// 5. Выполняем операцию между R1 (левый операнд) и R2 (правый операнд),
+		// результат помещаем в rd. (rd = R1 op R2)
 		var opcode uint32
 		switch e.Operator.Kind {
 		case lexer.PLUS:
 			opcode = OP_ADD
 		case lexer.MINUS:
 			opcode = OP_SUB
-		case lexer.ASTERISK: // Использование lexer.STAR вместо ASTERISK
+		case lexer.STAR:
 			opcode = OP_MUL
 		case lexer.SLASH:
 			opcode = OP_DIV
@@ -87,17 +89,17 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 			cg.addError(fmt.Sprintf("Unsupported binary operator: %s", e.Operator.Value))
 			return
 		}
-		cg.emitInstruction(opcode, AM_REG_REG, R0, R1, R0) // R0 = R1 op R0
+		cg.emitInstruction(opcode, AM_REG_REG, rd, R1, R2) // R0 = R1 op R0
 
 		// Если конечный регистр rd не R0, перемещаем результат
-		if rd != R0 {
-			cg.emitInstruction(OP_MOV, AM_REG_REG, rd, R0, -1)
-		}
+		// if rd != R0 {
+		// 	cg.emitInstruction(OP_MOV, AM_REG_REG, rd, R0, -1)
+		// }
 
 	case ast.SymbolExpr: // Для чтения значения переменной
 		symbol, found := cg.lookupSymbol(e.Value)
 		if !found {
-			cg.addError(fmt.Sprintf("Undeclared variable: %s", e.Value))
+			cg.addError(fmt.Sprintf("Undeclared variable in assign expr: %s", e.Value))
 			if rd != -1 {
 				cg.emitInstruction(OP_MOV, AM_IMM_REG, rd, -1, -1)
 				cg.emitImmediate(0) // Загрузить 0 в rd для восстановления
@@ -105,26 +107,18 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 			return
 		}
 		if symbol.MemoryArea == "data" {
-			cg.emitInstruction(OP_MOV, AM_MEM_ABS_REG, rd, -1, -1) // LDR rd, [global_addr]
+			cg.emitInstruction(OP_MOV, AM_MEM_REG, rd, -1, -1) // MOV rd, [symbol_addr] // rd<-var
 			cg.emitImmediate(symbol.AbsAddress)
 		} else if symbol.MemoryArea == "stack" {
+			//TODO:
 			cg.emitInstruction(OP_MOV, AM_MEM_FP_REG, rd, -1, -1) // LDR rd, [FP + offset]
 			cg.emitImmediate(uint32(symbol.FPOffset))
 		} else {
 			cg.addError(fmt.Sprintf("Unknown memory area for symbol '%s': %s", symbol.Name, symbol.MemoryArea))
 		}
-	// ... другие типы выражений
-	// case ast.ArrayLiteral:
-	// 	cg.addError("ArrayLiteral code generation not implemented.")
-	// case ast.NewExpr:
-	// 	cg.addError("NewExpr code generation not implemented.")
 	case ast.FunctionExpr:
 		cg.addError("FunctionExpr code generation not implemented.")
-	// case ast.ComputedExpr:
-	// 	cg.addError("ComputedExpr code generation not implemented.")
-	// case ast.RangeExpr:
-	// 	cg.addError("RangeExpr code generation not implemented.")
-	case ast.StringExpr: // Предполагается, что generateStringExpr будет вызвана
+	case ast.StringExpr: // TODO:Предполагается, что generateStringExpr будет вызвана
 		cg.generateStringExpr(e, rd) // Обновление: передаем rd
 	case ast.PrefixExpr: // Для унарных операторов
 		cg.generateUnaryExpr(e, rd) // Обновление: передаем rd
@@ -215,42 +209,11 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			}
 			cg.generateAssignExpr(assignExpr, R0)
 
-		case ast.AssignmentExpr:
-			//TODO: Handle cases like `let x = y = 5;` or `let x = (y = 5);` properly if needed.
-			// Currently, this should be handled by the default case below.
-			cg.addError("Nested assignment expressions in declaration are not directly supported yet via specific case.")
-			return
 		case ast.BinaryExpr:
 
+			cg.generateExpr(s.AssignedValue, R0)
 		default: // This will now handle StringExpr and other expressions
 			cg.addError("unimpl default gen var decl ")
-			// symbolEntry.Type = ast.IntType // Default type, consider type inference later (could be string, bool etc.)
-			// symbolEntry.SizeInBytes = WORD_SIZE_BYTES
-			//
-			// if len(cg.scopeStack) == 1 { // Global
-			// 	symbolEntry.MemoryArea = "data"
-			// 	allignDataMem(cg)
-			// 	symbolEntry.AbsAddress = cg.nextDataAddr // Assign before reserving
-			// 	for range symbolEntry.SizeInBytes {
-			// 		cg.dataMemory = append(cg.dataMemory, 0) // Initialize with zeros (reserving space for the pointer/value)
-			// 		cg.nextDataAddr++
-			// 	}
-			// 	allignDataMem(cg) // Align after reserving
-			// } else { // Local (on stack)
-			// 	symbolEntry.MemoryArea = "stack"
-			// 	alignmentPadding := (WORD_SIZE_BYTES - (cg.currentFrameOffset % WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
-			// 	cg.currentFrameOffset += alignmentPadding
-			// 	symbolEntry.FPOffset = cg.currentFrameOffset
-			// 	cg.currentFrameOffset += symbolEntry.SizeInBytes
-			// }
-			// cg.addSymbolToScope(symbolEntry)
-			//
-			// // Generate code to assign the initial value. This happens after symbol is added.
-			// assignExpr := ast.AssignmentExpr{
-			// 	Assigne:       ast.SymbolExpr{Value: s.Identifier},
-			// 	AssignedValue: s.AssignedValue,
-			// }
-			// cg.generateAssignExpr(assignExpr)
 		}
 	} else {
 		cg.addError(fmt.Sprintf("All variables should be initialized: %s", s.Identifier))
@@ -394,7 +357,7 @@ func (cg *CodeGenerator) generateBinaryExpr(e ast.BinaryExpr) {
 		opcode = OP_ADD
 	case lexer.MINUS:
 		opcode = OP_SUB
-	case lexer.ASTERISK: // For multiplication
+	case lexer.STAR: // For multiplication
 		opcode = OP_MUL
 	case lexer.SLASH: // For division
 		opcode = OP_DIV

@@ -56,7 +56,7 @@ const (
 	PLUS
 	MINUS // -
 	SLASH
-	ASTERISK
+	STAR
 	PERCENT
 
 	// Reserved Keywords
@@ -204,7 +204,7 @@ func TokenKindString(kind TokenKind) string {
 		return "dash"
 	case SLASH:
 		return "slash"
-	case ASTERISK:
+	case STAR:
 		return "star"
 	case PERCENT:
 		return "percent"

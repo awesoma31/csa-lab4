@@ -108,7 +108,7 @@ func createLexer(source string) *lexer {
 			{regexp.MustCompile(`\+`), defaultHandler(PLUS, "+")},
 			{regexp.MustCompile(`-`), defaultHandler(MINUS, "-")},
 			{regexp.MustCompile(`/`), defaultHandler(SLASH, "/")},
-			{regexp.MustCompile(`\*`), defaultHandler(ASTERISK, "*")},
+			{regexp.MustCompile(`\*`), defaultHandler(STAR, "*")},
 			{regexp.MustCompile(`%`), defaultHandler(PERCENT, "%")},
 		},
 	}
