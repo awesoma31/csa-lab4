@@ -5,37 +5,59 @@ package codegen
 // =============================================================================
 
 // Helper function to combine opcode and addressing mode into the first instruction word
-// Format: [Opcode (8 bits)][Addressing Mode (4 bits)][RegD (3 bits)][RegS1 (3 bits)][RegS2 (3 bits)][Unused (11 bits)]
+// Format: [Opcode (8 bits)][Addressing Mode (4 bits)][(3 bits)][RegS1 (3 bits)][RegS2 (3 bits)][Unused (11 bits)]
 // Note: Actual bit packing depends on the mode. Not all fields are always used.
-func encodeInstructionWord(opcode, mode uint32, regD, regS1, regS2 int) uint32 {
+func encodeInstructionWord(opcode, mode uint32, dest, s1, s2 int) uint32 {
 	word := opcode << 24 // Opcode in bits 31-24
 	word |= mode << 20   // Addressing mode in bits 23-20
-	if regD != -1 {
-		word |= uint32(regD) << 17 // RegD in bits 19-17
+
+	if opcode == OP_MOV && mode == AM_SPOFFS_REG {
+		// Special case for MOV with stack pointer offset mode
+		// Uses bits 19-0 for offset (signed immediate)
+		if dest != -1 {
+			word |= uint32(dest&0x7) << 17 // RegD in bits 19-17 (3 bits)
+		} else {
+			panic("dest = -1 in SPOFFS")
+		}
+		if s1 != -1 {
+			// Encode offset in remaining bits (16-0)
+			// Assuming regS1 contains the offset value in this mode
+			offset := uint32(s1) & 0x1FFFFF // 21-bit offset (signed)
+			word |= offset
+		} else {
+			panic("s1 = -1 in SPOFFS")
+		}
+		return word
 	}
-	if regS1 != -1 {
-		word |= uint32(regS1) << 14 // RegS1 in bits 16-14
+
+	// Standard encoding for other instructions/modes
+	if dest != -1 {
+		word |= uint32(dest) << 17 // RegD in bits 19-17
 	}
-	if regS2 != -1 {
-		word |= uint32(regS2) << 11 // RegS2 in bits 13-11
+	if s1 != -1 {
+		word |= uint32(s1) << 14 // RegS1 in bits 16-14
 	}
+	if s2 != -1 {
+		word |= uint32(s2) << 11 // RegS2 in bits 13-11
+	}
+
 	return word
 }
 
 const (
-	R0 = 0 // General purpose register, often used as accumulator
-	R1 = 1 // General purpose register
-	R2 = 2
-	R3 = 3
-	R4 = 4
-	R5 = 5
-	R6 = 6
-	R7 = 7
+	R0 = iota // General purpose register, often used as accumulator
+	R1        // General purpose register
+	R2
+	R3
+	R4
+	R5
+	R6
+	R7
 
 	// Special purpose registers (conceptual, might not be directly addressable by instructions)
-	SP_REG = 8 // Stack Pointer
-	FP_REG = 9 // Frame Pointer
-	PC_REG     // Program Counter is usually implicit
+	SP_REG // Stack Pointer
+	FP_REG // Frame Pointer
+	PC_REG // Program Counter is usually implicit
 )
 
 // Opcode constants (1 byte: 0x00 - 0xFF)
@@ -59,6 +81,18 @@ const (
 
 	OP_IN  uint32 = 0x30
 	OP_OUT uint32 = 0x31
+
+	OP_JE  uint32 = 0x40
+	OP_JNE uint32 = 0x41
+	OP_JG  uint32 = 0x42
+	OP_JL  uint32 = 0x43
+	OP_JGE uint32 = 0x44
+	OP_JLE uint32 = 0x45
+	OP_JA  uint32 = 0x46
+	OP_JB  uint32 = 0x47
+	OP_JAE uint32 = 0x48
+	OP_JBE uint32 = 0x49
+	OP_CMP uint32 = 0x50
 
 	//TODO: For vector operations
 	// OP_VADD           uint32 = 0x40 // Vector Add
@@ -91,6 +125,18 @@ func init() {
 	opcodeMnemonics[OP_IN] = "IN"
 	opcodeMnemonics[OP_OUT] = "OUT"
 
+	opcodeMnemonics[OP_JE] = "JE"
+	opcodeMnemonics[OP_JNE] = "JNE"
+	opcodeMnemonics[OP_JG] = "JG"
+	opcodeMnemonics[OP_JL] = "JL"
+	opcodeMnemonics[OP_JGE] = "JGE"
+	opcodeMnemonics[OP_JLE] = "JLE"
+	opcodeMnemonics[OP_JA] = "JA"
+	opcodeMnemonics[OP_JB] = "JB"
+	opcodeMnemonics[OP_JAE] = "JAE"
+	opcodeMnemonics[OP_JBE] = "JBE"
+	opcodeMnemonics[OP_CMP] = "CMP"
+
 	// ADDRESS MODE MNEMONIC
 	amMnemonics[AM_REG_REG] = "REG_REG"
 	amMnemonics[AM_IMM_REG] = "IMM_REG"
@@ -103,6 +149,31 @@ func init() {
 	amMnemonics[AM_REG_PORT_IMM] = "REG_PORT_IMM"
 	amMnemonics[AM_ABS_ADDR] = "ABS_ADDR"
 	amMnemonics[AM_NO_OPERANDS] = "NO_OPERANDS"
+	amMnemonics[AM_MEM_REG] = "MEM_REG"
+	amMnemonics[AM_SPOFFS_REG] = "SPOFFS_REG"
+	amMnemonics[AM_MEM_MEM] = "MEM_MEM"
+	amMnemonics[AM_REG_MEM] = "REG_MEM"
+	amMnemonics[AM_MATH_R_R_R_REG] = "MATH_R_R_R_REG"
+	amMnemonics[AM_MATH_R_M_R] = "MATH_R_M_R"
+	amMnemonics[AM_MATH_M_M_R] = "MATH_M_M_R"
+	amMnemonics[AM_JE] = "JE_AM"
+	amMnemonics[AM_JNE] = "JNE_AM"
+	amMnemonics[AM_JG] = "JG_AM"
+	amMnemonics[AM_JL] = "JL_AM"
+	amMnemonics[AM_JGE] = "JGE_AM"
+	amMnemonics[AM_JLE] = "JLE_AM"
+	amMnemonics[AM_JA] = "JA_AM"
+	amMnemonics[AM_JB] = "JB_AM"
+	amMnemonics[AM_JAE] = "JAE_AM"
+	amMnemonics[AM_JBE] = "JBE_AM"
+	amMnemonics[AM_JMP_ABS] = "JMP_ABS"
+	amMnemonics[AM_JMP_REG] = "JMP_REG"
+	amMnemonics[AM_JMP_MEM] = "JMP_MEM"
+	amMnemonics[AM_CMP] = "CMP_AM"
+	amMnemonics[AM_CALL_ABS] = "CALL_ABS"
+	amMnemonics[AM_CALL_REG] = "CALL_REG"
+	amMnemonics[AM_CALL_MEM] = "CALL_MEM"
+	amMnemonics[AM_RET_IMM] = "RET_IMM"
 
 	// REGISTER MNEMONIC
 	registerMnemonics[R0] = "R0"
@@ -160,5 +231,35 @@ const (
 	AM_ABS_ADDR     uint32 = 0x9 // Absolute Address (for JMP, CALL)
 	AM_NO_OPERANDS  uint32 = 0xA // No operands (e.g., HALT, RET)
 
-	// Добавьте больше, если нужны другие режимы адресации (например, индексная, косвенная через регистр)
+	AM_MEM_REG    uint32 = 0xB // Memory (absolute address) to Register (MOV rd, [addr])
+	AM_SPOFFS_REG uint32 = 0xC // Stack Pointer Offset to Register (MOV rd, [(sp)+offs])
+	AM_MEM_MEM    uint32 = 0xD // Memory to Memory (MOV [dest_addr], [source_addr])
+	AM_REG_MEM    uint32 = 0xE // Register to Memory (MOV [addr], rs)
+
+	AM_MATH_R_R_R_REG uint32 = 0xF  // Math op: Reg, Reg, Reg (ADD rd, rs1, rs2) - This is a placeholder, needs careful bit packing for 3 regs
+	AM_MATH_R_M_R     uint32 = 0x10 // Math op: Reg, Mem, Reg (ADD rd, rs1, [addr])
+	AM_MATH_M_M_R     uint32 = 0x11 // Math op: Mem, Mem, Reg (ADD rd, [addr1], [addr2])
+
+	AM_JE  uint32 = 0x12 // Jump if Equal
+	AM_JNE uint32 = 0x13 // Jump if Not Equal
+	AM_JG  uint32 = 0x14 // Jump if Greater (signed)
+	AM_JL  uint32 = 0x15 // Jump if Less (signed)
+	AM_JGE uint32 = 0x16 // Jump if Greater or Equal (signed)
+	AM_JLE uint32 = 0x17 // Jump if Less or Equal (signed)
+	AM_JA  uint32 = 0x18 // Jump if Above (unsigned)
+	AM_JB  uint32 = 0x19 // Jump if Below (unsigned)
+	AM_JAE uint32 = 0x1A // Jump if Above or Equal (unsigned)
+	AM_JBE uint32 = 0x1B // Jump if Below or Equal (unsigned)
+
+	AM_JMP_ABS uint32 = 0x1C // Jump Absolute (JMP addr)
+	AM_JMP_REG uint32 = 0x1D // Jump Register (JMP reg)
+	AM_JMP_MEM uint32 = 0x1E // Jump Memory (JMP [addr])
+
+	AM_CMP uint32 = 0x1F // Compare (CMP rs1, rs2)
+
+	AM_CALL_ABS uint32 = 0x20 // Call Absolute (CALL addr)
+	AM_CALL_REG uint32 = 0x21 // Call Register (CALL reg)
+	AM_CALL_MEM uint32 = 0x22 // Call Memory (CALL [addr])
+
+	AM_RET_IMM uint32 = 0x23 // Return with Immediate offset (RET imm)
 )

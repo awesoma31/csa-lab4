@@ -129,6 +129,12 @@ func (cg *CodeGenerator) addSymbolToScope(entry SymbolEntry) {
 
 // emitInstruction adds an instruction to the instruction memory.
 func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) {
+	// var instructionWord uint32
+	// if opcode == OP_MOV && mode == AM_SPOFFS_REG {
+	// 	instructionWord = encodeInstructionWord(opcode, mode, dest, s1, -1)
+	// } else {
+	// 	instructionWord = encodeInstructionWord(opcode, mode, dest, s1, s2)
+	// }
 	instructionWord := encodeInstructionWord(opcode, mode, dest, s1, s2)
 	cg.instructionMemory = append(cg.instructionMemory, instructionWord)
 	cg.debugAssembly = append(
@@ -157,6 +163,15 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 	case AM_MEM_REG: // mem to reg; s1=addr
 		cg.emitInstruction(OP_MOV, mode, dest, -1, -1)
 		cg.emitImmediate(uint32(s1))
+	case AM_SPOFFS_REG: // sp+offs to reg
+		cg.emitInstruction(OP_MOV, mode, dest, s1, -1)
+	case AM_MEM_MEM: // mem to mem
+		cg.emitInstruction(OP_MOV, mode, -1, -1, -1)
+		cg.emitImmediate(uint32(s1))
+		cg.emitImmediate(uint32(s2))
+	case AM_REG_MEM: // reg to mem; dest=addr, s1=reg
+		cg.emitInstruction(OP_MOV, mode, -1, s1, -1)
+		cg.emitImmediate(uint32(dest))
 	}
 	// cg.nextInstructionAddr++
 }
