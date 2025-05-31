@@ -40,19 +40,70 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 func (cg *CodeGenerator) generateExpr(expr ast.Expr) {
 	switch e := expr.(type) {
 	case ast.NumberExpr:
-		cg.generateNumberExpr(e)
-	case ast.StringExpr:
-		cg.generateStringExpr(e)
-	case ast.SymbolExpr: // Renamed from IdentifierExpr
-		cg.generateIdentifierExpr(e)
+		// Для числового литерала просто загружаем его в R0.
+		// OP_MOV AM_IMM_REG R0, -1, -1, value
+		cg.emitInstruction(OP_MOV, AM_IMM_REG, R0, -1, int(e.Value))
+		// Предполагаем, что числа умещаются в uint32
+
 	case ast.BinaryExpr:
-		cg.generateBinaryExpr(e)
-	case ast.PrefixExpr: // Renamed from UnaryExpr
-		cg.generateUnaryExpr(e)
-	case ast.CallExpr:
-		cg.generateCallExpr(e)
-	case ast.AssignmentExpr: // Added AssignmentExpr handling
-		cg.generateAssignExpr(e)
+		// Алгоритм для бинарных операций (инфиксная нотация):
+		// 1. Сгенерировать код для левого операнда (результат в R0).
+		cg.generateExpr(e.Left)
+		// 2. Сохранить результат левого операнда на стек (или в другой регистр, если доступен).
+		// Это необходимо, потому что правый операнд тоже будет использовать R0.
+		cg.emitInstruction(OP_PUSH, AM_REG_STACK_OFF, R0, -1, -1, 0) // PUSH R0
+
+		// 3. Сгенерировать код для правого операнда (результат в R0).
+		cg.generateExpr(e.Right)
+		// 4. Загрузить результат левого операнда со стека в другой регистр (например, R1).
+		cg.emitInstruction(OP_POP, AM_REG_STACK_OFF, R1, -1, -1, 0) // POP R1
+
+		// 5. Выполнить операцию между R1 (левый операнд) и R0 (правый операнд), результат в R0.
+		// R0 = R1 op R0
+		switch e.Operator.Kind {
+		case lexer.PLUS:
+			cg.emitInstruction(OP_ADD, AM_REG_REG, R0, R1, R0) // ADD R0, R1, R0 (R0 = R1 + R0)
+		case lexer.MINUS:
+			cg.emitInstruction(OP_SUB, AM_REG_REG, R0, R1, R0) // SUB R0, R1, R0 (R0 = R1 - R0)
+		case lexer.ASTERISK:
+			cg.emitInstruction(OP_MUL, AM_REG_REG, R0, R1, R0) // MUL R0, R1, R0 (R0 = R1 * R0)
+		case lexer.SLASH:
+			cg.emitInstruction(OP_DIV, AM_REG_REG, R0, R1, R0) // DIV R0, R1, R0 (R0 = R1 / R0)
+		// ... другие операторы: EQUALS, NOT_EQUALS, LESS, GREATER, AND, OR, и т.д.
+		default:
+			cg.addError(fmt.Sprintf("Unsupported binary operator: %s", e.Operator.Value))
+		}
+
+	case ast.SymbolExpr: // Для чтения значения переменной (например, если 'a' используется в выражении 'b = a + 1')
+		symbol, found := cg.lookupSymbol(e.Value)
+		if !found {
+			cg.addError(fmt.Sprintf("Undeclared variable: %s", e.Value))
+			// Загрузить 0 в R0 для восстановления
+			cg.emitInstruction(OP_MOV, AM_IMM_REG, R0, -1, -1, 0)
+			return
+		}
+		if symbol.IsGlobal {
+			cg.emitInstruction(OP_LDR, AM_MEM_ABS_REG, R0, -1, -1, symbol.Address) // LDR R0, [global_addr]
+		} else {
+			cg.emitInstruction(OP_LDR, AM_MEM_FP_OFF_REG, R0, -1, -1, uint32(symbol.Offset)) // LDR R0, [FP + offset]
+		}
+
+	// ... другие типы выражений, например StringExpr, CallExpr, PrefixExpr и т.д.
+	// (StringExpr уже была рассмотрена в предыдущем ответе)
+	case ast.ArrayLiteral:
+		// TODO: реализовать генерацию кода для литералов массивов.
+		// Это может включать выделение памяти в dataMemory и заполнение ее элементами.
+		// Результат в R0 будет адрес первого элемента или метаданные массива.
+		cg.addError("ArrayLiteral code generation not implemented.")
+	case ast.NewExpr:
+		cg.addError("NewExpr code generation not implemented.")
+	case ast.FunctionExpr:
+		cg.addError("FunctionExpr code generation not implemented.")
+	case ast.ComputedExpr:
+		cg.addError("ComputedExpr code generation not implemented.")
+	case ast.RangeExpr:
+		cg.addError("RangeExpr code generation not implemented.")
+
 	default:
 		cg.addError(fmt.Sprintf("Unsupported expression type: %T", e))
 	}

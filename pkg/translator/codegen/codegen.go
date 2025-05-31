@@ -175,10 +175,15 @@ func (cg *CodeGenerator) PatchWord(address, value uint32) {
 // addString adds a string literal to data memory.
 // It stores: [length_uint32 (4 bytes)][string_bytes...][padding_bytes_to_align_next_word].
 // The entire block must start at a word-aligned byte-address.
-// Returns the byte-address where the string's length word will start.
+// TODO: return start of str(len).
 func (cg *CodeGenerator) addString(s string) uint32 {
 	//Align current data address to the next word boundary (if not already aligned)
-	allignDataMem(cg)
+	currentByteAddr := cg.nextDataAddr
+	alignmentPadding := (WORD_SIZE_BYTES - int(currentByteAddr%WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
+	for range alignmentPadding {
+		cg.dataMemory = append(cg.dataMemory, 0)
+		cg.nextDataAddr++
+	}
 
 	// This is the word-aligned byte-address where the string's length word will start
 	stringBlockStartAddr := cg.nextDataAddr
@@ -186,19 +191,31 @@ func (cg *CodeGenerator) addString(s string) uint32 {
 	strBytes := []byte(strings.Trim(s, `"`))
 
 	// Store length as a uint32 (4 bytes)
-	length := uint32(len(strBytes))
+	length := byte(len(strBytes))
 	buf := make([]byte, WORD_SIZE_BYTES)
-	binary.LittleEndian.PutUint32(buf, length) // Store length as uint32
+	// binary.LittleEndian.PutUint32(buf, length) // Using LittleEndian for byte order
+	buf = append(buf, length)
 
 	cg.dataMemory = append(cg.dataMemory, buf...)
-	cg.nextDataAddr += WORD_SIZE_BYTES // Increment by WORD_SIZE_BYTES for the length
+	cg.nextDataAddr += 1
+
+	// The address of the actual string characters starts now (this is what the variable will point to)
+	// charStartAddr := cg.nextDataAddr // This might be needed if you want the pointer to point AFTER the length
 
 	// Store string characters (byte by byte)
 	cg.dataMemory = append(cg.dataMemory, strBytes...)
 	cg.nextDataAddr += uint32(len(strBytes))
 
 	// Add padding after the string characters to align the *next* data item
-	allignDataMem(cg)
+	// This ensures subsequent data variables also start on a word boundary.
+	remainingBytes := int(cg.nextDataAddr % WORD_SIZE_BYTES)
+	if remainingBytes != 0 {
+		padding := WORD_SIZE_BYTES - remainingBytes
+		for range padding {
+			cg.dataMemory = append(cg.dataMemory, 0) // Add padding bytes
+			cg.nextDataAddr++
+		}
+	}
 
 	return stringBlockStartAddr
 }

@@ -10,7 +10,7 @@ func (b BlockStmt) stmt() {}
 type VarDeclarationStmt struct {
 	Identifier    string
 	AssignedValue Expr
-	ExplicitType  Type // Используем новый интерфейс Type
+	// ExplicitType  Type // Используем новый интерфейс Type
 }
 
 func (n VarDeclarationStmt) stmt() {}
