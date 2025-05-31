@@ -42,7 +42,7 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 	case ast.NumberExpr:
 		// cg.emitInstruction(OP_MOV, AM_IMM_REG, rd, -1, -1)
 		// cg.emitImmediate(uint32(e.Value))
-		cg.emitMov(AM_IMM_REG, rd, -1, -1)
+		cg.emitMov(AM_IMM_REG, rd, int(e.Value), -1)
 
 	case ast.BinaryExpr:
 		// 1. Вычисляем левый операнд, результат в R1.

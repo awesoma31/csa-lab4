@@ -139,7 +139,7 @@ func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) 
 	cg.instructionMemory = append(cg.instructionMemory, instructionWord)
 	cg.debugAssembly = append(
 		cg.debugAssembly,
-		fmt.Sprintf("[0x%08X] - %08X - (Opc: %02s, Mode: %s, D:%s, S1:%s, S2:%s)",
+		fmt.Sprintf("[0x%04X] - %08X - (Opc: %02s, Mode: %s, D:%s, S1:%s, S2:%s)",
 			cg.nextInstructionAddr,
 			instructionWord,
 			GetMnemonic(opcode),
@@ -187,7 +187,7 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 // emitImmediate adds an immediate value as an operand to the instruction memory.
 func (cg *CodeGenerator) emitImmediate(value uint32) {
 	cg.instructionMemory = append(cg.instructionMemory, value)
-	cg.debugAssembly = append(cg.debugAssembly, fmt.Sprintf("[0x%08X] - %08X - (Imm)", cg.nextInstructionAddr, value))
+	cg.debugAssembly = append(cg.debugAssembly, fmt.Sprintf("[0x%04X] - %08X - (Imm)", cg.nextInstructionAddr, value))
 	cg.nextInstructionAddr++
 }
 

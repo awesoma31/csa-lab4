@@ -9,7 +9,7 @@ import (
 // --------------------
 
 type NumberExpr struct {
-	Value float64
+	Value uint32
 }
 
 func (n NumberExpr) expr() {}

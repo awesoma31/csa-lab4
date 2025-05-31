@@ -128,14 +128,14 @@ func parse_binary_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 func parse_primary_expr(p *parser) ast.Expr {
 	switch p.currentTokenKind() {
 	case lexer.NUMBER:
-		number, err := strconv.ParseFloat(p.advance().Value, 64)
+		number, err := strconv.ParseUint(p.advance().Value, 10, 32)
 		if err != nil {
 			p.addError(fmt.Sprintf("Failed to parse number: %v", err))
 			// Handle error gracefully or return a dummy node
 			return ast.NumberExpr{Value: 0} // Or panic based on your error strategy
 		}
 		return ast.NumberExpr{
-			Value: number,
+			Value: uint32(number),
 		}
 	case lexer.STRING:
 		return ast.StringExpr{
