@@ -39,7 +39,7 @@ func main() {
 	instructionMemory, dataMemory, debugAssembly, cgErrors := cg.Generate(program)
 	if len(cgErrors) > 0 {
 		for _, e := range cgErrors {
-			fmt.Println(e)
+			fmt.Println("[TRANSLATE ERROR]:", e)
 		}
 		os.Exit(1)
 	}
