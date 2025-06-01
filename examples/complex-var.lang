@@ -1,6 +1,7 @@
-let b = 256;
-let c = 605;
-let d = 2000;
-
-let a = (2+b) * c - d;
+let b = 2;
+let c = 3;
+let d = 7;
+let a = 1;
+let e = 999;
+e = (10+b*5)-(12/c+4)*(d-a);
 

@@ -45,13 +45,11 @@ func main() {
 	}
 
 	printDebugAsm(debugAssembly)
-
 	printInstrMem(instructionMemory)
-
 	printDataMem(dataMemory)
-
 	printSymTable(cg)
 
+	//TODO: write bin
 }
 
 func printAst(program ast.BlockStmt) {
@@ -61,10 +59,11 @@ func printAst(program ast.BlockStmt) {
 
 func printSymTable(cg *codegen.CodeGenerator) {
 	fmt.Println("-------------------SymTable--------------------------")
+	fmt.Println("[var_name | addres]")
 	scopeStack := cg.ScopeStack()
 
 	for k, v := range scopeStack[0].Symbols() {
-		fmt.Print(k, " ")
+		fmt.Print(k, " | ")
 		fmt.Println(v.AbsAddress)
 	}
 }

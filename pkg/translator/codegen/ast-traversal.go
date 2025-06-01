@@ -40,25 +40,17 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 	switch e := expr.(type) {
 	case ast.NumberExpr:
-		// cg.emitInstruction(OP_MOV, AM_IMM_REG, rd, -1, -1)
-		// cg.emitImmediate(uint32(e.Value))
 		cg.emitMov(AM_IMM_REG, rd, int(e.Value), -1)
 
 	case ast.BinaryExpr:
-		// 1. Вычисляем левый операнд, результат в R1.
-		cg.generateExpr(e.Left, R1)
-		// 2. Сохраняем результат левого операнда на стек (PUSH R1).
 		//TODO: check push
+		cg.generateExpr(e.Left, R1)
 		cg.emitInstruction(OP_PUSH, AM_SINGLE_REG, R1, -1, -1)
 
-		// 3. Вычисляем правый операнд, результат в R2.
 		cg.generateExpr(e.Right, R2)
 
-		// 4. Загружаем результат левого операнда со стека в R1 (POP R1).
 		cg.emitInstruction(OP_POP, AM_SINGLE_REG, R1, -1, -1)
 
-		// 5. Выполняем операцию между R1 (левый операнд) и R2 (правый операнд),
-		// результат помещаем в rd. (rd = R1 op R2)
 		var opcode uint32
 		switch e.Operator.Kind {
 		case lexer.PLUS:
@@ -90,11 +82,6 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 			return
 		}
 		cg.emitInstruction(opcode, AM_REG_REG, rd, R1, R2) // R0 = R1 op R0
-
-		// Если конечный регистр rd не R0, перемещаем результат
-		// if rd != R0 {
-		// 	cg.emitInstruction(OP_MOV, AM_REG_REG, rd, R0, -1)
-		// }
 
 	case ast.SymbolExpr: // Для чтения значения переменной
 		symbol, found := cg.lookupSymbol(e.Value)
@@ -210,9 +197,29 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			cg.generateAssignExpr(assignExpr, R0)
 
 		case ast.BinaryExpr:
+			//TODO: string check for operations
 
-			cg.generateExpr(s.AssignedValue, R0)
-		default: // This will now handle StringExpr and other expressions
+			// cg.generateExpr(s.AssignedValue, R0)
+			symbolEntry.Type = ast.IntType
+			symbolEntry.SizeInBytes = WORD_SIZE_BYTES
+
+			if len(cg.scopeStack) == 1 { // global
+				symbolEntry.MemoryArea = "data"
+				symbolEntry.AbsAddress = cg.addNumberData(0) // placeholder = 0
+			} else { // local
+				// TODO:stack
+				/* аналогичный код для stack-переменных */
+			}
+
+			cg.addSymbolToScope(symbolEntry)
+
+			assign := ast.AssignmentExpr{
+				Assigne:       ast.SymbolExpr{Value: s.Identifier},
+				AssignedValue: s.AssignedValue,
+			}
+			cg.generateAssignExpr(assign, R0)
+			return
+		default:
 			cg.addError("unimpl default gen var decl ")
 		}
 	} else {
@@ -224,8 +231,8 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 
 // generateAssignExpr generates code for assignment expressions.
 func (cg *CodeGenerator) generateAssignExpr(e ast.AssignmentExpr, rd int) {
-	// Evaluate the right-hand side expression, result is left in R0
-	cg.generateExpr(e.AssignedValue, R0)
+	// Evaluate the right-hand side expression, result is left in rd
+	cg.generateExpr(e.AssignedValue, rd)
 
 	switch target := e.Assigne.(type) {
 	case ast.SymbolExpr: // Assignment to a simple variable
@@ -235,14 +242,14 @@ func (cg *CodeGenerator) generateAssignExpr(e ast.AssignmentExpr, rd int) {
 			return
 		}
 
-		// Store the value from R0 into the variable's memory location based on MemoryArea
+		// Store the value from rd into the variable's memory location based on MemoryArea
 		if symbol.MemoryArea == "data" { // Global variable
-			// MOV [absolute_byte_address], R0
-			cg.emitInstruction(OP_MOV, AM_REG_MEM_ABS, -1, R0, -1)
+			// MOV [absolute_byte_address], rd
+			cg.emitInstruction(OP_MOV, AM_REG_MEM_ABS, -1, rd, -1)
 			cg.emitImmediate(symbol.AbsAddress) // Absolute byte-address operand (must be word-aligned)
 		} else if symbol.MemoryArea == "stack" { // Local variable (on the stack)
-			// MOV [FP+offset_in_bytes], R0
-			cg.emitInstruction(OP_MOV, AM_REG_MEM_FP, -1, R0, -1)
+			// MOV [FP+offset_in_bytes], rd
+			cg.emitInstruction(OP_MOV, AM_REG_MEM_FP, -1, rd, -1)
 			cg.emitImmediate(uint32(symbol.FPOffset)) // Byte-offset from FP as operand (must be word-aligned)
 		} else {
 			cg.addError(fmt.Sprintf("Unknown memory area for symbol '%s': %s", symbol.Name, symbol.MemoryArea))
@@ -254,8 +261,8 @@ func (cg *CodeGenerator) generateAssignExpr(e ast.AssignmentExpr, rd int) {
 }
 
 // VisitExpressionStmt handles statements that are just expressions (e.g., function calls).
-func (cg *CodeGenerator) VisitExpressionStmt(s ast.ExpressionStmt) {
-	cg.generateExpr(s.Expression, R0)
+func (cg *CodeGenerator) VisitExpressionStmt(s ast.ExpressionStmt, rd int) {
+	cg.generateExpr(s.Expression, rd)
 }
 
 // generateBlockStmt handles code blocks (scopes).
@@ -300,13 +307,6 @@ func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) {
 	}
 }
 
-// generateNumberExpr generates code for number literals.
-func (cg *CodeGenerator) generateNumberExpr(e ast.NumberExpr) {
-	// Move the immediate value (number literal) into R0 (accumulator)
-	cg.emitInstruction(OP_MOV, AM_IMM_REG, R0, -1, -1)
-	cg.emitImmediate(uint32(e.Value)) // Emit the numeric literal directly as an immediate operand
-}
-
 // generateStringExpr generates code for string literals.
 func (cg *CodeGenerator) generateStringExpr(e ast.StringExpr, rd int) {
 	// Store string in data memory and load its byte-address (pointer) into R0.
@@ -316,60 +316,7 @@ func (cg *CodeGenerator) generateStringExpr(e ast.StringExpr, rd int) {
 	cg.emitImmediate(stringAddr)                       // Emit the byte-address as an immediate word
 }
 
-// generateIdentifierExpr generates code for identifier (variable) access.
-func (cg *CodeGenerator) generateIdentifierExpr(e ast.SymbolExpr) {
-	symbol, found := cg.lookupSymbol(e.Value)
-	if !found {
-		cg.addError(fmt.Sprintf("Undeclared variable '%s' used in expression.", e.Value))
-		return
-	}
-
-	// Load the value from memory into R0 based on MemoryArea and its byte-address/offset
-	if symbol.MemoryArea == "data" { // Global variable
-		// MOV R0, [absolute_byte_address] - CPU will fetch 4 bytes (one word)
-		cg.emitInstruction(OP_MOV, AM_MEM_ABS_REG, R0, -1, -1)
-		cg.emitImmediate(symbol.AbsAddress) // Absolute byte-address operand (must be word-aligned)
-	} else if symbol.MemoryArea == "stack" { // Local variable (on the stack)
-		// MOV R0, [FP+offset_in_bytes] - CPU will fetch 4 bytes (one word)
-		cg.emitInstruction(OP_MOV, AM_MEM_FP_REG, R0, -1, -1)
-		cg.emitImmediate(uint32(symbol.FPOffset)) // Byte-offset from FP as operand (must be word-aligned)
-	} else {
-		cg.addError(fmt.Sprintf("Unknown memory area for symbol '%s': %s", symbol.Name, symbol.MemoryArea))
-		return
-	}
-}
-
-// generateBinaryExpr generates code for binary operations.
-func (cg *CodeGenerator) generateBinaryExpr(e ast.BinaryExpr) {
-	// Evaluate left-hand side, result in R0
-	cg.generateExpr(e.Left, R1)
-	cg.emitInstruction(OP_PUSH, AM_SINGLE_REG, R1, -1, -1) // Push R0 to stack
-
-	// Evaluate right-hand side, result in R0
-	cg.generateExpr(e.Right, R2)
-	cg.emitInstruction(OP_MOV, AM_REG_REG, R2, R0, -1) // Move R0 to R1 (operand 2)
-
-	cg.emitInstruction(OP_POP, AM_SINGLE_REG, R0, -1, -1) // Pop stack to R0 (operand 1)
-
-	var opcode uint32
-	switch e.Operator.Kind { // Access Kind from lexer.Token
-	case lexer.PLUS:
-		opcode = OP_ADD
-	case lexer.MINUS:
-		opcode = OP_SUB
-	case lexer.STAR: // For multiplication
-		opcode = OP_MUL
-	case lexer.SLASH: // For division
-		opcode = OP_DIV
-	default:
-		cg.addError(fmt.Sprintf("Unsupported binary operator: %s", e.Operator.Value)) // Use Operator.Value for string
-		return
-	}
-
-	// Perform operation: R0 = R0 op R1
-	cg.emitInstruction(opcode, AM_REG_REG, R0, R0, R1)
-}
-
+// TODO: check
 // generateUnaryExpr generates code for unary operations.
 func (cg *CodeGenerator) generateUnaryExpr(e ast.PrefixExpr, rd int) {
 	cg.generateExpr(e.Right, R0) // Evaluate operand, result in R0
@@ -384,6 +331,7 @@ func (cg *CodeGenerator) generateUnaryExpr(e ast.PrefixExpr, rd int) {
 	}
 }
 
+// TODO: check
 // generateCallExpr generates code for function calls.
 func (cg *CodeGenerator) generateCallExpr(e ast.CallExpr, rd int) {
 	// Example: Handling built-in 'print' and 'input' functions.
@@ -420,6 +368,7 @@ func (cg *CodeGenerator) generateCallExpr(e ast.CallExpr, rd int) {
 	}
 }
 
+// TODO: check
 // generateFunctionDeclarationStmt handles function declarations. (Stub)
 func (cg *CodeGenerator) generateFunctionDeclarationStmt(s ast.FunctionDeclarationStmt) {
 	// TODO: Implement function code generation.
@@ -433,6 +382,7 @@ func (cg *CodeGenerator) generateFunctionDeclarationStmt(s ast.FunctionDeclarati
 	cg.addError(fmt.Sprintf("Function declaration '%s' code generation not yet implemented.", s.Name))
 }
 
+// TODO: check
 // generateReturnStmt handles return statements. (Stub)
 func (cg *CodeGenerator) generateReturnStmt(s ast.ReturnStmt) {
 	// TODO: Implement return statement.
