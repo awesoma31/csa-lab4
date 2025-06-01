@@ -93,10 +93,6 @@ const (
 	OP_JAE uint32 = 0x48
 	OP_JBE uint32 = 0x49
 	OP_CMP uint32 = 0x50
-
-	//TODO: For vector operations
-	// OP_VADD           uint32 = 0x40 // Vector Add
-	// ...
 )
 
 var opcodeMnemonics = map[uint32]string{}

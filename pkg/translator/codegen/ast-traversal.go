@@ -61,18 +61,14 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 			opcode = OP_MUL
 		case lexer.SLASH:
 			opcode = OP_DIV
-		// case lexer.EQUALS: // ==
-		// 	opcode = OP_EQ
-		// case lexer.NOT_EQUALS: // !=
-		// 	opcode = OP_NEQ
-		// case lexer.LESS: // <
-		// 	opcode = OP_LT
-		// case lexer.LESS_EQUALS: // <=
-		// 	opcode = OP_LTE
-		// case lexer.GREATER: // >
-		// 	opcode = OP_GT
-		// case lexer.GREATER_EQUALS: // >=
-		// 	opcode = OP_GTE
+		case lexer.EQUALS: // ==
+		case lexer.NOT_EQUALS: // !=
+		case lexer.LESS: // <
+		case lexer.LESS_EQUALS: // <=
+		case lexer.GREATER: // >
+		case lexer.GREATER_EQUALS: // >=
+			opcode = OP_CMP
+			rd = -1
 		// case lexer.AND: // &&
 		// 	opcode = OP_AND
 		// case lexer.OR: // ||
@@ -277,34 +273,46 @@ func (cg *CodeGenerator) generateBlockStmt(s ast.BlockStmt) {
 
 // generateIfStmt handles if-else statements.
 func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) {
-	// Evaluate condition (result in R0, 0 for false, non-zero for true)
-	cg.generateExpr(s.Condition, R0)
+	var operator lexer.Token
+	switch a := s.Condition.(type) {
+	case ast.BinaryExpr:
+		operator = a.Operator
+	case ast.SymbolExpr:
+		//TODO: check for 1 or 0
+		cg.addError(fmt.Sprintf("checking for variable bool is not implemented - %v", a.Value))
+	case ast.NumberExpr:
+		cg.addError(fmt.Sprintf("just number in if condition - %v", a.Value))
 
-	// JUMP IF FALSE: JMP R0, else_label (if R0 is 0, jump to else_label)
-	// We assume OP_JMP with AM_REG_REG implies a conditional jump if RegD (R0) is 0.
-	cg.emitInstruction(OP_JMP, AM_REG_REG, R0, -1, -1) // JMP if R0 is 0 (false)
-	jumpToFalseTargetPlaceholder := cg.ReserveWord()   // Reserve space for jump target word-address
+	}
+	// binary esxpr inside condition must do cmp at the end so flags are set
+	cg.generateExpr(s.Condition, -1)
 
-	// Visit 'then' block
+	consBlockAddr := cg.ReserveWord() // space for jumpInstr over then stmts
+
 	cg.generateStmt(s.Consequent)
 
 	if s.Alternate != nil {
-		// After 'then' block, jump over 'else' block
-		cg.emitInstruction(OP_JMP, AM_ABS_ADDR, -1, -1, -1)
-		jumpToEndIfTargetPlaceholder := cg.ReserveWord() // Reserve space for jump target word-address after else
-
-		// Patch the jump target for the 'if' condition (if R0 was false, jump here)
-		cg.PatchWord(jumpToFalseTargetPlaceholder, cg.nextInstructionAddr)
-
-		// Visit 'else' block
+		// altBlockAddr := cg.ReserveWord() // space for jmpInstr over alt stmts
 		cg.generateStmt(s.Alternate)
-
-		// Patch the jump target for the jump after 'then' block
-		cg.PatchWord(jumpToEndIfTargetPlaceholder, cg.nextInstructionAddr)
-	} else {
-		// Patch the jump target for the 'if' condition (if R0 was false, jump here)
-		cg.PatchWord(jumpToFalseTargetPlaceholder, cg.nextInstructionAddr)
 	}
+
+	//TODO: operator -> gen jmp instr and patch 2 times
+	var jmpToAltOpc uint32
+	switch operator.Kind {
+	case lexer.EQUALS:
+		jmpToAltOpc = OP_JE
+	case lexer.NOT_EQUALS:
+		jmpToAltOpc = OP_JNE
+	case lexer.GREATER:
+		jmpToAltOpc = OP_JG
+	case lexer.LESS:
+		jmpToAltOpc = OP_JL
+	case lexer.GREATER_EQUALS:
+		jmpToAltOpc = OP_JGE
+	case lexer.LESS_EQUALS:
+		jmpToAltOpc = OP_JLE
+	}
+	cg.PatchWord(consBlockAddr, 1)
 }
 
 // generateStringExpr generates code for string literals.
