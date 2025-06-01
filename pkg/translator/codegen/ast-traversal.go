@@ -168,7 +168,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 
 			if len(cg.scopeStack) == 1 { // if global
 				symbolEntry.MemoryArea = "data"
-				symbolEntry.AbsAddress = cg.addNumberData(uint32(asVal.Value))
+				symbolEntry.AbsAddress = cg.addNumberData(asVal.Value)
 			} else { // It's a local variable (on the stack)
 				//TODO:
 				symbolEntry.MemoryArea = "stack"
@@ -192,7 +192,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			//store as pointer
 			if len(cg.scopeStack) == 1 { // Global
 				symbolEntry.MemoryArea = "data"
-				symbolEntry.AbsAddress = cg.addNumberData(uint32(symbolEntry.NumberValue))
+				symbolEntry.AbsAddress = cg.addNumberData(symbolEntry.NumberValue)
 			} else { // Local (on stack)
 				symbolEntry.MemoryArea = "stack"
 				alignmentPadding := (WORD_SIZE_BYTES - (cg.currentFrameOffset % WORD_SIZE_BYTES)) % WORD_SIZE_BYTES

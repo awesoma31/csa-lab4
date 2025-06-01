@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 	"github.com/awesoma31/csa-lab4/pkg/translator/codegen"
 	"github.com/awesoma31/csa-lab4/pkg/translator/parser"
 	"github.com/sanity-io/litter"
@@ -32,8 +33,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("-------------------AST----------------------")
-	litter.Dump(program)
+	printAst(program)
 
 	cg := codegen.NewCodeGenerator()
 	instructionMemory, dataMemory, debugAssembly, cgErrors := cg.Generate(program)
@@ -44,25 +44,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("-------------------debugAssembly----------------------")
-	for _, val := range debugAssembly {
-		fmt.Println(val)
-	}
+	printDebugAsm(debugAssembly)
 
-	fmt.Println("-------------------instructionMemory----------------------")
-	for i, instr := range instructionMemory {
-		// fmt.Println(instr)
-		fmt.Println(fmt.Sprintf("[0x%04X|%d]:", i, i), instr)
-	}
+	printInstrMem(instructionMemory)
 
-	fmt.Println("-------------------dataMemory----------------------")
-	for i, val := range dataMemory {
-		if i%4 == 0 {
-			fmt.Println("_____")
-		}
-		fmt.Println(fmt.Sprintf("[0x%X|%d]:", i, i), val)
-	}
+	printDataMem(dataMemory)
 
+	printSymTable(cg)
+
+}
+
+func printAst(program ast.BlockStmt) {
+	fmt.Println("-------------------AST----------------------")
+	litter.Dump(program)
+}
+
+func printSymTable(cg *codegen.CodeGenerator) {
 	fmt.Println("-------------------SymTable--------------------------")
 	scopeStack := cg.ScopeStack()
 
@@ -70,7 +67,34 @@ func main() {
 		fmt.Print(k, " ")
 		fmt.Println(v.AbsAddress)
 	}
+}
 
+func printDataMem(dataMemory []byte) {
+	fmt.Println("-------------------dataMemory----------------------")
+	for i, val := range dataMemory {
+		if i%4 == 0 {
+			fmt.Println("_____")
+		}
+		fmt.Println(fmt.Sprintf("[0x%X|%d]:", i, i), fmt.Sprintf("0x%02X", val))
+	}
+}
+
+func printInstrMem(instructionMemory []uint32) {
+	fmt.Println("-------------------instructionMemory----------------------")
+	for i, instr := range instructionMemory {
+		// fmt.Println(instr)
+		fmt.Println(
+			fmt.Sprintf("[0x%04X|%04d]:", i, i),
+			fmt.Sprintf("0x%08X - %d", instr, instr),
+		)
+	}
+}
+
+func printDebugAsm(debugAssembly []string) {
+	fmt.Println("-------------------debugAssembly----------------------")
+	for _, val := range debugAssembly {
+		fmt.Println(val)
+	}
 }
 
 type flags struct {

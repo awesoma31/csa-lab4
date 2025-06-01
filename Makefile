@@ -11,7 +11,7 @@ ARCHS := amd64 arm64
 all: build
 
 .PHONY: build
-build: build-translator build-machine
+build: test build-translator build-machine   
 
 .PHONY: build-translator
 build-translator:
@@ -62,10 +62,29 @@ release-machine:
 		)\
 	)
 
+
+.PHONY: test
+test:        ## go test ./...
+	@echo "Running unit-tests…"
+	go test ./...
+
+.PHONY: test-race
+test-race:   ## go test -race ./...
+	@echo "Running unit-tests (race detector)…"
+	go test -race ./...
+
+.PHONY: coverage
+coverage:    ## выводит суммарное покрытие
+	@echo "Generating coverage report…"
+	go test -coverprofile=coverage.out ./...
+	go tool cover -func=coverage.out
+	@rm coverage.out
+
 .PHONY: clean
 clean:
 	@echo "Cleaning..."
 	@rm -rf $(BIN_DIR)
+
 
 .PHONY: help
 help:

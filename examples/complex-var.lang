@@ -1,6 +1,6 @@
-let b = 3;
-let c = 6;
-let d = 2;
+let b = 256;
+let c = 605;
+let d = 2000;
 
-let a = (2*b) + (c / d);
+let a = (2+b) * c - d;
 

@@ -1,5 +1,4 @@
 let a = 123;
 let b = 456; 
-let stroka = "biba";
-
+let str = "biba";
 

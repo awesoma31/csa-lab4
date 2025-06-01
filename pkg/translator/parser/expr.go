@@ -131,11 +131,10 @@ func parse_primary_expr(p *parser) ast.Expr {
 		number, err := strconv.ParseUint(p.advance().Value, 10, 32)
 		if err != nil {
 			p.addError(fmt.Sprintf("Failed to parse number: %v", err))
-			// Handle error gracefully or return a dummy node
-			return ast.NumberExpr{Value: 0} // Or panic based on your error strategy
+			return ast.NumberExpr{Value: 0}
 		}
 		return ast.NumberExpr{
-			Value: uint32(number),
+			Value: int32(number),
 		}
 	case lexer.STRING:
 		return ast.StringExpr{

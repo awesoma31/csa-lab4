@@ -123,7 +123,7 @@ func (cg *CodeGenerator) lookupSymbol(name string) (SymbolEntry, bool) {
 }
 
 func (cg *CodeGenerator) addSymbolToScope(entry SymbolEntry) {
-	fmt.Printf("added var-[%s] to scope %d with value=%d\n", entry.Name, len(cg.scopeStack), entry.NumberValue)
+	// fmt.Printf("added var-[%s] to scope %d with value=%d\n", entry.Name, len(cg.scopeStack), entry.NumberValue)
 	cg.currentScope().symbols[entry.Name] = entry
 }
 
@@ -215,6 +215,7 @@ func (cg *CodeGenerator) PatchWord(address, value uint32) {
 // It stores: [len(4 bytes)][string_bytes...][padding].
 // The entire block must start at a word-aligned byte-address.
 // TODO: return start of str(len).
+// FIXME: check str len in datamem
 func (cg *CodeGenerator) addString(s string) uint32 {
 	//Align current data address to the next word boundary (if not already aligned)
 	currentByteAddr := cg.nextDataAddr
@@ -262,13 +263,13 @@ func (cg *CodeGenerator) addString(s string) uint32 {
 // addNumberData adds a uint32 number to data memory.
 // This function ensures the number is stored at a word-aligned byte-address.
 // Returns the byte-address where the number is stored.
-func (cg *CodeGenerator) addNumberData(val uint32) uint32 {
+func (cg *CodeGenerator) addNumberData(val int32) uint32 {
 	// Ensure current data address is aligned to the next word boundary
 	allignDataMem(cg)
 
 	dataAddr := cg.nextDataAddr // This is now a word-aligned byte-address
 	buf := make([]byte, WORD_SIZE_BYTES)
-	binary.LittleEndian.PutUint32(buf, val) // Assuming LittleEndian
+	binary.LittleEndian.PutUint32(buf, uint32(val)) // Assuming LittleEndian
 
 	cg.dataMemory = append(cg.dataMemory, buf...)
 	cg.nextDataAddr += WORD_SIZE_BYTES // Increment by the size of the number in bytes
