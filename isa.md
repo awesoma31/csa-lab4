@@ -41,10 +41,6 @@
 | **JL**   | addr | -   | JL addr  | PC ← addr, если меньше (signed) | SF ≠ OF            | [opc+AM_JL][addr]  | 2       |
 | **JGE**  | addr | -   | JGE addr | PC ← addr, если ≥ (signed)      | SF = OF            | [opc+AM_JGE][addr] | 2       |
 | **JLE**  | addr | -   | JLE addr | PC ← addr, если ≤ (signed)      | SF ≠ OF или ZF = 1 | [opc+AM_JLE][addr] | 2       |
-| **JA**   | addr | -   | JA addr  | PC ← addr, если выше (unsigned) | CF = 0 и ZF = 0    | [opc+AM_JA][addr]  | 2       |
-| **JB**   | addr | -   | JB addr  | PC ← addr, если ниже (unsigned) | CF = 1             | [opc+AM_JB][addr]  | 2       |
-| **JAE**  | addr | -   | JAE addr | PC ← addr, если ≥ (unsigned)    | CF = 0             | [opc+AM_JAE][addr] | 2       |
-| **JBE**  | addr | -   | JBE addr | PC ← addr, если ≤ (unsigned)    | CF = 1 или ZF = 1  | [opc+AM_JBE][addr] | 2       |
 
 | Операция | dest   | arg1 | arg2 | mnemonic     | Описание                | Кодировка               | n_words |
 | -------- | ------ | ---- | ---- | ------------ | ----------------------- | ----------------------- | ------- |
