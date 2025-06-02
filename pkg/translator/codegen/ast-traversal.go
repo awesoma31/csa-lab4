@@ -61,22 +61,14 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 			opcode = OP_MUL
 		case lexer.SLASH:
 			opcode = OP_DIV
-		case lexer.EQUALS: // ==
-		case lexer.NOT_EQUALS: // !=
-		case lexer.LESS: // <
-		case lexer.LESS_EQUALS: // <=
-		case lexer.GREATER: // >
-		case lexer.GREATER_EQUALS: // >=
+		case lexer.EQUALS, lexer.NOT_EQUALS, lexer.GREATER, lexer.GREATER_EQUALS, lexer.LESS, lexer.LESS_EQUALS:
 			opcode = OP_CMP
 			rd = -1
-		// case lexer.AND: // &&
-		// 	opcode = OP_AND
-		// case lexer.OR: // ||
-		// 	opcode = OP_OR
 		default:
 			cg.addError(fmt.Sprintf("Unsupported binary operator: %s", e.Operator.Value))
 			return
 		}
+		// TODO: check addres mode
 		cg.emitInstruction(opcode, AM_REG_REG, rd, R1, R2) // R0 = R1 op R0
 
 	case ast.SymbolExpr: // Для чтения значения переменной
@@ -106,7 +98,7 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 	case ast.PrefixExpr: // Для унарных операторов
 		cg.generateUnaryExpr(e, rd) // Обновление: передаем rd
 	case ast.CallExpr: // Для вызовов функций
-		cg.generateCallExpr(e, rd) // Обновление: передаем rd
+		cg.generateCallExpr(e) // Обновление: передаем rd
 	case ast.AssignmentExpr: // Для выражений присваивания
 		cg.generateAssignExpr(e, rd) // Обновление: передаем rd
 	default:
@@ -145,9 +137,9 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 		switch asVal := s.AssignedValue.(type) {
 		case ast.NumberExpr:
 			symbolEntry.Type = ast.IntType
-			symbolEntry.SizeInBytes = WORD_SIZE_BYTES
+			symbolEntry.SizeInBytes = WordSizeBytes
 			//TODO: big numbers go to 0
-			symbolEntry.NumberValue = int32(asVal.Value)
+			symbolEntry.NumberValue = asVal.Value
 
 			if len(cg.scopeStack) == 1 { // if global
 				symbolEntry.MemoryArea = "data"
@@ -156,7 +148,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 				//TODO:
 				symbolEntry.MemoryArea = "stack"
 				// Ensure the offset is aligned for stack variables
-				alignmentPadding := (WORD_SIZE_BYTES - (cg.currentFrameOffset % WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
+				alignmentPadding := (WordSizeBytes - (cg.currentFrameOffset % WordSizeBytes)) % WordSizeBytes
 				cg.currentFrameOffset += alignmentPadding // Add padding to the offset
 
 				symbolEntry.FPOffset = cg.currentFrameOffset     // Assign current aligned offset
@@ -169,7 +161,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 		case ast.StringExpr:
 			// in word store ptr, in word stored len and in bytes stored chars
 			symbolEntry.Type = ast.IntType // Default type, consider type inference later (could be string, bool etc.)
-			symbolEntry.SizeInBytes = WORD_SIZE_BYTES
+			symbolEntry.SizeInBytes = WordSizeBytes
 			symbolEntry.NumberValue = int32(cg.nextDataAddr) + int32(symbolEntry.SizeInBytes)
 
 			//store as pointer
@@ -178,7 +170,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 				symbolEntry.AbsAddress = cg.addNumberData(symbolEntry.NumberValue)
 			} else { // Local (on stack)
 				symbolEntry.MemoryArea = "stack"
-				alignmentPadding := (WORD_SIZE_BYTES - (cg.currentFrameOffset % WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
+				alignmentPadding := (WordSizeBytes - (cg.currentFrameOffset % WordSizeBytes)) % WordSizeBytes
 				cg.currentFrameOffset += alignmentPadding
 				symbolEntry.FPOffset = cg.currentFrameOffset
 				cg.currentFrameOffset += symbolEntry.SizeInBytes
@@ -197,7 +189,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 
 			// cg.generateExpr(s.AssignedValue, R0)
 			symbolEntry.Type = ast.IntType
-			symbolEntry.SizeInBytes = WORD_SIZE_BYTES
+			symbolEntry.SizeInBytes = WordSizeBytes
 
 			if len(cg.scopeStack) == 1 { // global
 				symbolEntry.MemoryArea = "data"
@@ -271,8 +263,8 @@ func (cg *CodeGenerator) generateBlockStmt(s ast.BlockStmt) {
 	cg.popScope() // Exit the scope
 }
 
-// generateIfStmt handles if-else statements.
 func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) {
+	cg.debugAssembly = append(cg.debugAssembly, "IF STATEMENT CONDITION:")
 	var operator lexer.Token
 	switch a := s.Condition.(type) {
 	case ast.BinaryExpr:
@@ -282,37 +274,58 @@ func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) {
 		cg.addError(fmt.Sprintf("checking for variable bool is not implemented - %v", a.Value))
 	case ast.NumberExpr:
 		cg.addError(fmt.Sprintf("just number in if condition - %v", a.Value))
-
-	}
-	// binary esxpr inside condition must do cmp at the end so flags are set
-	cg.generateExpr(s.Condition, -1)
-
-	consBlockAddr := cg.ReserveWord() // space for jumpInstr over then stmts
-
-	cg.generateStmt(s.Consequent)
-
-	if s.Alternate != nil {
-		// altBlockAddr := cg.ReserveWord() // space for jmpInstr over alt stmts
-		cg.generateStmt(s.Alternate)
 	}
 
-	//TODO: operator -> gen jmp instr and patch 2 times
+	cg.generateExpr(s.Condition, -1) // cmp generates inside, flags must be set
+
+	// determines type of jump based on operator in reverse order (> -> jump less_equals to else block)
 	var jmpToAltOpc uint32
 	switch operator.Kind {
 	case lexer.EQUALS:
-		jmpToAltOpc = OP_JE
-	case lexer.NOT_EQUALS:
 		jmpToAltOpc = OP_JNE
+	case lexer.NOT_EQUALS:
+		jmpToAltOpc = OP_JE
 	case lexer.GREATER:
-		jmpToAltOpc = OP_JG
-	case lexer.LESS:
-		jmpToAltOpc = OP_JL
-	case lexer.GREATER_EQUALS:
-		jmpToAltOpc = OP_JGE
-	case lexer.LESS_EQUALS:
 		jmpToAltOpc = OP_JLE
+	case lexer.LESS:
+		jmpToAltOpc = OP_JGE
+	case lexer.GREATER_EQUALS:
+		jmpToAltOpc = OP_JL
+	case lexer.LESS_EQUALS:
+		jmpToAltOpc = OP_JG
+	default:
+		jmpToAltOpc = OP_JMP
 	}
-	cg.PatchWord(consBlockAddr, 1)
+	cg.emitInstruction(jmpToAltOpc, AM_JMP_ABS, -1, -1, -1)
+	addrToPatchElse := cg.nextInstructionAddr
+	cg.emitImmediate(0)
+
+	cg.debugAssembly = append(cg.debugAssembly, "IF STMT CONSEQUENSE:")
+	cg.generateStmt(s.Consequent)
+
+	var addrOfAddrToJumpAfterElse uint32 = 4294967295
+	if s.Alternate != nil {
+		cg.emitInstruction(OP_JMP, AM_JMP_ABS, -1, -1, -1)
+		addrOfAddrToJumpAfterElse = cg.nextInstructionAddr
+		cg.emitImmediate(0)
+	}
+	elseBlockAddr := cg.nextInstructionAddr
+
+	if s.Alternate != nil {
+		cg.debugAssembly = append(cg.debugAssembly, "IF STMT ALTERNATE:")
+		cg.generateStmt(s.Alternate)
+	}
+
+	endOfElseAddr := cg.nextInstructionAddr
+
+	cg.PatchWord(addrToPatchElse, elseBlockAddr)
+	if s.Alternate != nil {
+		if addrOfAddrToJumpAfterElse == 4294967295 {
+			panic("addr defined not gud")
+		}
+		cg.PatchWord(addrOfAddrToJumpAfterElse, endOfElseAddr)
+	}
+
 }
 
 // generateStringExpr generates code for string literals.
@@ -341,7 +354,7 @@ func (cg *CodeGenerator) generateUnaryExpr(e ast.PrefixExpr, rd int) {
 
 // TODO: check
 // generateCallExpr generates code for function calls.
-func (cg *CodeGenerator) generateCallExpr(e ast.CallExpr, rd int) {
+func (cg *CodeGenerator) generateCallExpr(e ast.CallExpr) {
 	// Example: Handling built-in 'print' and 'input' functions.
 	// For actual function calls, you'd push arguments, then CALL instruction,
 	// and handle return values.

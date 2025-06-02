@@ -6,40 +6,38 @@ import (
 	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
 )
 
-type type_nud_handler func(p *parser) ast.Type
-type type_led_handler func(p *parser, left ast.Type) ast.Type
+type typeNudHandler func(p *parser) ast.Type
+type typeLedHandler func(p *parser, left ast.Type) ast.Type
 
-type type_nud_lookup map[lexer.TokenKind]type_nud_handler
-type type_led_lookup map[lexer.TokenKind]type_led_handler
-type type_bp_lookup map[lexer.TokenKind]binding_power
+type typeNudLookup map[lexer.TokenKind]typeNudHandler
+type typeLedLookup map[lexer.TokenKind]typeLedHandler
+type typeBpLookup map[lexer.TokenKind]bindingPower
 
-var type_bp_lu = type_bp_lookup{}
-var type_nud_lu = type_nud_lookup{}
-var type_led_lu = type_led_lookup{}
+var typeBpLu = typeBpLookup{}
+var typeNudLu = typeNudLookup{}
+var typeLedLu = typeLedLookup{}
 
-func type_led(kind lexer.TokenKind, bp binding_power, led_fn type_led_handler) {
-	type_bp_lu[kind] = bp
-	type_led_lu[kind] = led_fn
+func typeLed(kind lexer.TokenKind, bp bindingPower, ledFn typeLedHandler) {
+	typeBpLu[kind] = bp
+	typeLedLu[kind] = ledFn
 }
 
-func type_nud(kind lexer.TokenKind, nud_fn type_nud_handler) {
-	// type_bp_lu[kind] = primary
-	type_nud_lu[kind] = nud_fn
+func typeNud(kind lexer.TokenKind, nudFn typeNudHandler) {
+	typeNudLu[kind] = nudFn
 }
 
 func createTypeTokenLookups() {
 
-	type_nud(lexer.IDENTIFIER, func(p *parser) ast.Type {
+	typeNud(lexer.IDENTIFIER, func(p *parser) ast.Type {
 		return ast.SymbolType{
 			Value: p.advance().Value,
 		}
 	})
 
-	// []number
-	type_nud(lexer.OPEN_BRACKET, func(p *parser) ast.Type {
+	typeNud(lexer.OPEN_BRACKET, func(p *parser) ast.Type {
 		p.advance()
 		p.expect(lexer.CLOSE_BRACKET)
-		insideType := parse_type(p, defalt_bp)
+		insideType := parseType(p, defaultBp)
 
 		return ast.ListType{
 			Underlying: insideType,
@@ -47,28 +45,29 @@ func createTypeTokenLookups() {
 	})
 }
 
-// parse_type is the Pratt parser for type expressions.
-func parse_type(p *parser, rbp binding_power) ast.Type {
+// parseType is the Pratt parser for type expressions.
+// TODO: delete
+func parseType(p *parser, rbp bindingPower) ast.Type {
 	tokenKind := p.currentTokenKind()
-	nud_fn, exists := type_nud_lu[tokenKind]
+	nudFn, exists := typeNudLu[tokenKind]
 
 	if !exists {
 		p.addError(fmt.Sprintf("type: NUD Handler expected for token %s\n", lexer.TokenKindString(tokenKind)))
 		panic(p.errors[len(p.errors)-1])
 	}
 
-	left := nud_fn(p)
+	left := nudFn(p)
 
-	for type_bp_lu[p.currentTokenKind()] > rbp {
+	for typeBpLu[p.currentTokenKind()] > rbp {
 		tokenKind = p.currentTokenKind()
-		led_fn, exists := type_led_lu[tokenKind]
+		ledFn, exists := typeLedLu[tokenKind]
 
 		if !exists {
 			p.addError(fmt.Sprintf("type: LED Handler expected for token %s\n", lexer.TokenKindString(tokenKind)))
 			panic(p.errors[len(p.errors)-1])
 		}
 
-		left = led_fn(p, left) // Removed bp argument
+		left = ledFn(p, left) // Removed bp argument
 	}
 
 	return left

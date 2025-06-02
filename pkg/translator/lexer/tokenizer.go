@@ -21,7 +21,7 @@ type lexer struct {
 func Tokenize(source string) []Token {
 	lex := createLexer(source)
 
-	for !lex.at_eof() {
+	for !lex.atEof() {
 		matched := false
 
 		for _, pattern := range lex.patterns {
@@ -62,7 +62,7 @@ func (lex *lexer) push(token Token) {
 	lex.Tokens = append(lex.Tokens, token)
 }
 
-func (lex *lexer) at_eof() bool {
+func (lex *lexer) atEof() bool {
 	return lex.pos >= len(lex.source)
 }
 
@@ -74,14 +74,16 @@ func createLexer(source string) *lexer {
 		Tokens: make([]Token, 0),
 		patterns: []regexPattern{
 			{regexp.MustCompile(`\s+`), skipHandler},
-			{regexp.MustCompile(`\/\/.*`), commentHandler},
+			//{regexp.MustCompile(`\/\/.*`), commentHandler}
+			//TODO: check
+			{regexp.MustCompile(`//.*`), commentHandler},
 			{regexp.MustCompile(`"[^"]*"`), stringHandler},
 			{regexp.MustCompile(`[0-9]+(\.[0-9]+)?`), numberHandler},
 			{regexp.MustCompile(`[a-zA-Z_][a-zA-Z0-9_]*`), symbolHandler},
 			{regexp.MustCompile(`\[`), defaultHandler(OPEN_BRACKET, "[")},
-			{regexp.MustCompile(`\]`), defaultHandler(CLOSE_BRACKET, "]")},
+			{regexp.MustCompile(`]`), defaultHandler(CLOSE_BRACKET, "]")},
 			{regexp.MustCompile(`\{`), defaultHandler(OPEN_CURLY, "{")},
-			{regexp.MustCompile(`\}`), defaultHandler(CLOSE_CURLY, "}")},
+			{regexp.MustCompile(`}`), defaultHandler(CLOSE_CURLY, "}")},
 			{regexp.MustCompile(`\(`), defaultHandler(OPEN_PAREN, "(")},
 			{regexp.MustCompile(`\)`), defaultHandler(CLOSE_PAREN, ")")},
 			{regexp.MustCompile(`==`), defaultHandler(EQUALS, "==")},
@@ -141,7 +143,7 @@ func numberHandler(lex *lexer, regex *regexp.Regexp) {
 func symbolHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindString(lex.remainder())
 
-	if kind, found := reserved_lu[match]; found {
+	if kind, found := reservedLu[match]; found {
 		lex.push(newUniqueToken(kind, match))
 	} else {
 		lex.push(newUniqueToken(IDENTIFIER, match))

@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/binary"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -112,31 +111,10 @@ func (f *flags) parseFlags() {
 	}
 }
 
-// writeBinaryFile записывает слайс uint32 в бинарный файл.
-// Использует LittleEndian для записи, что является распространенным выбором для большинства систем.
-func writeBinaryFile(filename string, data []uint32) error {
-	file, err := os.Create(filename)
-	if err != nil {
-		return err
-	}
-	// Гарантируем закрытие файла при выходе из функции
-	defer file.Close()
-
-	for _, word := range data {
-		// Записываем каждое 32-битное слово (4 байта)
-		// Используем binary.Write и указываем порядок байтов (LittleEndian)
-		err := binary.Write(file, binary.LittleEndian, word)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // getPrettyJson форматирует JSON байты в удобочитаемую строку с отступами.
 func getPrettyJson(in []byte) (string, error) {
 	var prettyJson bytes.Buffer
-	err := json.Indent(&prettyJson, []byte(in), "", " ")
+	err := json.Indent(&prettyJson, in, "", " ")
 	if err != nil {
 		return "", err
 	}

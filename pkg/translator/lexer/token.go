@@ -61,6 +61,7 @@ const (
 
 	// Reserved Keywords
 	LET
+	//TODO: delete
 	CONST
 	CLASS
 	NEW
@@ -79,12 +80,9 @@ const (
 	RETURN
 
 	UNKNOWN
-
-	// Misc
-	NUM_TOKENS
 )
 
-var reserved_lu map[string]TokenKind = map[string]TokenKind{
+var reservedLu = map[string]TokenKind{
 	"true":    TRUE,
 	"false":   FALSE,
 	"null":    NULL,
@@ -120,11 +118,11 @@ func (tk Token) IsOneOfMany(expectedTokens ...TokenKind) bool {
 	return false
 }
 
-func (token Token) Debug() {
-	if token.Kind == IDENTIFIER || token.Kind == NUMBER || token.Kind == STRING {
-		fmt.Printf("%s(%s)\n", TokenKindString(token.Kind), token.Value)
+func (tk Token) Debug() {
+	if tk.Kind == IDENTIFIER || tk.Kind == NUMBER || tk.Kind == STRING {
+		fmt.Printf("%s(%s)\n", TokenKindString(tk.Kind), tk.Value)
 	} else {
-		fmt.Printf("%s()\n", TokenKindString(token.Kind))
+		fmt.Printf("%s()\n", TokenKindString(tk.Kind))
 	}
 }
 

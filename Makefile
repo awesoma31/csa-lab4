@@ -28,39 +28,9 @@ build-machine:
 .PHONY: release
 release: release-translator release-machine
 
-.PHONY: release-translator
-release-translator:
-	@echo "Building $(NAME_TRANSLATOR) for all platforms..."
-	@$(foreach GOOS, $(PLATFORMS),\
-		$(foreach GOARCH, $(ARCHS),\
-			$(shell \
-				export GOOS=$(GOOS);\
-				export GOARCH=$(GOARCH);\
-				BINARY=$(BIN_DIR)/$(GOOS)-$(GOARCH)/$(NAME_TRANSLATOR);\
-				if [ "$(GOOS)" = "windows" ]; then BINARY=$$BINARY.exe; fi;\
-				mkdir -p $$(dirname $$BINARY);\
-				echo "Building $$BINARY";\
-				go build $(GOFLAGS) -o $$BINARY ./cmd/$(NAME_TRANSLATOR);\
-			)\
-		)\
-	)
-
-.PHONY: release-machine
 release-machine:
-	@echo "Building $(NAME_MACHINE) for all platforms..."
-	@$(foreach GOOS, $(PLATFORMS),\
-		$(foreach GOARCH, $(ARCHS),\
-			$(shell \
-				export GOOS=$(GOOS);\
-				export GOARCH=$(GOARCH);\
-				BINARY=$(BIN_DIR)/$(GOOS)-$(GOARCH)/$(NAME_MACHINE);\
-				if [ "$(GOOS)" = "windows" ]; then BINARY=$$BINARY.exe; fi;\
-				mkdir -p $$(dirname $$BINARY);\
-				echo "Building $$BINARY";\
-				go build $(GOFLAGS) -o $$BINARY ./cmd/$(NAME_MACHINE);\
-			)\
-		)\
-	)
+
+release-translator:
 
 
 .PHONY: test

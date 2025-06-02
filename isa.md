@@ -34,8 +34,8 @@
 # CONTROL FLOW
 
 | Операция | dest | arg | mnemonic | Описание                        | flags              | Кодировка          | n_words |
-| -------- | ---- | --- | -------- | ------------------------------- | ------------------ | ------------------ | ------- |
-| **JE**   | addr | -   | JE addr  | PC ← addr, если равно           | ZF = 1             | [opc+AM_JE][addr]  | 2       |
+| -------- | ---- | --- | -------- | ------------------------------- | ------------------ | ------------------ | ------- | ---------------------------------------------- |
+| **JE**   | addr | -   | JE addr  | PC ← addr, если равно           | ZF = 1             | [opc+AM_JE][addr]  | 2       | jump addres mode doesnt value just opcodes now |
 | **JNE**  | addr | -   | JNE addr | PC ← addr, если не равно        | ZF = 0             | [opc+AM_JNE][addr] | 2       |
 | **JG**   | addr | -   | JG addr  | PC ← addr, если больше (signed) | SF = OF и ZF = 0   | [opc+AM_JG][addr]  | 2       |
 | **JL**   | addr | -   | JL addr  | PC ← addr, если меньше (signed) | SF ≠ OF            | [opc+AM_JL][addr]  | 2       |

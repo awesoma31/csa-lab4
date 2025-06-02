@@ -45,8 +45,8 @@ func encodeInstructionWord(opcode, mode uint32, dest, s1, s2 int) uint32 {
 }
 
 const (
-	R0 = iota // General purpose register, often used as accumulator
-	R1        // General purpose register
+	R0 = iota
+	R1
 	R2
 	R3
 	R4
@@ -54,15 +54,15 @@ const (
 	R6
 	R7
 
-	// Special purpose registers (conceptual, might not be directly addressable by instructions)
+	// SP_REG Special purpose registers (conceptual, might not be directly addressable by instructions)
 	SP_REG // Stack Pointer
 	FP_REG // Frame Pointer
-	PC_REG // Program Counter is usually implicit
+	// Program Counter is usually implicit
 )
 
 // Opcode constants (1 byte: 0x00 - 0xFF)
 const (
-	OP_HALT uint32 = 0x00
+	OP_NOP  uint32 = 0x00
 	OP_MOV  uint32 = 0x01
 	OP_ADD  uint32 = 0x02
 	OP_SUB  uint32 = 0x03
@@ -70,7 +70,7 @@ const (
 	OP_DIV  uint32 = 0x05
 	OP_NEG  uint32 = 0x06
 	OP_NOT  uint32 = 0x07
-	OP_NOP  uint32 = 0x08
+	OP_HALT uint32 = 0x08
 
 	OP_PUSH uint32 = 0x10
 	OP_POP  uint32 = 0x11
@@ -158,10 +158,10 @@ func init() {
 	amMnemonics[AM_JL] = "JL_AM"
 	amMnemonics[AM_JGE] = "JGE_AM"
 	amMnemonics[AM_JLE] = "JLE_AM"
-	amMnemonics[AM_JA] = "JA_AM"
-	amMnemonics[AM_JB] = "JB_AM"
-	amMnemonics[AM_JAE] = "JAE_AM"
-	amMnemonics[AM_JBE] = "JBE_AM"
+	// amMnemonics[AM_JA] = "JA_AM"
+	// amMnemonics[AM_JB] = "JB_AM"
+	// amMnemonics[AM_JAE] = "JAE_AM"
+	// amMnemonics[AM_JBE] = "JBE_AM"
 	amMnemonics[AM_JMP_ABS] = "JMP_ABS"
 	amMnemonics[AM_JMP_REG] = "JMP_REG"
 	amMnemonics[AM_JMP_MEM] = "JMP_MEM"
@@ -184,8 +184,6 @@ func init() {
 	registerMnemonics[FP_REG] = "FP_REG"
 }
 
-// GetMnemonic returns the string mnemonic for a given opcode.
-// If the opcode is not found, it returns "UNKNOWN".
 func GetMnemonic(opcode uint32) string {
 	if mnemonic, ok := opcodeMnemonics[opcode]; ok {
 		return mnemonic
@@ -193,8 +191,6 @@ func GetMnemonic(opcode uint32) string {
 	return "UNKNOWN"
 }
 
-// GetAMnemonic returns the string mnemonic for a given addressing mode.
-// If the mode is not found, it returns "UNKNOWN_AM".
 func GetAMnemonic(mode uint32) string {
 	if mnemonic, ok := amMnemonics[mode]; ok {
 		return mnemonic
@@ -204,7 +200,7 @@ func GetAMnemonic(mode uint32) string {
 
 func GetRegisterMnemonic(reg int) string {
 	if reg == -1 {
-		return "" // Represents an unused register field
+		return ""
 	}
 	if mnemonic, ok := registerMnemonics[reg]; ok {
 		return mnemonic
@@ -213,7 +209,6 @@ func GetRegisterMnemonic(reg int) string {
 }
 
 // Addressing Mode / Operand Type constants (4 bits: 0x0 - 0xF)
-// Эти биты будут идти сразу за опкодом в первом слове инструкции.
 const (
 	AM_REG_REG      uint32 = 0x0 // Register to Register (e.g., ADD R0, R1)
 	AM_IMM_REG      uint32 = 0x1 // Immediate to Register (e.g., MOV R0, #123)
@@ -242,10 +237,10 @@ const (
 	AM_JL  uint32 = 0x15 // Jump if Less (signed)
 	AM_JGE uint32 = 0x16 // Jump if Greater or Equal (signed)
 	AM_JLE uint32 = 0x17 // Jump if Less or Equal (signed)
-	AM_JA  uint32 = 0x18 // Jump if Above (unsigned)
-	AM_JB  uint32 = 0x19 // Jump if Below (unsigned)
-	AM_JAE uint32 = 0x1A // Jump if Above or Equal (unsigned)
-	AM_JBE uint32 = 0x1B // Jump if Below or Equal (unsigned)
+	// AM_JA  uint32 = 0x18 // Jump if Above (unsigned)
+	// AM_JB  uint32 = 0x19 // Jump if Below (unsigned)
+	// AM_JAE uint32 = 0x1A // Jump if Above or Equal (unsigned)
+	// AM_JBE uint32 = 0x1B // Jump if Below or Equal (unsigned)
 
 	AM_JMP_ABS uint32 = 0x1C // Jump Absolute (JMP addr)
 	AM_JMP_REG uint32 = 0x1D // Jump Register (JMP reg)

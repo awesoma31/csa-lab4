@@ -80,12 +80,12 @@ func TestComplexMathExpressionTree(t *testing.T) {
 	}
 
 	// 7.1 левый операнд сложения – число 2
-	if lnum, ok := add.Left.(ast.NumberExpr); !ok || lnum.Value != 2 {
+	if lNum, ok := add.Left.(ast.NumberExpr); !ok || lNum.Value != 2 {
 		t.Fatalf("left operand of + should be number 2, got %#v", add.Left)
 	}
 
 	// 7.2 правый операнд сложения – символ b
-	if rsym, ok := add.Right.(ast.SymbolExpr); !ok || rsym.Value != "b" {
+	if rSym, ok := add.Right.(ast.SymbolExpr); !ok || rSym.Value != "b" {
 		t.Fatalf("right operand of + should be symbol b, got %#v", add.Right)
 	}
 }

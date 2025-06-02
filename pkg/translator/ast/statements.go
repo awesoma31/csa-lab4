@@ -6,7 +6,7 @@ type BlockStmt struct {
 
 func (b BlockStmt) stmt() {}
 
-// Var declare
+// VarDeclarationStmt Var declare
 type VarDeclarationStmt struct {
 	Identifier    string
 	AssignedValue Expr
@@ -26,7 +26,6 @@ type Parameter struct {
 	Type Type
 }
 
-// Function
 type FunctionDeclarationStmt struct {
 	Name       string
 	Parameters []Parameter

@@ -3,6 +3,7 @@ package codegen
 import (
 	"encoding/binary"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
@@ -12,7 +13,7 @@ import (
 // CodeGenerator Structure and Core Methods
 // =============================================================================
 
-const WORD_SIZE_BYTES = 4
+const WordSizeBytes = 4
 
 type SymbolEntry struct {
 	Name        string
@@ -37,7 +38,7 @@ func (sc *Scope) Symbols() map[string]SymbolEntry {
 	return sc.symbols
 }
 
-// CodeGenerator: Main code generator structure
+// CodeGenerator  Main code generator structure
 type CodeGenerator struct {
 	// Output segments
 	instructionMemory []uint32 // Machine words for instruction memory
@@ -129,12 +130,6 @@ func (cg *CodeGenerator) addSymbolToScope(entry SymbolEntry) {
 
 // emitInstruction adds an instruction to the instruction memory.
 func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) {
-	// var instructionWord uint32
-	// if opcode == OP_MOV && mode == AM_SPOFFS_REG {
-	// 	instructionWord = encodeInstructionWord(opcode, mode, dest, s1, -1)
-	// } else {
-	// 	instructionWord = encodeInstructionWord(opcode, mode, dest, s1, s2)
-	// }
 	instructionWord := encodeInstructionWord(opcode, mode, dest, s1, s2)
 	cg.instructionMemory = append(cg.instructionMemory, instructionWord)
 	cg.debugAssembly = append(
@@ -176,14 +171,6 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 	// cg.nextInstructionAddr++
 }
 
-// [opc+AM_REG_REG+rd+rs]
-// [opc+AM_IMM_REG+rd][imm]           	// instructionWord := encodeInstructionWord(OP_MOV, mode, dest, s1, s2)
-// [opc+AM_MEM_REG+rd][addr]
-// [opc+AM_SPOFFS_REG+rd+offs(17bits)]	// cg.instructionMemory = append(cg.instructionMemory, instructionWord)
-// [                                  	// cg.debugAssembly = append(
-// [opc+AM_MEM_MEM][d_addr][s_addr]   	// 	cg.debugAssembly,
-// [opc+AM_REG_MEM+rs][d_addr]        	// 	fmt.Sprintf("[0x%08X] - %08X - (Opc: %02s, Mode: %s, D:%s, S1:%s, S2:%s)",
-
 // emitImmediate adds an immediate value as an operand to the instruction memory.
 func (cg *CodeGenerator) emitImmediate(value uint32) {
 	cg.instructionMemory = append(cg.instructionMemory, value)
@@ -205,10 +192,32 @@ func (cg *CodeGenerator) PatchWord(address, value uint32) {
 		cg.addError(fmt.Sprintf("Attempted to patch address %d out of bounds (instruction memory size %d).", address, len(cg.instructionMemory)))
 		return
 	}
+	// NOTE: displaying in the wrong address bcs  extra lines of debug
 	cg.instructionMemory[address] = value
-	// Update debug assembly line for patching
 	originalLine := cg.debugAssembly[address]
-	cg.debugAssembly[address] = fmt.Sprintf("%s -> PATCHED to %08X", originalLine, value)
+	// cg.debugAssembly[address] = fmt.Sprintf("%s ->[%08X] PATCHED to: 0x%08X", originalLine, address, value)
+	fmt.Printf("%s ->[%08X] PATCHED to: 0x%08X", originalLine, address, value)
+}
+
+func (cg *CodeGenerator) PatchDebugAssemblyByAddress(targetAddress uint32, newContent string) {
+	addressHex := fmt.Sprintf("0x%08X", targetAddress)
+	re, err := regexp.Compile("^" + regexp.QuoteMeta(addressHex) + ":")
+	if err != nil {
+		cg.addError(fmt.Sprintf("Failed to compile regex for address %s: %v", addressHex, err))
+		return
+	}
+
+	foundAndPatched := false
+	for i, line := range cg.debugAssembly {
+		if re.MatchString(line) {
+			cg.debugAssembly[i] = fmt.Sprintf("%s -> PATCHED: %s", line, newContent)
+			foundAndPatched = true
+		}
+	}
+
+	if !foundAndPatched {
+		cg.addError(fmt.Sprintf("No debug assembly line found for address %s to patch.", addressHex))
+	}
 }
 
 // addString adds a string literal to data memory.
@@ -219,7 +228,7 @@ func (cg *CodeGenerator) PatchWord(address, value uint32) {
 func (cg *CodeGenerator) addString(s string) uint32 {
 	//Align current data address to the next word boundary (if not already aligned)
 	currentByteAddr := cg.nextDataAddr
-	alignmentPadding := (WORD_SIZE_BYTES - int(currentByteAddr%WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
+	alignmentPadding := (WordSizeBytes - int(currentByteAddr%WordSizeBytes)) % WordSizeBytes
 	for range alignmentPadding {
 		cg.dataMemory = append(cg.dataMemory, 0)
 		cg.nextDataAddr++
@@ -230,9 +239,9 @@ func (cg *CodeGenerator) addString(s string) uint32 {
 
 	strBytes := []byte(strings.Trim(s, `"`))
 
-	// Store length as a uint32 (4 bytes)
+	// Store length as an uint32 (4 bytes)
 	length := byte(len(strBytes))
-	buf := make([]byte, WORD_SIZE_BYTES)
+	buf := make([]byte, WordSizeBytes)
 	// binary.LittleEndian.PutUint32(buf, length) // Using LittleEndian for byte order
 	buf = append(buf, length)
 
@@ -248,9 +257,9 @@ func (cg *CodeGenerator) addString(s string) uint32 {
 
 	// Add padding after the string characters to align the *next* data item
 	// This ensures subsequent data variables also start on a word boundary.
-	remainingBytes := int(cg.nextDataAddr % WORD_SIZE_BYTES)
+	remainingBytes := int(cg.nextDataAddr % WordSizeBytes)
 	if remainingBytes != 0 {
-		padding := WORD_SIZE_BYTES - remainingBytes
+		padding := WordSizeBytes - remainingBytes
 		for range padding {
 			cg.dataMemory = append(cg.dataMemory, 0) // Add padding bytes
 			cg.nextDataAddr++
@@ -260,7 +269,7 @@ func (cg *CodeGenerator) addString(s string) uint32 {
 	return stringBlockStartAddr
 }
 
-// addNumberData adds a uint32 number to data memory.
+// addNumberData adds an uint32 number to data memory.
 // This function ensures the number is stored at a word-aligned byte-address.
 // Returns the byte-address where the number is stored.
 func (cg *CodeGenerator) addNumberData(val int32) uint32 {
@@ -268,18 +277,18 @@ func (cg *CodeGenerator) addNumberData(val int32) uint32 {
 	allignDataMem(cg)
 
 	dataAddr := cg.nextDataAddr // This is now a word-aligned byte-address
-	buf := make([]byte, WORD_SIZE_BYTES)
+	buf := make([]byte, WordSizeBytes)
 	binary.LittleEndian.PutUint32(buf, uint32(val)) // Assuming LittleEndian
 
 	cg.dataMemory = append(cg.dataMemory, buf...)
-	cg.nextDataAddr += WORD_SIZE_BYTES // Increment by the size of the number in bytes
+	cg.nextDataAddr += WordSizeBytes // Increment by the size of the number in bytes
 
 	return dataAddr
 }
 
 func allignDataMem(cg *CodeGenerator) {
 	currentByteAddr := cg.nextDataAddr
-	alignmentPadding := (WORD_SIZE_BYTES - int(currentByteAddr%WORD_SIZE_BYTES)) % WORD_SIZE_BYTES
+	alignmentPadding := (WordSizeBytes - int(currentByteAddr%WordSizeBytes)) % WordSizeBytes
 	for range alignmentPadding {
 		cg.dataMemory = append(cg.dataMemory, 0) // Add padding bytes
 		cg.nextDataAddr++

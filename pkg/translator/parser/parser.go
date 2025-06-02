@@ -15,7 +15,7 @@ type parser struct {
 }
 
 func createParser(tokens []lexer.Token) *parser {
-	if len(bp_lu) == 0 {
+	if len(bpLu) == 0 {
 		createTokenLookups()
 		createTypeTokenLookups()
 	}
@@ -44,7 +44,7 @@ func Parse(source string) (ast.BlockStmt, []string) {
 
 	for p.hasTokens() {
 		// body = append(body, parse_stmt(p))
-		stmt := parse_stmt(p)
+		stmt := parseStmt(p)
 		if stmt != nil { // Only append if a statement was successfully parsed
 			body = append(body, stmt)
 		} else {

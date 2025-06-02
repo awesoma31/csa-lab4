@@ -1,19 +1,6 @@
-// package ast
-//
-//	type SymbolType struct {
-//		Value string
-//	}
-//
-// func (t SymbolType) _type() {}
-//
-//	type ListType struct {
-//		Underlying Type
-//	}
-//
-// func (t ListType) _type() {}
 package ast
 
-// TypeKind represents the kind of a type (e.g., int, string, bool).
+// TypeKind represents the kind of type (e.g., int, string, bool).
 type TypeKind int
 
 const (

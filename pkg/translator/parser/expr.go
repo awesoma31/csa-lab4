@@ -8,9 +8,9 @@ import (
 )
 
 // bp is the right binding power limit.
-func parse_expr(p *parser, rbp binding_power) ast.Expr {
+func parseExpr(p *parser, rbp bindingPower) ast.Expr {
 	tokenKind := p.currentTokenKind()
-	nud_fn, exists := nud_lu[tokenKind]
+	nudFn, exists := nudLu[tokenKind]
 
 	if !exists {
 		p.addError(fmt.Sprintf("NUD Handler expected for token %s\n", lexer.TokenKindString(tokenKind)))
@@ -20,15 +20,15 @@ func parse_expr(p *parser, rbp binding_power) ast.Expr {
 
 	// 1. Call the Null Denotation (NUD) to parse the left-hand side of the expression.
 	// This handles literals, identifiers, prefix operators, and grouped expressions.
-	left := nud_fn(p)
+	left := nudFn(p)
 
 	// 2. Loop to parse Left Denotation (LED) operators.
 	// This loop continues as long as the current token's LEFT_BINDING_POWER
 	// is greater than the RIGHT_BINDING_POWER_LIMIT passed to this parse_expr call.
 	// This is the core of precedence enforcement.
-	for bp_lu[p.currentTokenKind()] > rbp {
+	for bpLu[p.currentTokenKind()] > rbp {
 		tokenKind = p.currentTokenKind()
-		led_fn, exists := led_lu[tokenKind]
+		ledFn, exists := ledLu[tokenKind]
 
 		if !exists {
 			p.addError(fmt.Sprintf("LED Handler expected for token %s\n", lexer.TokenKindString(tokenKind)))
@@ -38,18 +38,18 @@ func parse_expr(p *parser, rbp binding_power) ast.Expr {
 		// Call the Left Denotation (LED), passing the already parsed 'left' expression.
 		// The LED function is responsible for consuming the current operator token
 		// and then parsing its right-hand side operand(s).
-		left = led_fn(p, left) // Removed 'bp' as an argument to led_fn; it's handled internally by specific LED handlers.
+		left = ledFn(p, left) // Removed 'bp' as an argument to led_fn; it's handled internally by specific LED handlers.
 	}
 
 	return left
 }
 
-// parse_prefix_expr handles unary operators (e.g., -x, !y, typeof z)
-func parse_prefix_expr(p *parser) ast.Expr {
+// parsePrefixExpr handles unary operators (e.g., -x, !y, typeof z)
+func parsePrefixExpr(p *parser) ast.Expr {
 	operatorToken := p.advance()
 	// Parse the right-hand side operand with the 'unary' precedence.
 	// This ensures that `!a + b` parses as `(!a) + b`, not `!(a + b)`.
-	expr := parse_expr(p, unary)
+	expr := parseExpr(p, unary)
 
 	return ast.PrefixExpr{
 		Operator: operatorToken,
@@ -57,8 +57,8 @@ func parse_prefix_expr(p *parser) ast.Expr {
 	}
 }
 
-// parse_assignment_expr handles assignment operators (e.g., x = y, x += y)
-func parse_assignment_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp, it's determined by the operator's own LBP
+// parseAssignmentExpr handles assignment operators (e.g., x = y, x += y)
+func parseAssignmentExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp, it's determined by the operator's own LBP
 	operatorToken := p.advance() // Consume the assignment token (=, +=, etc.)
 
 	// Assignment is right-associative (e.g., a = b = c parses as a = (b = c)).
@@ -66,7 +66,7 @@ func parse_assignment_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp, i
 	// *one less* than the assignment operator's own binding power.
 	// This ensures that the next assignment operator on the right will bind to its
 	// right operand before the current assignment operator finalizes.
-	rhs := parse_expr(p, bp_lu[operatorToken.Kind]-1)
+	rhs := parseExpr(p, bpLu[operatorToken.Kind]-1)
 
 	return ast.AssignmentExpr{
 		Assigne:       left,
@@ -74,15 +74,11 @@ func parse_assignment_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp, i
 	}
 }
 
-// parse_range_expr handles range operators (e.g., 1..10)
-func parse_range_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp
-	operatorToken := p.advance() // Consume the '..' token
-
-	// Range operator typically has very low precedence, but its right-hand side
-	// should consume expressions according to the range operator's own precedence.
-	// This makes expressions like `1 .. 5 + 2` parse as `1 .. (5 + 2)`.
-	// For most left-associative operators, this means using its own binding power.
-	right := parse_expr(p, bp_lu[operatorToken.Kind])
+// parseRangeExpr handles range operators (e.g., 1..10)
+// TODO: delete
+func parseRangeExpr(p *parser, left ast.Expr) ast.Expr {
+	operatorToken := p.advance()
+	right := parseExpr(p, bpLu[operatorToken.Kind])
 
 	return ast.RangeExpr{
 		Lower: left,
@@ -90,33 +86,11 @@ func parse_range_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 	}
 }
 
-// parse_binary_expr handles standard binary operators (+, -, *, /, ==, <, etc.)
-func parse_binary_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp
+// parseBinaryExpr handles standard binary operators (+, -, *, /, ==, <, etc.)
+func parseBinaryExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 	operatorToken := p.advance() // Consume the operator token (+, *, ==, etc.)
 
-	// For left-associative binary operators (like +, -, *, /, ==, <, etc.),
-	// the right-hand side expression must be parsed with a right binding power
-	// equal to the current operator's LEFT_BINDING_POWER.
-	// This ensures that operators of equal or lower precedence on the right will *not*
-	// be consumed by this `parse_expr` call, allowing the current operator to bind.
-	// For example, in `2 + 3 * 4`:
-	// 1. `parse_expr` parses `2`.
-	// 2. Encounters `+`. Its LBP is `additive`. `additive > current_rbp`.
-	// 3. Calls `parse_binary_expr` for `+`.
-	// 4. `parse_binary_expr` consumes `+`.
-	// 5. Calls `parse_expr` for the right side (`3 * 4`) with `additive` as `rbp`.
-	//    a. `parse_expr` parses `3`.
-	//    b. Encounters `*`. Its LBP is `multiplicative`. `multiplicative > additive`.
-	//    c. Calls `parse_binary_expr` for `*`.
-	//    d. `parse_binary_expr` consumes `*`.
-	//    e. Calls `parse_expr` for `4` with `multiplicative` as `rbp`.
-	//    f. `parse_expr` parses `4`.
-	//    g. No more tokens with LBP > `multiplicative`. Returns `4`.
-	//    h. `parse_binary_expr` for `*` gets `4`, constructs `3 * 4`.
-	//    i. Returns `3 * 4`.
-	// 6. `parse_binary_expr` for `+` gets `(3 * 4)`, constructs `2 + (3 * 4)`.
-	// This ensures correct precedence.
-	right := parse_expr(p, bp_lu[operatorToken.Kind])
+	right := parseExpr(p, bpLu[operatorToken.Kind])
 
 	return ast.BinaryExpr{
 		Left:     left,
@@ -125,7 +99,7 @@ func parse_binary_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 	}
 }
 
-func parse_primary_expr(p *parser) ast.Expr {
+func parsePrimaryExpr(p *parser) ast.Expr {
 	switch p.currentTokenKind() {
 	case lexer.NUMBER:
 		number, err := strconv.ParseUint(p.advance().Value, 10, 32)
@@ -152,7 +126,8 @@ func parse_primary_expr(p *parser) ast.Expr {
 	}
 }
 
-func parse_member_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp
+// TODO: delete
+func parseMemberExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 	dotOrBracketToken := p.advance() // Consume DOT or OPEN_BRACKET
 
 	isComputed := dotOrBracketToken.Kind == lexer.OPEN_BRACKET
@@ -161,7 +136,7 @@ func parse_member_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 		// For computed members (e.g., obj[prop]), the property itself is an expression.
 		// It should be parsed with the lowest possible precedence (0 or defalt_bp)
 		// to consume the entire expression inside the brackets.
-		rhs := parse_expr(p, defalt_bp)
+		rhs := parseExpr(p, defaultBp)
 		p.expect(lexer.CLOSE_BRACKET)
 		return ast.ComputedExpr{
 			Member:   left,
@@ -176,7 +151,8 @@ func parse_member_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 	}
 }
 
-func parse_array_literal_expr(p *parser) ast.Expr {
+// TODO: delete
+func parseArrayLiteralExpr(p *parser) ast.Expr {
 	p.expect(lexer.OPEN_BRACKET)
 	arrayContents := make([]ast.Expr, 0)
 
@@ -184,7 +160,7 @@ func parse_array_literal_expr(p *parser) ast.Expr {
 	// but allowing for full expressions.
 	// `logical` (or a similar low precedence) is often a good choice here.
 	for p.hasTokens() && p.currentTokenKind() != lexer.CLOSE_BRACKET {
-		arrayContents = append(arrayContents, parse_expr(p, assignment)) // Use assignment for array elements, common practice
+		arrayContents = append(arrayContents, parseExpr(p, assignment)) // Use assignment for array elements, common practice
 
 		if p.currentTokenKind() == lexer.COMMA {
 			p.advance() // Consume the comma
@@ -202,23 +178,23 @@ func parse_array_literal_expr(p *parser) ast.Expr {
 	}
 }
 
-func parse_grouping_expr(p *parser) ast.Expr {
+func parseGroupingExpr(p *parser) ast.Expr {
 	p.expect(lexer.OPEN_PAREN)
 	// Parse the expression inside the parentheses with the lowest possible precedence (0 or defalt_bp)
 	// so it consumes the entire inner expression.
-	expr := parse_expr(p, defalt_bp)
+	expr := parseExpr(p, defaultBp)
 	p.expect(lexer.CLOSE_PAREN)
 	return expr
 }
 
-func parse_call_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp
+func parseCallExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 	p.advance() // Consume the OPEN_PAREN token
 	arguments := make([]ast.Expr, 0)
 
 	for p.hasTokens() && p.currentTokenKind() != lexer.CLOSE_PAREN {
 		// Arguments are typically parsed with the lowest possible precedence (e.g., assignment or logical)
 		// to allow full expressions within the arguments.
-		arguments = append(arguments, parse_expr(p, assignment))
+		arguments = append(arguments, parseExpr(p, assignment))
 
 		if p.currentTokenKind() == lexer.COMMA {
 			p.advance() // Consume the comma
@@ -235,9 +211,9 @@ func parse_call_expr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 	}
 }
 
-func parse_fn_expr(p *parser) ast.Expr {
+func parseFnExpr(p *parser) ast.Expr {
 	p.expect(lexer.FN)
-	functionParams, returnType, functionBody := parse_fn_params_and_body(p)
+	functionParams, returnType, functionBody := parseFnParamsAndBody(p)
 
 	return ast.FunctionExpr{
 		Parameters: functionParams,
