@@ -63,7 +63,7 @@ func printSymTable(cg *codegen.CodeGenerator) {
 
 	for k, v := range scopeStack[0].Symbols() {
 		fmt.Print(k, " | ")
-		fmt.Println(v.AbsAddress)
+		fmt.Printf(" %X\n", v.AbsAddress)
 	}
 }
 

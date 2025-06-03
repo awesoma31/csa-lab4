@@ -1,3 +1,2 @@
-let a = read();
-
-read();
+let rea = read();
+let just_str = "golang";

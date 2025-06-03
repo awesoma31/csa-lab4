@@ -7,17 +7,13 @@ import (
 	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
 )
 
-// =============================================================================
-// AST Traversal and Code Generation Methods
-// =============================================================================
-
 // generateStmt generates code for a given statement.
 func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 	switch s := stmt.(type) {
 	case ast.VarDeclarationStmt:
 		cg.generateVarDeclStmt(s)
 	case ast.ExpressionStmt:
-		cg.generateExpr(s.Expression, R0)
+		cg.generateExpr(s.Expression, RA)
 		// For an expression statement, the result in R0 is usually discarded.
 		// If it's the result of an assignment, the assignment handled saving.
 	case ast.BlockStmt:
@@ -28,12 +24,20 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 		cg.generateReturnStmt(s)
 	case ast.IfStmt:
 		cg.generateIfStmt(s)
+	case ast.PrintStmt: // Обработка оператора Print
+		cg.generatePrintStmt(s)
 	// case ast.WhileStmt: // Added WhileStmt handling
 	// 	cg.generateWhileStmt(s)
 	// Add other statement types as needed (Loop, etc.)
 	default:
 		cg.addError(fmt.Sprintf("Unsupported statement type: %T", s))
 	}
+}
+
+// generatePrintStmt handles PrintStmt (if `print` can be a statement like `print("hello");`).
+func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
+	cg.generateExpr(s.Argument, RPRINT)
+	cg.emitInstruction(OP_OUT, AM_SINGLE_REG, RPRINT, -1, -1)
 }
 
 // generateExpr generates code for a given expression, leaving its result in specified register.
@@ -44,12 +48,12 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 
 	case ast.BinaryExpr:
 		//TODO: check push
-		cg.generateExpr(e.Left, R1)
-		cg.emitInstruction(OP_PUSH, AM_SINGLE_REG, R1, -1, -1)
+		cg.generateExpr(e.Left, RM1)
+		cg.emitInstruction(OP_PUSH, AM_SINGLE_REG, RM1, -1, -1)
 
-		cg.generateExpr(e.Right, R2)
+		cg.generateExpr(e.Right, RM2)
 
-		cg.emitInstruction(OP_POP, AM_SINGLE_REG, R1, -1, -1)
+		cg.emitInstruction(OP_POP, AM_SINGLE_REG, RM1, -1, -1)
 
 		var opcode uint32
 		switch e.Operator.Kind {
@@ -69,7 +73,7 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 			return
 		}
 		// TODO: check addres mode
-		cg.emitInstruction(opcode, AM_REG_REG, rd, R1, R2) // R0 = R1 op R0
+		cg.emitInstruction(opcode, AM_REG_REG, rd, RM1, RM2) // R0 = R1 op R0
 
 	case ast.SymbolExpr: // Для чтения значения переменной
 		symbol, found := cg.lookupSymbol(e.Value)
@@ -93,7 +97,8 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 		}
 	case ast.FunctionExpr:
 		cg.addError("FunctionExpr code generation not implemented.")
-	case ast.StringExpr: // TODO:Предполагается, что generateStringExpr будет вызвана
+	case ast.StringExpr:
+		// panic("impl me StringExpr")
 		cg.generateStringExpr(e, rd) // Обновление: передаем rd
 	case ast.PrefixExpr: // Для унарных операторов
 		cg.generateUnaryExpr(e, rd) // Обновление: передаем rd
@@ -101,9 +106,21 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 		cg.generateCallExpr(e) // Обновление: передаем rd
 	case ast.AssignmentExpr: // Для выражений присваивания
 		cg.generateAssignExpr(e, rd) // Обновление: передаем rd
+	case ast.PrintExpr: // Обработка выражения Print
+		cg.generatePrintExpr(e) // Вызываем тот же генератор, что и для PrintStmt
+	case ast.ReadExpr: // <-- НОВОЕ: Обработка выражения ReadExpr
+		cg.generateReadExpr()
 	default:
 		cg.addError(fmt.Sprintf("Unsupported expression type: %T", e))
 	}
+}
+
+func (cg *CodeGenerator) generateReadExpr() {
+	cg.emitInstruction(OP_IN, AM_SINGLE_REG, RREAD, -1, -1)
+}
+
+func (cg *CodeGenerator) generatePrintExpr(e ast.PrintExpr) {
+	panic("unimplemented")
 }
 
 // VisitProgram generates code for the entire program.
@@ -115,7 +132,7 @@ func (cg *CodeGenerator) VisitProgram(p *ast.BlockStmt) {
 		cg.generateStmt(stmt)
 	}
 
-	cg.emitInstruction(OP_HALT, AM_NO_OPERANDS, -1, -1, -1)
+	cg.emitInstruction(OP_HALT, 0, -1, -1, -1)
 
 	// cg.popScope() // Pop global scope
 }
@@ -134,16 +151,16 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 
 	// Determine the type and size based on the assigned value (simple inference)
 	if s.AssignedValue != nil {
-		switch asVal := s.AssignedValue.(type) {
+		switch assignedVal := s.AssignedValue.(type) {
 		case ast.NumberExpr:
 			symbolEntry.Type = ast.IntType
 			symbolEntry.SizeInBytes = WordSizeBytes
 			//TODO: big numbers go to 0
-			symbolEntry.NumberValue = asVal.Value
+			symbolEntry.NumberValue = assignedVal.Value
 
 			if len(cg.scopeStack) == 1 { // if global
 				symbolEntry.MemoryArea = "data"
-				symbolEntry.AbsAddress = cg.addNumberData(asVal.Value)
+				symbolEntry.AbsAddress = cg.addNumberData(assignedVal.Value)
 			} else { // It's a local variable (on the stack)
 				//TODO:
 				symbolEntry.MemoryArea = "stack"
@@ -159,30 +176,52 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			return
 
 		case ast.StringExpr:
+			strAddr := cg.addString(assignedVal.Value)
+			ptrAddr := cg.addNumberData(int32(strAddr))
 			// in word store ptr, in word stored len and in bytes stored chars
 			symbolEntry.Type = ast.IntType // Default type, consider type inference later (could be string, bool etc.)
 			symbolEntry.SizeInBytes = WordSizeBytes
-			symbolEntry.NumberValue = int32(cg.nextDataAddr) + int32(symbolEntry.SizeInBytes)
+			symbolEntry.NumberValue = int32(strAddr)
+			symbolEntry.AbsAddress = ptrAddr
 
 			//store as pointer
-			if len(cg.scopeStack) == 1 { // Global
+			if len(cg.scopeStack) == 1 {
 				symbolEntry.MemoryArea = "data"
-				symbolEntry.AbsAddress = cg.addNumberData(symbolEntry.NumberValue)
-			} else { // Local (on stack)
-				symbolEntry.MemoryArea = "stack"
-				alignmentPadding := (WordSizeBytes - (cg.currentFrameOffset % WordSizeBytes)) % WordSizeBytes
-				cg.currentFrameOffset += alignmentPadding
-				symbolEntry.FPOffset = cg.currentFrameOffset
-				cg.currentFrameOffset += symbolEntry.SizeInBytes
+				// symbolEntry.AbsAddress = cg.addNumberData(symbolEntry.NumberValue)
+			} else {
+				//TODO:
 			}
 			cg.addSymbolToScope(symbolEntry)
 
 			// Generate code to assign the initial value. This happens after symbol is added.
-			assignExpr := ast.AssignmentExpr{
-				Assigne:       ast.SymbolExpr{Value: s.Identifier},
-				AssignedValue: s.AssignedValue,
+			// assignExpr := ast.AssignmentExpr{
+			// 	Assigne:       ast.SymbolExpr{Value: s.Identifier},
+			// 	AssignedValue: s.AssignedValue,
+			// }
+			// cg.generateAssignExpr(assignExpr, RA)
+		case ast.ReadExpr:
+			strAddr := cg.addString("") // reserve space for reading 1 char
+			ptrAddr := cg.addNumberData(int32(strAddr))
+
+			symbolEntry.Type = ast.IntType // PTR to str
+			symbolEntry.SizeInBytes = WordSizeBytes
+			symbolEntry.NumberValue = int32(strAddr)
+			//TODO: check when local, stack
+			symbolEntry.AbsAddress = ptrAddr
+
+			if len(cg.scopeStack) == 1 { // if global
+				symbolEntry.MemoryArea = "data"
+			} else { // It's a local variable (on the stack)
+				//TODO:
 			}
-			cg.generateAssignExpr(assignExpr, R0)
+
+			cg.addSymbolToScope(symbolEntry)
+			cg.generateReadExpr()
+
+			cg.emitMov(AM_IMM_REG, RA, 1, -1)            // imm to reg; s1=imm dest = rd
+			cg.emitMov(AM_REG_MEM, int(strAddr), RA, -1) // reg to mem; dest=addr, s1=reg
+			cg.emitMov(AM_REG_MEM, int(strAddr+1), RREAD, -1)
+			return
 
 		case ast.BinaryExpr:
 			//TODO: string check for operations
@@ -205,10 +244,11 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 				Assigne:       ast.SymbolExpr{Value: s.Identifier},
 				AssignedValue: s.AssignedValue,
 			}
-			cg.generateAssignExpr(assign, R0)
+			cg.generateAssignExpr(assign, RA)
 			return
+
 		default:
-			cg.addError(fmt.Sprintf("unimpl default case of generating var declaration - %T", asVal))
+			cg.addError(fmt.Sprintf("unknown case of generating var declaration - %T", assignedVal))
 		}
 	} else {
 		cg.addError(fmt.Sprintf("All variables should be initialized: %s - is undefined", s.Identifier))
@@ -340,7 +380,7 @@ func (cg *CodeGenerator) generateStringExpr(e ast.StringExpr, rd int) {
 // TODO: check
 // generateUnaryExpr generates code for unary operations.
 func (cg *CodeGenerator) generateUnaryExpr(e ast.PrefixExpr, rd int) {
-	cg.generateExpr(e.Right, R0) // Evaluate operand, result in R0
+	cg.generateExpr(e.Right, RA) // Evaluate operand, result in R0
 
 	switch e.Operator.Kind { // Access Kind from lexer.Token
 	case lexer.MINUS: // Unary negation (minus sign)
@@ -373,15 +413,15 @@ func (cg *CodeGenerator) generateCallExpr(e ast.CallExpr) {
 			cg.addError("Print function expects exactly one argument.")
 			return
 		}
-		cg.generateExpr(e.Arguments[0], R0)                     // Evaluate argument, result in R0 (should contain value or string address)
-		cg.emitInstruction(OP_OUT, AM_REG_PORT_IMM, -1, R0, -1) // OUT #0, R0 (assuming port 0 for console output)
+		cg.generateExpr(e.Arguments[0], RA)                     // Evaluate argument, result in R0 (should contain value or string address)
+		cg.emitInstruction(OP_OUT, AM_REG_PORT_IMM, -1, RA, -1) // OUT #0, R0 (assuming port 0 for console output)
 		cg.emitImmediate(0)                                     // Port address for output
 	case "input":
 		if len(e.Arguments) != 0 {
 			cg.addError("Input function expects no arguments.")
 			return
 		}
-		cg.emitInstruction(OP_IN, AM_IMM_PORT_REG, R0, -1, -1) // IN R0, #0 (assuming port 0 for console input)
+		cg.emitInstruction(OP_IN, AM_IMM_PORT_REG, RA, -1, -1) // IN R0, #0 (assuming port 0 for console input)
 		cg.emitImmediate(0)                                    // Port address for input
 	default:
 		// For user-defined functions, lookup the function symbol and CALL its address.
@@ -412,7 +452,7 @@ func (cg *CodeGenerator) generateReturnStmt(s ast.ReturnStmt) {
 	// 2. Deallocating local stack frame.
 	// 3. Emitting a RET instruction.
 	if s.Expr != nil {
-		cg.generateExpr(s.Expr, R0) // Evaluate return value into R0
+		cg.generateExpr(s.Expr, RA) // Evaluate return value into R0
 	}
 	cg.emitInstruction(OP_RET, AM_NO_OPERANDS, -1, -1, -1)
 	cg.addError("Return statement code generation not fully implemented (stack cleanup).")

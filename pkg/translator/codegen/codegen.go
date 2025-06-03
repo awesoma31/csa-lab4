@@ -4,14 +4,9 @@ import (
 	"encoding/binary"
 	"fmt"
 	"regexp"
-	"strings"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 )
-
-// =============================================================================
-// CodeGenerator Structure and Core Methods
-// =============================================================================
 
 const WordSizeBytes = 4
 
@@ -19,8 +14,8 @@ type SymbolEntry struct {
 	Name        string
 	Type        ast.Type
 	MemoryArea  string // "data", "stack", "code" (for functions)
-	AbsAddress  uint32 // Absolute address in data memory or code memory (word-address)
-	FPOffset    int    // Offset from FP for stack variables (in bytes, negative)
+	AbsAddress  uint32 // addr of it in dataMemory
+	FPOffset    int
 	SizeInBytes int
 	NumberValue int32
 	StringValue string
@@ -152,7 +147,7 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 	switch mode {
 	case AM_REG_REG: // reg to reg
 		cg.emitInstruction(OP_MOV, AM_REG_REG, dest, s1, s2)
-	case AM_IMM_REG: // imm to reg; s1=imm
+	case AM_IMM_REG: // imm to reg; s1=imm dest = rd
 		cg.emitInstruction(OP_MOV, AM_IMM_REG, dest, -1, -1)
 		cg.emitImmediate(uint32(s1))
 	case AM_MEM_REG: // mem to reg; s1=addr
@@ -221,52 +216,28 @@ func (cg *CodeGenerator) PatchDebugAssemblyByAddress(targetAddress uint32, newCo
 }
 
 // addString adds a string literal to data memory.
-// It stores: [len(4 bytes)][string_bytes...][padding].
-// The entire block must start at a word-aligned byte-address.
-// TODO: return start of str(len).
-// FIXME: check str len in datamem
+// It stores: [len(1 bytes)][string_bytes...][padding].
+// The entire starts at a word-aligned byte-address.
 func (cg *CodeGenerator) addString(s string) uint32 {
-	//Align current data address to the next word boundary (if not already aligned)
-	currentByteAddr := cg.nextDataAddr
-	alignmentPadding := (WordSizeBytes - int(currentByteAddr%WordSizeBytes)) % WordSizeBytes
-	for range alignmentPadding {
-		cg.dataMemory = append(cg.dataMemory, 0)
+	var strStartAddr uint32 // points to 1st byte of str(len)
+	allignDataMem(cg)
+
+	strStartAddr = cg.nextDataAddr
+	if len(s) > 255 {
+		cg.addError("String too long for Pascal-style string (max 255 characters)")
+		return 0
+	}
+
+	cg.dataMemory = append(cg.dataMemory, byte(len(s)))
+	cg.nextDataAddr++
+	for i := range len(s) {
+		cg.dataMemory = append(cg.dataMemory, s[i])
 		cg.nextDataAddr++
 	}
 
-	// This is the word-aligned byte-address where the string's length word will start
-	stringBlockStartAddr := cg.nextDataAddr
+	allignDataMem(cg)
 
-	strBytes := []byte(strings.Trim(s, `"`))
-
-	// Store length as an uint32 (4 bytes)
-	length := byte(len(strBytes))
-	buf := make([]byte, WordSizeBytes)
-	// binary.LittleEndian.PutUint32(buf, length) // Using LittleEndian for byte order
-	buf = append(buf, length)
-
-	cg.dataMemory = append(cg.dataMemory, buf...)
-	cg.nextDataAddr += 1
-
-	// The address of the actual string characters starts now (this is what the variable will point to)
-	// charStartAddr := cg.nextDataAddr // This might be needed if you want the pointer to point AFTER the length
-
-	// Store string characters (byte by byte)
-	cg.dataMemory = append(cg.dataMemory, strBytes...)
-	cg.nextDataAddr += uint32(len(strBytes))
-
-	// Add padding after the string characters to align the *next* data item
-	// This ensures subsequent data variables also start on a word boundary.
-	remainingBytes := int(cg.nextDataAddr % WordSizeBytes)
-	if remainingBytes != 0 {
-		padding := WordSizeBytes - remainingBytes
-		for range padding {
-			cg.dataMemory = append(cg.dataMemory, 0) // Add padding bytes
-			cg.nextDataAddr++
-		}
-	}
-
-	return stringBlockStartAddr
+	return strStartAddr
 }
 
 // addNumberData adds an uint32 number to data memory.

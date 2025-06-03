@@ -4,7 +4,6 @@ package codegen
 // ISA Definition
 // =============================================================================
 
-// Helper function to combine opcode and addressing mode into the first instruction word
 // Format: [Opcode (8 bits)][Addressing Mode (4 bits)][(3 bits)][RegS1 (3 bits)][RegS2 (3 bits)][Unused (11 bits)]
 // Note: Actual bit packing depends on the mode. Not all fields are always used.
 func encodeInstructionWord(opcode, mode uint32, dest, s1, s2 int) uint32 {
@@ -45,13 +44,13 @@ func encodeInstructionWord(opcode, mode uint32, dest, s1, s2 int) uint32 {
 }
 
 const (
-	R0 = iota
-	R1
-	R2
+	RA = iota
+	RM1
+	RM2
 	R3
 	R4
-	R5
-	R6
+	RPRINT
+	RREAD
 	R7
 
 	// SP_REG Special purpose registers (conceptual, might not be directly addressable by instructions)
@@ -136,6 +135,7 @@ func init() {
 	// ADDRESS MODE MNEMONIC
 	amMnemonics[AM_REG_REG] = "REG_REG"
 	amMnemonics[AM_IMM_REG] = "IMM_REG"
+	amMnemonics[AM_IMM_MEM] = "IMM_MEM"
 	amMnemonics[AM_MEM_ABS_REG] = "MEM_ABS_REG"
 	amMnemonics[AM_REG_MEM_ABS] = "REG_MEM_ABS"
 	amMnemonics[AM_MEM_FP_REG] = "MEM_FP_REG"
@@ -158,10 +158,6 @@ func init() {
 	amMnemonics[AM_JL] = "JL_AM"
 	amMnemonics[AM_JGE] = "JGE_AM"
 	amMnemonics[AM_JLE] = "JLE_AM"
-	// amMnemonics[AM_JA] = "JA_AM"
-	// amMnemonics[AM_JB] = "JB_AM"
-	// amMnemonics[AM_JAE] = "JAE_AM"
-	// amMnemonics[AM_JBE] = "JBE_AM"
 	amMnemonics[AM_JMP_ABS] = "JMP_ABS"
 	amMnemonics[AM_JMP_REG] = "JMP_REG"
 	amMnemonics[AM_JMP_MEM] = "JMP_MEM"
@@ -172,16 +168,16 @@ func init() {
 	amMnemonics[AM_RET_IMM] = "RET_IMM"
 
 	// REGISTER MNEMONIC
-	registerMnemonics[R0] = "R0"
-	registerMnemonics[R1] = "R1"
-	registerMnemonics[R2] = "R2"
+	registerMnemonics[RA] = "RA"
+	registerMnemonics[RM1] = "RM1"
+	registerMnemonics[RM2] = "RM2"
 	registerMnemonics[R3] = "R3"
 	registerMnemonics[R4] = "R4"
-	registerMnemonics[R5] = "R5"
-	registerMnemonics[R6] = "R6"
+	registerMnemonics[RPRINT] = "RPRINT"
+	registerMnemonics[RREAD] = "RREAD"
 	registerMnemonics[R7] = "R7"
-	registerMnemonics[SP_REG] = "SP_REG"
-	registerMnemonics[FP_REG] = "FP_REG"
+	registerMnemonics[SP_REG] = "SP"
+	registerMnemonics[FP_REG] = "FP"
 }
 
 func GetMnemonic(opcode uint32) string {
@@ -231,6 +227,7 @@ const (
 	AM_MATH_R_M_R     uint32 = 0x10 // Math op: Reg, Mem, Reg (ADD rd, rs1, [addr])
 	AM_MATH_M_M_R     uint32 = 0x11 // Math op: Mem, Mem, Reg (ADD rd, [addr1], [addr2])
 
+	//TODO: remove prbly
 	AM_JE  uint32 = 0x12 // Jump if Equal
 	AM_JNE uint32 = 0x13 // Jump if Not Equal
 	AM_JG  uint32 = 0x14 // Jump if Greater (signed)
@@ -253,4 +250,5 @@ const (
 	AM_CALL_MEM uint32 = 0x22 // Call Memory (CALL [addr])
 
 	AM_RET_IMM uint32 = 0x23 // Return with Immediate offset (RET imm)
+	AM_IMM_MEM uint32 = 0x24
 )
