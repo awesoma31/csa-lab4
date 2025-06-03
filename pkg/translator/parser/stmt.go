@@ -116,6 +116,23 @@ func parseFnDeclaration(p *parser) ast.Stmt {
 	}
 }
 
+func parsePrintStmt(p *parser) ast.Stmt {
+	p.expect(lexer.PRINT)
+	p.expect(lexer.OPEN_PAREN)
+
+	arg := parseExpr(p, defaultBp)
+	fmt.Println(arg)
+
+	p.expect(lexer.CLOSE_PAREN)
+	p.expect(lexer.SEMI_COLON)
+
+	return ast.PrintStmt{Argument: arg}
+}
+
+func parseReadStmt(p *parser) ast.Stmt {
+	panic("impl me")
+}
+
 func parseIfStmt(p *parser) ast.Stmt {
 	p.advance()
 	condition := parseExpr(p, assignment)
@@ -136,61 +153,5 @@ func parseIfStmt(p *parser) ast.Stmt {
 		Condition:  condition,
 		Consequent: consequent,
 		Alternate:  alternate,
-	}
-}
-
-// TODO: delete
-func parseImportStmt(p *parser) ast.Stmt {
-	p.advance()
-	var importFrom string
-	importName := p.expect(lexer.IDENTIFIER).Value
-
-	if p.currentTokenKind() == lexer.FROM {
-		p.advance()
-		importFrom = p.expect(lexer.STRING).Value
-	} else {
-		importFrom = importName
-	}
-
-	p.expect(lexer.SEMI_COLON)
-	return ast.ImportStmt{
-		Name: importName,
-		From: importFrom,
-	}
-}
-
-// TODO: delete
-func parseForeachStmt(p *parser) ast.Stmt {
-	p.advance()
-	valueName := p.expect(lexer.IDENTIFIER).Value
-
-	var index bool
-	if p.currentTokenKind() == lexer.COMMA {
-		p.expect(lexer.COMMA)
-		p.expect(lexer.IDENTIFIER)
-		index = true
-	}
-
-	p.expect(lexer.IN)
-	iterable := parseExpr(p, defaultBp)
-	body := ast.ExpectStmt[ast.BlockStmt](parseBlockStmt(p)).Body
-
-	return ast.ForeachStmt{
-		Value:    valueName,
-		Index:    index,
-		Iterable: iterable,
-		Body:     body,
-	}
-}
-
-// TODO: delete
-func parseClassDeclarationStmt(p *parser) ast.Stmt {
-	p.advance()
-	className := p.expect(lexer.IDENTIFIER).Value
-	classBody := parseBlockStmt(p)
-
-	return ast.ClassDeclarationStmt{
-		Name: className,
-		Body: ast.ExpectStmt[ast.BlockStmt](classBody).Body,
 	}
 }

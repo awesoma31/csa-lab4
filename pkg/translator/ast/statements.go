@@ -49,6 +49,19 @@ type IfStmt struct {
 
 func (n IfStmt) stmt() {}
 
+type PrintStmt struct {
+	Argument Expr
+}
+
+func (n PrintStmt) stmt() {}
+
+type ReadStmt struct {
+	//TODO: return
+	Argument Expr
+}
+
+func (n ReadStmt) stmt() {}
+
 type ImportStmt struct {
 	Name string
 	From string

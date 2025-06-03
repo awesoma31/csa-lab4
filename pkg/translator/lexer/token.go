@@ -1,5 +1,7 @@
 package lexer
 
+import "slices"
+
 import "fmt"
 
 type TokenKind int
@@ -77,6 +79,10 @@ const (
 	TYPEOF
 	IN
 
+	PRINT
+	READ
+	QOUTE
+
 	RETURN
 
 	UNKNOWN
@@ -101,6 +107,8 @@ var reservedLu = map[string]TokenKind{
 	"export":  EXPORT,
 	"typeof":  TYPEOF,
 	"in":      IN,
+	"print":   PRINT,
+	"read":    READ,
 }
 
 type Token struct {
@@ -109,13 +117,7 @@ type Token struct {
 }
 
 func (tk Token) IsOneOfMany(expectedTokens ...TokenKind) bool {
-	for _, expected := range expectedTokens {
-		if expected == tk.Kind {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(expectedTokens, tk.Kind)
 }
 
 func (tk Token) Debug() {
@@ -199,7 +201,7 @@ func TokenKindString(kind TokenKind) string {
 	case PLUS:
 		return "plus"
 	case MINUS:
-		return "dash"
+		return "minus"
 	case SLASH:
 		return "slash"
 	case STAR:
@@ -234,6 +236,12 @@ func TokenKindString(kind TokenKind) string {
 		return "export"
 	case IN:
 		return "in"
+	case PRINT:
+		return "print"
+	case READ:
+		return "read"
+	case QOUTE:
+		return `"`
 	default:
 		return fmt.Sprintf("unknown(%d)", kind)
 	}

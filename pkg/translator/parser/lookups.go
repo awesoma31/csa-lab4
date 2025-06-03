@@ -135,12 +135,14 @@ func createTokenLookups() {
 	stmt(lexer.RETURN, parseReturnStmt)
 	stmt(lexer.OPEN_CURLY, parseBlockStmt)
 	stmt(lexer.LET, parseVarDeclStmt)
-	stmt(lexer.CONST, parseVarDeclStmt)
+	// stmt(lexer.CONST, parseVarDeclStmt)
 	stmt(lexer.FN, parseFnDeclaration) // Function Declaration (Statement)
 	stmt(lexer.IF, parseIfStmt)
-	stmt(lexer.IMPORT, parseImportStmt)
-	stmt(lexer.FOREACH, parseForeachStmt)
-	stmt(lexer.CLASS, parseClassDeclarationStmt)
+	// stmt(lexer.IMPORT, parseImportStmt)
+	// stmt(lexer.FOREACH, parseForeachStmt)
+	// stmt(lexer.CLASS, parseClassDeclarationStmt)
+	stmt(lexer.PRINT, parsePrintStmt)
+	stmt(lexer.READ, parseReadStmt)
 }
 
 func parseReturnStmt(p *parser) ast.Stmt {

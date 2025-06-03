@@ -52,13 +52,6 @@ type PrefixExpr struct {
 
 func (n PrefixExpr) expr() {}
 
-// type BoolExpr struct {
-// 	Token lexer.Token
-// 	Value bool
-// }
-//
-// func (n BoolExpr) expr() {}
-
 type MemberExpr struct {
 	Member   Expr
 	Property string

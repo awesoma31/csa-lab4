@@ -1,0 +1,4 @@
+print(3);
+print(a);
+print(b + 1);
+print("a + 2");
