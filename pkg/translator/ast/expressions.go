@@ -26,6 +26,17 @@ type SymbolExpr struct {
 
 func (n SymbolExpr) expr() {}
 
+type ReadExpr struct{}
+
+func (n ReadExpr) expr() {}
+
+// TODO: should be only standalone stmt so remove
+type PrintExpr struct {
+	Argument Expr
+}
+
+func (n PrintExpr) expr() {}
+
 // --------------------
 // Complex Expressions
 // --------------------

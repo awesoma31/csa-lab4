@@ -131,6 +131,12 @@ func createTokenLookups() {
 		}
 	})
 
+	// Built-in fnuctions
+	nud(lexer.PRINT, parsePrintExpr)
+	nud(lexer.READ, parseReadExpr)
+	// stmt(lexer.PRINT, parsePrintStmt)
+	// stmt(lexer.READ, parseReadStmt)
+
 	// Statement handlers
 	stmt(lexer.RETURN, parseReturnStmt)
 	stmt(lexer.OPEN_CURLY, parseBlockStmt)
@@ -141,22 +147,6 @@ func createTokenLookups() {
 	// stmt(lexer.IMPORT, parseImportStmt)
 	// stmt(lexer.FOREACH, parseForeachStmt)
 	// stmt(lexer.CLASS, parseClassDeclarationStmt)
-	stmt(lexer.PRINT, parsePrintStmt)
-	stmt(lexer.READ, parseReadStmt)
-}
-
-func parseReturnStmt(p *parser) ast.Stmt {
-	p.expect(lexer.RETURN)
-
-	var expr ast.Expr
-	if p.currentTokenKind() != lexer.SEMI_COLON {
-		// Return expression can be any valid expression up to `defalt_bp` (lowest)
-		expr = parseExpr(p, defaultBp)
-	}
-
-	p.expect(lexer.SEMI_COLON)
-
-	return ast.ReturnStmt{
-		Expr: expr,
-	}
+	stmt(lexer.PRINT, parsePrintStmt) // This would be for `print("hello");` as a statement
+	// stmt(lexer.READ, parseReadStmt) // if read is standalone
 }

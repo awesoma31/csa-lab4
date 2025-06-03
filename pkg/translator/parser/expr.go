@@ -2,9 +2,11 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
-	"strconv"
 )
 
 // bp is the right binding power limit.
@@ -74,6 +76,21 @@ func parseAssignmentExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp, it'
 	}
 }
 
+func parsePrintExpr(p *parser) ast.Expr {
+	p.expect(lexer.PRINT)
+	p.expect(lexer.OPEN_PAREN)
+	arg := parseExpr(p, defaultBp)
+	p.expect(lexer.CLOSE_PAREN)
+	return ast.PrintExpr{Argument: arg}
+}
+
+func parseReadExpr(p *parser) ast.Expr {
+	p.expect(lexer.READ)
+	p.expect(lexer.OPEN_PAREN)
+	p.expect(lexer.CLOSE_PAREN)
+	return ast.ReadExpr{} // Возвращаем новый AST-узел ReadExpr
+}
+
 // parseRangeExpr handles range operators (e.g., 1..10)
 // TODO: delete
 func parseRangeExpr(p *parser, left ast.Expr) ast.Expr {
@@ -111,8 +128,9 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 			Value: int32(number),
 		}
 	case lexer.STRING:
+		s := strings.Trim(p.advance().Value, `"`)
 		return ast.StringExpr{
-			Value: p.advance().Value,
+			Value: s,
 		}
 	case lexer.IDENTIFIER:
 		return ast.SymbolExpr{

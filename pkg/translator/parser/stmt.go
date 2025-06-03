@@ -121,13 +121,24 @@ func parsePrintStmt(p *parser) ast.Stmt {
 	p.expect(lexer.OPEN_PAREN)
 
 	arg := parseExpr(p, defaultBp)
-	fmt.Println(arg)
+	// fmt.Println(arg) // This is for debugging the parser, not for code generation
 
 	p.expect(lexer.CLOSE_PAREN)
 	p.expect(lexer.SEMI_COLON)
 
 	return ast.PrintStmt{Argument: arg}
 }
+
+// parseReadStmt is removed or commented out because read() is now an expression.
+// If you *do* need `read();` as a standalone statement (which typically returns a value that is then discarded),
+// you would create a ReadStmt node that contains a ReadExpr.
+// func parseReadStmt(p *parser) ast.Stmt {
+// 	p.expect(lexer.READ)
+// 	p.expect(lexer.OPEN_PAREN)
+// 	p.expect(lexer.CLOSE_PAREN)
+// 	p.expect(lexer.SEMI_COLON)
+// 	return ast.ReadStmt{} // Assuming you have a ReadStmt in ast/statements.go
+// }
 
 func parseReadStmt(p *parser) ast.Stmt {
 	panic("impl me")
@@ -153,5 +164,21 @@ func parseIfStmt(p *parser) ast.Stmt {
 		Condition:  condition,
 		Consequent: consequent,
 		Alternate:  alternate,
+	}
+}
+
+func parseReturnStmt(p *parser) ast.Stmt {
+	p.expect(lexer.RETURN)
+
+	var expr ast.Expr
+	if p.currentTokenKind() != lexer.SEMI_COLON {
+		// Return expression can be any valid expression up to `defalt_bp` (lowest)
+		expr = parseExpr(p, defaultBp)
+	}
+
+	p.expect(lexer.SEMI_COLON)
+
+	return ast.ReturnStmt{
+		Expr: expr,
 	}
 }

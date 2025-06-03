@@ -88,6 +88,7 @@ const (
 	UNKNOWN
 )
 
+// RESERVED WRODS FOUND HERE
 var reservedLu = map[string]TokenKind{
 	"true":    TRUE,
 	"false":   FALSE,
@@ -184,8 +185,8 @@ func TokenKindString(kind TokenKind) string {
 		return "semi_colon"
 	case COLON:
 		return "colon"
-	case QUESTION:
-		return "question"
+	// case QUESTION:
+	// 	return "question"
 	case COMMA:
 		return "comma"
 	case PLUS_PLUS:
@@ -210,32 +211,32 @@ func TokenKindString(kind TokenKind) string {
 		return "percent"
 	case LET:
 		return "let"
-	case CONST:
-		return "const"
-	case CLASS:
-		return "class"
-	case NEW:
-		return "new"
-	case IMPORT:
-		return "import"
-	case FROM:
-		return "from"
+	// case CONST:
+	// 	return "const"
+	// case CLASS:
+	// 	return "class"
+	// case NEW:
+	// 	return "new"
+	// case IMPORT:
+	// 	return "import"
+	// case FROM:
+	// 	return "from"
 	case FN:
 		return "fn"
 	case IF:
 		return "if"
 	case ELSE:
 		return "else"
-	case FOREACH:
-		return "foreach"
+	// case FOREACH:
+	// 	return "foreach"
 	case FOR:
 		return "for"
-	case WHILE:
-		return "while"
-	case EXPORT:
-		return "export"
-	case IN:
-		return "in"
+	// case WHILE:
+	// 	return "while"
+	// case EXPORT:
+	// 	return "export"
+	// case IN:
+	// 	return "in"
 	case PRINT:
 		return "print"
 	case READ:

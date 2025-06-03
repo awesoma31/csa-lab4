@@ -208,10 +208,10 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			cg.generateAssignExpr(assign, R0)
 			return
 		default:
-			cg.addError("unimpl default gen var decl ")
+			cg.addError(fmt.Sprintf("unimpl default case of generating var declaration - %T", asVal))
 		}
 	} else {
-		cg.addError(fmt.Sprintf("All variables should be initialized: %s", s.Identifier))
+		cg.addError(fmt.Sprintf("All variables should be initialized: %s - is undefined", s.Identifier))
 		return
 	}
 
