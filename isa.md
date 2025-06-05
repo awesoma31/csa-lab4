@@ -1,14 +1,14 @@
 # DATA MOVEMENTS
 
-| Операция | dest | 1 arg | 2 arg | mnemonic                       | ?                          | code                                | n_words |
-| -------- | ---- | ----- | ----- | ------------------------------ | -------------------------- | ----------------------------------- | ------- |
-| **MOV**  | reg  | reg   | -     | MOV rd, rs                     | rd <- rs                   | [opc+AM_REG_REG+rd+rs]              | 1       |
-|          | reg  | imm   | -     | MOV rd, imm                    | rd <- imm                  | [opc+AM_IMM_REG+rd][imm]            | 2       |
-|          | reg  | ptr   | -     | MOV rd, [addr]                 | rd <- mem[addr1]           | [opc+AM_MEM_REG+rd][addr]           | 2       |
-|          | reg  | offs  |       | MOV rd, [(sp)+offs]            | rd <- mem[sp+offs]         | [opc+AM_SPOFFS_REG+rd+offs(17bits)] | 1       |
-|          |      |       |       |                                |                            |                                     |         |
-|          | mem  | ptr   | ptr   | MOV [dest_addr], [source_addr] | mem[d_addr] <- mem[s_addr] | [opc+AM_MEM_MEM][d_addr][s_addr]    | 3       |
-|          | mem  | reg   |       | MOV [addr], rs                 | mem[d_addr] <- rs          | [opc+AM_REG_MEM+rs][d_addr]         | 2       |
+| Операция | dest | 1 arg | 2 arg | mnemonic                       | ?                          | code                             | n_words |
+| -------- | ---- | ----- | ----- | ------------------------------ | -------------------------- | -------------------------------- | ------- |
+| **MOV**  | reg  | reg   | -     | MOV rd, rs                     | rd <- rs                   | [opc+REG_REG+rd+rs]              | 1       |
+|          | reg  | imm   | -     | MOV rd, imm                    | rd <- imm                  | [opc+IMM_REG+rd][imm]            | 2       |
+|          | reg  | ptr   | -     | MOV rd, [addr]                 | rd <- mem[addr1]           | [opc+MEM_REG+rd][addr]           | 2       |
+|          | reg  | offs  |       | MOV rd, [(sp)+offs]            | rd <- mem[sp+offs]         | [opc+SPOFFS_REG+rd+offs(17bits)] | 1       |
+|          |      |       |       |                                |                            |                                  |         |
+|          | mem  | ptr   | ptr   | MOV [dest_addr], [source_addr] | mem[d_addr] <- mem[s_addr] | [opc+MEM_MEM][d_addr][s_addr]    | 3       |
+|          | mem  | reg   |       | MOV [addr], rs                 | mem[d_addr] <- rs          | [opc+REG_MEM+rs][d_addr]         | 2       |
 
 # MATH
 
@@ -47,11 +47,12 @@
 | Операция | dest | arg1 | arg2 | mnemonic     | Описание             | Кодировка     | n_words |
 | -------- | ---- | ---- | ---- | ------------ | -------------------- | ------------- | ------- |
 | **JMP**  | addr | -    | -    | JMP addr     | PC ← addr            | [opc][addr]   | 2       |
-| **NOP**  |      |      |      |              | NO OPERATION         | [opc]         | 1       |
 | **CMP**  |      | rs1  | rs2  | CMP rs1, rs2 | NZVC <- cmp rs1, rs2 | [opc+rd1+rs2] | 1       |
 | **CALL** | addr | -    | -    | CALL addr    | PUSH PC; PC ← addr   | [opc][addr]   | 2       |
 | **RET**  | -    | -    | -    | RET          | PC ← POP()           | [opc]         | 1       |
+|          |      |      |      |              |                      |               |         |
 | **HALT** |      | -    | -    | HALT         |                      | [opc]         | 1       |
+| **NOP**  |      |      |      |              | NO OPERATION         | [opc]         | 1       |
 |          |      |      |      |              |                      |               |         |
 
 #IO

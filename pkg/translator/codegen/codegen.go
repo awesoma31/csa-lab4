@@ -125,11 +125,12 @@ func (cg *CodeGenerator) addSymbolToScope(entry SymbolEntry) {
 
 // emitInstruction adds an instruction to the instruction memory.
 func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) {
+	//TODO: jmp addr mode
 	instructionWord := encodeInstructionWord(opcode, mode, dest, s1, s2)
 	cg.instructionMemory = append(cg.instructionMemory, instructionWord)
 	cg.debugAssembly = append(
 		cg.debugAssembly,
-		fmt.Sprintf("[0x%04X] - %08X - (Opc: %02s, Mode: %s, D:%s, S1:%s, S2:%s)",
+		fmt.Sprintf("[0x%04X] - %08X - Opc: %02s, Mode: %s, D:%s, S1:%s, S2:%s",
 			cg.nextInstructionAddr,
 			instructionWord,
 			GetMnemonic(opcode),
@@ -145,38 +146,81 @@ func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) 
 func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 	// var instructionWord uint32
 	switch mode {
-	case AM_REG_REG: // reg to reg
-		cg.emitInstruction(OP_MOV, AM_REG_REG, dest, s1, s2)
-	case AM_IMM_REG: // imm to reg; s1=imm dest = rd
-		cg.emitInstruction(OP_MOV, AM_IMM_REG, dest, -1, -1)
+	case MV_REG_REG: // reg to reg
+		cg.emitInstruction(OP_MOV, MV_REG_REG, dest, s1, s2)
+	case MV_IMM_REG: // imm to reg; s1=imm dest = rd
+		cg.emitInstruction(OP_MOV, MV_IMM_REG, dest, -1, -1)
 		cg.emitImmediate(uint32(s1))
-	case AM_MEM_REG: // mem to reg; s1=addr
+	case MV_MEM_REG: // mem to reg; s1=addr
 		cg.emitInstruction(OP_MOV, mode, dest, -1, -1)
 		cg.emitImmediate(uint32(s1))
-	case AM_SPOFFS_REG: // sp+offs to reg
+	case SPOFFS_REG: // sp+offs to reg
 		cg.emitInstruction(OP_MOV, mode, dest, s1, -1)
-	case AM_MEM_MEM: // mem to mem
+	case MV_MEM_MEM: // mem to mem
 		cg.emitInstruction(OP_MOV, mode, -1, -1, -1)
 		cg.emitImmediate(uint32(s1))
 		cg.emitImmediate(uint32(s2))
-	case AM_REG_MEM: // reg to mem; dest=addr, s1=reg
+	case MV_REG_MEM: // reg to mem; dest=addr, s1=reg
 		cg.emitInstruction(OP_MOV, mode, -1, s1, -1)
 		cg.emitImmediate(uint32(dest))
 	}
 	// cg.nextInstructionAddr++
 }
 
+func fits17(v uint32) bool { return v>>17 == 0 }
+
+// port ∈ [0..3] → 2 бита. 19 младших бит — “что угодно” (имм-данные для OUT IMM).
+const IO_NO_IMM_VAL = 0
+
+func encodeIOWord(opcode, mode uint32, port uint8, imm int32) uint32 {
+	if port > 3 {
+		panic("port number must be 0-3")
+	}
+	word := uint32(opcode)<<26 | mode<<21 | uint32(port)<<19
+	if mode == IO_IMM_REG {
+		word |= uint32(imm) & 0x7FFFF // 19 бит
+	}
+	return word
+}
+
+func (cg *CodeGenerator) emitOut(mode uint32, port uint8, value int32) {
+	switch mode {
+	case IO_MEM_REG:
+		cg.emitOutMemReg(port)
+	case IO_IMM_REG:
+		cg.emitOutImm(port, value)
+	}
+
+}
+
+// ───────────────────────── OUT ──────────────────────────
+func (cg *CodeGenerator) emitOutMemReg(port uint8) {
+	word := encodeIOWord(OP_OUT, IO_MEM_REG, port, IO_NO_IMM_VAL)
+	cg.instructionMemory = append(cg.instructionMemory, word)
+	cg.debugAssembly = append(cg.debugAssembly,
+		fmt.Sprintf("[0x%04X] - %08X - Opc: OUT mem[R_OUT_ADDR]->(R_OUT_DATA)->port[%d]", cg.nextInstructionAddr, word, port))
+	cg.nextInstructionAddr++
+}
+
+func (cg *CodeGenerator) emitOutImm(port uint8, value int32) {
+	word := encodeIOWord(OP_OUT, IO_IMM_REG, port, value)
+	cg.instructionMemory = append(cg.instructionMemory, word)
+	cg.debugAssembly = append(cg.debugAssembly,
+		fmt.Sprintf("[0x%04X] OUT #%d → port[%d]  0x%08X", cg.nextDataAddr, value, port, word))
+	cg.nextInstructionAddr++
+}
+
 // emitImmediate adds an immediate value as an operand to the instruction memory.
 func (cg *CodeGenerator) emitImmediate(value uint32) {
 	cg.instructionMemory = append(cg.instructionMemory, value)
-	cg.debugAssembly = append(cg.debugAssembly, fmt.Sprintf("[0x%04X] - %08X - (Imm)", cg.nextInstructionAddr, value))
+	cg.debugAssembly = append(cg.debugAssembly, fmt.Sprintf("[0x%04X] - %08X - Imm", cg.nextInstructionAddr, value))
 	cg.nextInstructionAddr++
 }
 
 // ReserveWord reserves space for a word in instruction memory and returns its address.
 func (cg *CodeGenerator) ReserveWord() uint32 {
 	addr := cg.nextInstructionAddr
-	cg.emitInstruction(OP_NOP, AM_NO_OPERANDS, -1, -1, -1) // Emit a NOP
+	cg.emitInstruction(OP_NOP, NO_OPERANDS, -1, -1, -1) // Emit a NOP
 	//   TODO: should it nextInstructionAddr++?
 	return addr
 }

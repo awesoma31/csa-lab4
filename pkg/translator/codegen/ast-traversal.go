@@ -36,16 +36,15 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 
 // generatePrintStmt handles PrintStmt (if `print` can be a statement like `print("hello world");`).
 func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
-	cg.generateExpr(s.Argument, RPRINT) // str addr is in RPRINT [len]byte
+	cg.generateExpr(s.Argument, R_OUT_ADDR) // str addr is in R_OUT_ADDR [len]byte
 	switch arg := s.Argument.(type) {
 	case ast.StringExpr:
 		strLen := len(arg.Value)
-		cg.emitInstruction(OP_ADD, MATH_R_I_R, RPRINT, RPRINT, -1) // RPRINT is ptr to the 1 char
-		cg.emitImmediate(1)
 		for range strLen {
-			cg.emitInstruction(OP_OUT, AM_SINGLE_REG, RPRINT, -1, -1)  // char mem[RPRINT] to out
-			cg.emitInstruction(OP_ADD, MATH_R_I_R, RPRINT, RPRINT, -1) // RPRINT++
+			cg.emitInstruction(OP_ADD, MATH_R_I_R, R_OUT_ADDR, R_OUT_ADDR, -1) // R_OUT_ADDR points to string 1 byte
 			cg.emitImmediate(1)
+			var port uint8 = 0
+			cg.emitOut(IO_MEM_REG, port, IO_NO_IMM_VAL)
 		}
 	case ast.SymbolExpr:
 		panic("print var not implemented")
@@ -63,16 +62,16 @@ func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
 func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 	switch e := expr.(type) {
 	case ast.NumberExpr:
-		cg.emitMov(AM_IMM_REG, rd, int(e.Value), -1)
+		cg.emitMov(MV_IMM_REG, rd, int(e.Value), -1)
 
 	case ast.BinaryExpr:
 		//TODO: check push
 		cg.generateExpr(e.Left, RM1)
-		cg.emitInstruction(OP_PUSH, AM_SINGLE_REG, RM1, -1, -1)
+		cg.emitInstruction(OP_PUSH, SINGLE_REG, RM1, -1, -1)
 
 		cg.generateExpr(e.Right, RM2)
 
-		cg.emitInstruction(OP_POP, AM_SINGLE_REG, RM1, -1, -1)
+		cg.emitInstruction(OP_POP, SINGLE_REG, RM1, -1, -1)
 
 		var opcode uint32
 		switch e.Operator.Kind {
@@ -92,24 +91,24 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 			return
 		}
 		// TODO: check addres mode
-		cg.emitInstruction(opcode, AM_REG_REG, rd, RM1, RM2) // R0 = R1 op R0
+		cg.emitInstruction(opcode, MV_REG_REG, rd, RM1, RM2) // R0 = R1 op R0
 
 	case ast.SymbolExpr: // Для чтения значения переменной
 		symbol, found := cg.lookupSymbol(e.Value)
 		if !found {
 			cg.addError(fmt.Sprintf("Undeclared variable in assign expr: %s", e.Value))
 			if rd != -1 {
-				cg.emitInstruction(OP_MOV, AM_IMM_REG, rd, -1, -1)
+				cg.emitInstruction(OP_MOV, MV_IMM_REG, rd, -1, -1)
 				cg.emitImmediate(0) // Загрузить 0 в rd для восстановления
 			}
 			return
 		}
 		if symbol.MemoryArea == "data" {
-			cg.emitInstruction(OP_MOV, AM_MEM_REG, rd, -1, -1) // MOV rd, [symbol_addr] // rd<-var
+			cg.emitInstruction(OP_MOV, MV_MEM_REG, rd, -1, -1) // MOV rd, [symbol_addr] // rd<-var
 			cg.emitImmediate(symbol.AbsAddress)
 		} else if symbol.MemoryArea == "stack" {
 			//TODO:
-			// cg.emitInstruction(OP_MOV, AM_MEM_FP_REG, rd, -1, -1) // LDR rd, [FP + offset]
+			// cg.emitInstruction(OP_MOV, MEM_FP_REG, rd, -1, -1) // LDR rd, [FP + offset]
 			// cg.emitImmediate(uint32(symbol.FPOffset))
 		} else {
 			cg.addError(fmt.Sprintf("Unknown memory area for symbol '%s': %s", symbol.Name, symbol.MemoryArea))
@@ -154,7 +153,7 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 
 func (cg *CodeGenerator) generateReadExpr() {
 	panic("impl me assign o read()")
-	cg.emitInstruction(OP_IN, AM_SINGLE_REG, RREAD, -1, -1)
+	cg.emitInstruction(OP_IN, SINGLE_REG, R_IN_ADDR, -1, -1)
 }
 
 func (cg *CodeGenerator) generatePrintExpr(e ast.PrintExpr) {
@@ -249,9 +248,9 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			cg.addSymbolToScope(symbolEntry)
 			cg.generateReadExpr()
 
-			cg.emitMov(AM_IMM_REG, RA, 1, -1)            // imm to reg; s1=imm dest = rd
-			cg.emitMov(AM_REG_MEM, int(strAddr), RA, -1) // reg to mem; dest=addr, s1=reg
-			cg.emitMov(AM_REG_MEM, int(strAddr+1), RREAD, -1)
+			cg.emitMov(MV_IMM_REG, RA, 1, -1)            // imm to reg; s1=imm dest = rd
+			cg.emitMov(MV_REG_MEM, int(strAddr), RA, -1) // reg to mem; dest=addr, s1=reg
+			cg.emitMov(MV_REG_MEM, int(strAddr+1), R_IN_ADDR, -1)
 			return
 
 		case ast.BinaryExpr:
@@ -326,12 +325,14 @@ func (cg *CodeGenerator) generateAssignExpr(e ast.AssignmentExpr, rd int) {
 		// Store the value from rd into the variable's memory location based on MemoryArea
 		if symbol.MemoryArea == "data" { // Global variable
 			// MOV [absolute_byte_address], rd
-			cg.emitInstruction(OP_MOV, AM_REG_MEM_ABS, -1, rd, -1)
+			cg.emitInstruction(OP_MOV, MV_REG_MEM_ABS, -1, rd, -1)
 			cg.emitImmediate(symbol.AbsAddress) // Absolute byte-address operand (must be word-aligned)
 		} else if symbol.MemoryArea == "stack" { // Local variable (on the stack)
+			//TODO:
+
 			// MOV [FP+offset_in_bytes], rd
-			cg.emitInstruction(OP_MOV, AM_REG_MEM_FP, -1, rd, -1)
-			cg.emitImmediate(uint32(symbol.FPOffset)) // Byte-offset from FP as operand (must be word-aligned)
+			// cg.emitInstruction(OP_MOV, REG_MEM_FP, -1, rd, -1)
+			// cg.emitImmediate(uint32(symbol.FPOffset)) // Byte-offset from FP as operand (must be word-aligned)
 		} else {
 			cg.addError(fmt.Sprintf("Unknown memory area for symbol '%s': %s", symbol.Name, symbol.MemoryArea))
 			return
@@ -389,7 +390,7 @@ func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) {
 	default:
 		jmpToAltOpc = OP_JMP
 	}
-	cg.emitInstruction(jmpToAltOpc, AM_JMP_ABS, -1, -1, -1)
+	cg.emitInstruction(jmpToAltOpc, 0, -1, -1, -1)
 	addrToPatchElse := cg.nextInstructionAddr
 	cg.emitImmediate(0)
 
@@ -398,7 +399,7 @@ func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) {
 
 	var addrOfAddrToJumpAfterElse uint32 = 4294967295
 	if s.Alternate != nil {
-		cg.emitInstruction(OP_JMP, AM_JMP_ABS, -1, -1, -1)
+		cg.emitInstruction(OP_JMP, 0, -1, -1, -1)
 		addrOfAddrToJumpAfterElse = cg.nextInstructionAddr
 		cg.emitImmediate(0)
 	}
@@ -426,7 +427,7 @@ func (cg *CodeGenerator) generateStringExpr(e ast.StringExpr, rd int) {
 	// Store string in data memory and load its byte-address (pointer) into R0.
 	stringAddr := cg.addString(e.Value) // addString handles writing string to dataMemory (bytes) and alignment
 
-	cg.emitInstruction(OP_MOV, AM_IMM_REG, rd, -1, -1) // MOV R0, #string_byte_address
+	cg.emitInstruction(OP_MOV, MV_IMM_REG, rd, -1, -1) // MOV R0, #string_byte_address
 	cg.emitImmediate(stringAddr)                       // Emit the byte-address as an immediate word
 }
 
@@ -437,9 +438,9 @@ func (cg *CodeGenerator) generateUnaryExpr(e ast.PrefixExpr, rd int) {
 
 	switch e.Operator.Kind { // Access Kind from lexer.Token
 	case lexer.MINUS: // Unary negation (minus sign)
-		cg.emitInstruction(OP_NEG, AM_SINGLE_REG, rd, -1, -1)
+		cg.emitInstruction(OP_NEG, SINGLE_REG, rd, -1, -1)
 	case lexer.NOT: // Logical NOT
-		cg.emitInstruction(OP_NOT, AM_SINGLE_REG, rd, -1, -1)
+		cg.emitInstruction(OP_NOT, SINGLE_REG, rd, -1, -1)
 	default:
 		cg.addError(fmt.Sprintf("Unsupported unary operator: %s", e.Operator.Value)) // Use Operator.Value
 	}
@@ -466,16 +467,16 @@ func (cg *CodeGenerator) generateCallExpr(e ast.CallExpr) {
 			cg.addError("Print function expects exactly one argument.")
 			return
 		}
-		cg.generateExpr(e.Arguments[0], RA)                     // Evaluate argument, result in R0 (should contain value or string address)
-		cg.emitInstruction(OP_OUT, AM_REG_PORT_IMM, -1, RA, -1) // OUT #0, R0 (assuming port 0 for console output)
-		cg.emitImmediate(0)                                     // Port address for output
+		cg.generateExpr(e.Arguments[0], RA)                  // Evaluate argument, result in R0 (should contain value or string address)
+		cg.emitInstruction(OP_OUT, OUT_REG_PORT, -1, RA, -1) // OUT #0, R0 (assuming port 0 for console output)
+		cg.emitImmediate(0)                                  // Port address for output
 	case "input":
 		if len(e.Arguments) != 0 {
 			cg.addError("Input function expects no arguments.")
 			return
 		}
-		cg.emitInstruction(OP_IN, AM_IMM_PORT_REG, RA, -1, -1) // IN R0, #0 (assuming port 0 for console input)
-		cg.emitImmediate(0)                                    // Port address for input
+		cg.emitInstruction(OP_IN, IN_PORT_REG, RA, -1, -1) // IN R0, #0 (assuming port 0 for console input)
+		cg.emitImmediate(0)                                // Port address for input
 	default:
 		// For user-defined functions, lookup the function symbol and CALL its address.
 		cg.addError(fmt.Sprintf("Unsupported or undeclared function call: %s", calleeName))
@@ -507,6 +508,6 @@ func (cg *CodeGenerator) generateReturnStmt(s ast.ReturnStmt) {
 	if s.Expr != nil {
 		cg.generateExpr(s.Expr, RA) // Evaluate return value into R0
 	}
-	cg.emitInstruction(OP_RET, AM_NO_OPERANDS, -1, -1, -1)
+	cg.emitInstruction(OP_RET, NO_OPERANDS, -1, -1, -1)
 	cg.addError("Return statement code generation not fully implemented (stack cleanup).")
 }
