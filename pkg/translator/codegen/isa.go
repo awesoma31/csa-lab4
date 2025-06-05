@@ -138,7 +138,8 @@ func init() {
 	amMnemonics[AM_IMM_MEM] = "IMM_MEM"
 	amMnemonics[AM_MEM_ABS_REG] = "MEM_ABS_REG"
 	amMnemonics[AM_REG_MEM_ABS] = "REG_MEM_ABS"
-	amMnemonics[AM_MEM_FP_REG] = "MEM_FP_REG"
+	//TODO:
+	// amMnemonics[AM_MEM_FP_REG] = "MEM_FP_REG"
 	amMnemonics[AM_REG_MEM_FP] = "REG_MEM_FP"
 	amMnemonics[AM_SINGLE_REG] = "SINGLE_REG"
 	amMnemonics[AM_IMM_PORT_REG] = "IMM_PORT_REG"
@@ -149,9 +150,10 @@ func init() {
 	amMnemonics[AM_SPOFFS_REG] = "SPOFFS_REG"
 	amMnemonics[AM_MEM_MEM] = "MEM_MEM"
 	amMnemonics[AM_REG_MEM] = "REG_MEM"
-	amMnemonics[AM_MATH_R_R_R_REG] = "MATH_R_R_R_REG"
-	amMnemonics[AM_MATH_R_M_R] = "MATH_R_M_R"
-	amMnemonics[AM_MATH_M_M_R] = "MATH_M_M_R"
+	amMnemonics[MATH_R_R_R] = "MATH_R_R_R"
+	amMnemonics[MATH_R_M_R] = "MATH_R_M_R"
+	amMnemonics[MATH_M_M_R] = "MATH_M_M_R"
+	amMnemonics[MATH_R_I_R] = "MATH_R_I_R"
 	amMnemonics[AM_JE] = "JE_AM"
 	amMnemonics[AM_JNE] = "JNE_AM"
 	amMnemonics[AM_JG] = "JG_AM"
@@ -206,11 +208,11 @@ func GetRegisterMnemonic(reg int) string {
 
 // Addressing Mode / Operand Type constants (4 bits: 0x0 - 0xF)
 const (
-	AM_REG_REG      uint32 = 0x0 // Register to Register (e.g., ADD R0, R1)
-	AM_IMM_REG      uint32 = 0x1 // Immediate to Register (e.g., MOV R0, #123)
-	AM_MEM_ABS_REG  uint32 = 0x2 // Absolute Memory to Register (e.g., MOV R0, [0x1000])
-	AM_REG_MEM_ABS  uint32 = 0x3 // Register to Absolute Memory (e.g., MOV [0x1000], R0)
-	AM_MEM_FP_REG   uint32 = 0x4 // FP+Offset Memory to Register (e.g., MOV R0, [FP+8])
+	AM_REG_REG     uint32 = 0x0 // Register to Register (e.g., ADD R0, R1)
+	AM_IMM_REG     uint32 = 0x1 // Immediate to Register (e.g., MOV R0, #123)
+	AM_MEM_ABS_REG uint32 = 0x2 // Absolute Memory to Register (e.g., MOV R0, [0x1000])
+	AM_REG_MEM_ABS uint32 = 0x3 // Register to Absolute Memory (e.g., MOV [0x1000], R0)
+	// AM_MEM_FP_REG   uint32 = 0x4 // FP+Offset Memory to Register (e.g., MOV R0, [FP+8])
 	AM_REG_MEM_FP   uint32 = 0x5 // Register to FP+Offset Memory (e.g., MOV [FP+8], R0)
 	AM_SINGLE_REG   uint32 = 0x6 // Single Register operand (e.g., PUSH R0, NEG R0)
 	AM_IMM_PORT_REG uint32 = 0x7 // Immediate (port number) to Register (e.g., IN R0, #PORT_ID)
@@ -223,11 +225,12 @@ const (
 	AM_MEM_MEM    uint32 = 0xD // Memory to Memory (MOV [dest_addr], [source_addr])
 	AM_REG_MEM    uint32 = 0xE // Register to Memory (MOV [addr], rs)
 
-	AM_MATH_R_R_R_REG uint32 = 0xF  // Math op: Reg, Reg, Reg (ADD rd, rs1, rs2) - This is a placeholder, needs careful bit packing for 3 regs
-	AM_MATH_R_M_R     uint32 = 0x10 // Math op: Reg, Mem, Reg (ADD rd, rs1, [addr])
-	AM_MATH_M_M_R     uint32 = 0x11 // Math op: Mem, Mem, Reg (ADD rd, [addr1], [addr2])
+	MATH_R_R_R uint32 = 0x1 // Math op: Reg, Reg, Reg (ADD rd, rs1, rs2) - This is a placeholder, needs careful bit packing for 3 regs
+	MATH_R_M_R uint32 = 0x2 // Math op: Reg, Mem, Reg (ADD rd, rs1, [addr])
+	MATH_M_M_R uint32 = 0x3 // Math op: Mem, Mem, Reg (ADD rd, [addr1], [addr2])
+	MATH_R_I_R uint32 = 0x4
 
-	//TODO: remove prbly
+	//FIXME: размерность
 	AM_JE  uint32 = 0x12 // Jump if Equal
 	AM_JNE uint32 = 0x13 // Jump if Not Equal
 	AM_JG  uint32 = 0x14 // Jump if Greater (signed)

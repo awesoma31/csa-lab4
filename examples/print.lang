@@ -1,4 +1,4 @@
-print(3);
-print(a);
-print(a + 3);
-print("a + 2");
+//let a = "hello world";
+//print(a);
+
+print("hello world");

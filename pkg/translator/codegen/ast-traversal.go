@@ -34,10 +34,29 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 	}
 }
 
-// generatePrintStmt handles PrintStmt (if `print` can be a statement like `print("hello");`).
+// generatePrintStmt handles PrintStmt (if `print` can be a statement like `print("hello world");`).
 func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
-	cg.generateExpr(s.Argument, RPRINT)
-	cg.emitInstruction(OP_OUT, AM_SINGLE_REG, RPRINT, -1, -1)
+	cg.generateExpr(s.Argument, RPRINT) // str addr is in RPRINT [len]byte
+	switch arg := s.Argument.(type) {
+	case ast.StringExpr:
+		strLen := len(arg.Value)
+		cg.emitInstruction(OP_ADD, MATH_R_I_R, RPRINT, RPRINT, -1) // RPRINT is ptr to the 1 char
+		cg.emitImmediate(1)
+		for range strLen {
+			cg.emitInstruction(OP_OUT, AM_SINGLE_REG, RPRINT, -1, -1)  // char mem[RPRINT] to out
+			cg.emitInstruction(OP_ADD, MATH_R_I_R, RPRINT, RPRINT, -1) // RPRINT++
+			cg.emitImmediate(1)
+		}
+	case ast.SymbolExpr:
+		panic("print var not implemented")
+		// val, found := cg.currentScope().Symbols()[arg.Value]
+		// if !found {
+		// 	cg.addError(fmt.Sprintf("could not find variable %s in scope", arg.Value))
+		// }
+		//TODO:
+
+	}
+
 }
 
 // generateExpr generates code for a given expression, leaving its result in specified register.
@@ -90,8 +109,8 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 			cg.emitImmediate(symbol.AbsAddress)
 		} else if symbol.MemoryArea == "stack" {
 			//TODO:
-			cg.emitInstruction(OP_MOV, AM_MEM_FP_REG, rd, -1, -1) // LDR rd, [FP + offset]
-			cg.emitImmediate(uint32(symbol.FPOffset))
+			// cg.emitInstruction(OP_MOV, AM_MEM_FP_REG, rd, -1, -1) // LDR rd, [FP + offset]
+			// cg.emitImmediate(uint32(symbol.FPOffset))
 		} else {
 			cg.addError(fmt.Sprintf("Unknown memory area for symbol '%s': %s", symbol.Name, symbol.MemoryArea))
 		}
@@ -101,7 +120,24 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 		// panic("impl me StringExpr")
 		cg.generateStringExpr(e, rd) // Обновление: передаем rd
 	case ast.PrefixExpr: // Для унарных операторов
-		cg.generateUnaryExpr(e, rd) // Обновление: передаем rd
+		newExpr := ast.NumberExpr{}
+		switch a := e.Right.(type) {
+		case ast.NumberExpr:
+			switch e.Operator.Kind {
+			case lexer.MINUS:
+				newExpr.Value = -a.Value
+			case lexer.PLUS:
+				newExpr.Value = a.Value
+			default:
+				cg.addError(fmt.Sprintf("unknown unary prefix %v", e.Operator.Kind))
+				return
+			}
+			cg.generateExpr(newExpr, rd)
+
+		default:
+			panic("unimpl prefix functionality, only unary with numbers work for now")
+		}
+		// cg.generateUnaryExpr(e, rd) // Обновление: передаем rd
 	case ast.CallExpr: // Для вызовов функций
 		cg.generateCallExpr(e) // Обновление: передаем rd
 	case ast.AssignmentExpr: // Для выражений присваивания
@@ -109,6 +145,7 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 	case ast.PrintExpr: // Обработка выражения Print
 		cg.generatePrintExpr(e) // Вызываем тот же генератор, что и для PrintStmt
 	case ast.ReadExpr: // <-- НОВОЕ: Обработка выражения ReadExpr
+		//TODO: var then should store ptr to string
 		cg.generateReadExpr()
 	default:
 		cg.addError(fmt.Sprintf("Unsupported expression type: %T", e))
@@ -116,6 +153,7 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 }
 
 func (cg *CodeGenerator) generateReadExpr() {
+	panic("impl me assign o read()")
 	cg.emitInstruction(OP_IN, AM_SINGLE_REG, RREAD, -1, -1)
 }
 
@@ -192,13 +230,6 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 				//TODO:
 			}
 			cg.addSymbolToScope(symbolEntry)
-
-			// Generate code to assign the initial value. This happens after symbol is added.
-			// assignExpr := ast.AssignmentExpr{
-			// 	Assigne:       ast.SymbolExpr{Value: s.Identifier},
-			// 	AssignedValue: s.AssignedValue,
-			// }
-			// cg.generateAssignExpr(assignExpr, RA)
 		case ast.ReadExpr:
 			strAddr := cg.addString("") // reserve space for reading 1 char
 			ptrAddr := cg.addNumberData(int32(strAddr))
@@ -246,7 +277,29 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			}
 			cg.generateAssignExpr(assign, RA)
 			return
+		case ast.PrefixExpr:
+			//TODO: for now movs expr to placeholder
+			symbolEntry.Type = ast.IntType
+			symbolEntry.SizeInBytes = WordSizeBytes
 
+			if len(cg.scopeStack) == 1 { // global
+				symbolEntry.MemoryArea = "data"
+				symbolEntry.AbsAddress = cg.addNumberData(0) // placeholder = 0
+			} else { // local
+				// TODO:stack
+				/* аналогичный код для stack-переменных */
+			}
+
+			cg.addSymbolToScope(symbolEntry)
+
+			assign := ast.AssignmentExpr{
+				Assigne:       ast.SymbolExpr{Value: s.Identifier},
+				AssignedValue: s.AssignedValue,
+			}
+			cg.generateAssignExpr(assign, RA)
+			return
+
+			// cg.generateExpr(assignedVal, RA)
 		default:
 			cg.addError(fmt.Sprintf("unknown case of generating var declaration - %T", assignedVal))
 		}

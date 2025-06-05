@@ -14,10 +14,10 @@
 
 | Операция | dest | 1 arg | 2 arg | mnemonic                 | ?                             | code                                 | n_words |
 | -------- | ---- | ----- | ----- | ------------------------ | ----------------------------- | ------------------------------------ | ------- |
-| **ADD**  | reg  | rs1   | rs2   | ADD rd, rs1, rs2         | rd <- rs1+rs2                 | [opc+AM_MATH_R_R_R_REG+rd+rs1+rs2]   | 1       |
+| **ADD**  | reg  | rs1   | rs2   | ADD rd, rs1, rs2         | rd <- rs1+rs2                 | [opc+AM_MATH_R_R_R+rd+rs1+rs2]       | 1       |
 |          | reg  | rs1   | addr  | ADD rd, rs1, [addr]      | rd <- rs1 + mem[addr]         | [opc+AM_MATH_R_M_R+rd+rs1][addr]     | 2       |
 |          | reg  | addr1 | addr2 | ADD rd, [addr1], [addr2] | rd <- mem[addr1] + mem[add2]  | [opc+AM_MATH_M_M_R+rs][addr1][addr2] | 3       |
-|          |      |       |       |                          |                               |                                      |         |
+|          | reg  | reg   | imm   | ADD rd, rs1, imm         | rd <- rs1 + imm               | [opc+AM_MATH_R_I_R+rd+rs1][imm]      | 2       |
 | **SUB**  | reg  | rs1   | rs2   | SUB rd, rs1, rs2         | rd <- rs1 - rs2               | [opc+AM_MATH_R_R_R_REG+rd+rs1+rs2]   | 1       |
 |          | reg  | rs1   | addr  | SUB rd, rs1, [addr]      | rd <- rs1 - mem[addr]         | [opc+AM_MATH_R_M_R+rd+rs1][addr]     | 2       |
 |          | reg  | addr1 | addr2 | SUB rd, [addr1], [addr2] | rd <- mem[addr1] - mem[add2]  | [opc+AM_MATH_M_M_R+rs][addr1][addr2] | 3       |
@@ -58,3 +58,10 @@
 |          | imm    | -    | -    | RET imm      | PC ← POP(); SP += imm   | [opc+AM_RET_IMM][imm]   | 2       |
 | **HALT** |        | -    | -    | HALT         |                         | [opc]                   | 1       |
 |          |        |      |      |              |                         |                         |         |
+
+#IO
+
+| Операция | dest | arg1 | arg2 | mnemonic                    | Описание | Кодировка | n_words |
+| -------- | ---- | ---- | ---- | --------------------------- | -------- | --------- | ------- |
+| **OUT**  | -    | -    | -    | sends mem[RPRINT] to output |          | [opc]     | 1       |
+| **IN**   | -    | -    | -    |                             |          | [opc]     | 1       |

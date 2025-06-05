@@ -1,4 +1,3 @@
-let a = 123;
-let b = 456; 
+let plu = 456; 
 let str = "biba";
-
+let minu = -1;
