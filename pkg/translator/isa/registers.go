@@ -2,10 +2,10 @@ package isa
 
 // ──────────────────────── registers (4 bits) ─────────────────
 const (
-	RA = iota
+	RA = iota // 1
 	RM1
 	RM2
-	R3
+	RAddr
 	R4
 	ROutAddr
 	ROutData
@@ -15,5 +15,7 @@ const (
 	SpReg
 	FpReg
 	R5
-	ZERO
+	ZERO        //14
+	ONE         // 15
+	placeholder // 16
 )

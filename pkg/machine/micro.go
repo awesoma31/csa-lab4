@@ -2,7 +2,6 @@ package machine
 
 import (
 	"fmt"
-	"log/slog"
 	"os"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
@@ -10,114 +9,127 @@ import (
 
 type microStep func(c *CPU) bool // true → macro-instruction done
 
+const (
+	opcodesMaxAmount = 64 // 6 bit opcode
+	modesMaxAmount   = 32 // 5 bit
+)
+
 // [opcode][mode] → factory(rd,rs1,rs2)→microStep
-var ucode [64][32]func(int, int, int) microStep
+var ucode [opcodesMaxAmount][modesMaxAmount]func(int, int, int) microStep
 
 func init() {
 	// ─── NOP (single tick) ───────────────────────────────
-	ucode[isa.OpNop][isa.NoOperands] = func(_, _, _ int) microStep {
-		return func(c *CPU) bool {
-			c.reg.PC++
-			return true
-		}
-	}
-
-	// HALT
+	ucode[isa.OpNop][isa.NoOperands] = uNop
 	ucode[isa.OpHalt][isa.NoOperands] = uHalt
-	// func(i1, i2, i3 int) microStep {
-	// 	fmt.Printf("Opc: %s\n", isa.GetMnemonic(isa.OpHalt))
-	// 	return func(c *CPU) bool {
-	// 		slog.Info("HALT, stopping simulation")
-	// 		os.Exit(0)
-	// 		return true
-	// 	}
-	// }
 
 	// ─── MOV rd, [memAbs] (2 words, 3 ticks) ─────────────
-	// ucode[isa.OpMov][isa.MvMemReg] = func(rd, _, _ int) microStep {
-	// 	stage := 0
-	// 	var addr uint32
-	// 	return func(c *CPU) bool {
-	// 		switch stage {
-	// 		case 0: // T0 – fetch 2-nd word
-	// 			c.reg.PC++
-	// 			addr = c.memI[c.reg.PC]
-	// 			stage = 1
-	// 		case 1: // T1 – memory read
-	// 			c.tmp = c.memD[addr]
-	// 			stage = 2
-	// 		case 2: // T2 – write-back, PC advance
-	// 			//TODO: read 4 bytes
-	// 			c.reg.GPR[rd] = uint32(c.tmp)
-	// 			c.reg.PC += 2
-	// 			return true
-	// 		}
-	// 		return false
-	// 	}
-	// }
-	// ucode[isa.OpMov][isa.MvImmReg] = uMovImmReg
-	// ucode[isa.OpMov][isa.MvRegReg] = uMovRegReg
+	ucode[isa.OpMov][isa.MvMemReg] = uMovMemReg
+	ucode[isa.OpMov][isa.MvImmReg] = uMovImmReg
+	ucode[isa.OpMov][isa.MvRegReg] = uMovRegReg
 
-	// ─── IN rd, #port (single-word, single-tick) ─────────
-	// ucode[isa.OpIn][InPortReg] = func(rd, _, _ int) microStep {
-	// 	return func(c *CPU) bool {
-	// 		port := int((c.reg.IR >> 9) & 0xF)
-	// 		val := c.io.Devs[port].Load()
-	// 		c.reg.GPR[rd] = val
-	// 		c.reg.PC++
-	// 		return true
-	// 	}
-	// }
+}
 
-	// OUT #port, rs (single tick)
-	// ucode[isa.OpOut][OutRegPort] = func(_, rs, _ int) microStep {
-	// 	return func(c *CPU) bool {
-	// 		port := int((c.reg.IR >> 9) & 0xF)
-	// 		c.io.Devs[port].Store(byte(c.reg.GPR[rs]))
-	// 		c.reg.PC++
-	// 		return true
-	// 	}
-	// }
+func uNop(_, _, _ int) microStep {
+	return func(c *CPU) bool {
+		fmt.Printf("TICK %d - NOP, PC++\n", c.tick)
+		c.reg.PC++
+		return true
+	}
 }
 
 func uHalt(_ int, _ int, _ int) microStep {
 	return func(c *CPU) bool {
-		slog.Info("HALT, stopping simulation")
+		fmt.Println("simultaion stopped")
 		os.Exit(0)
 		return true
 	}
 }
-func uMovImmReg(rd int, _ int, _ int) microStep {
-	// fmt.Println("MV IMM REG DECODED")
+
+//	func uMovMemReg(rd, _, _ int) microStep {
+//		stage := 0
+//		var b [4]byte
+//		return func(c *CPU) bool {
+//			switch stage {
+//			case 0: // T0 – fetch 2-nd word (адрес)
+//				c.reg.PC++
+//				c.reg.GPR[isa.RAddr] = c.memI[c.reg.PC]
+//				stage++
+//			case 1: // T1 – read byte 0
+//				b[0] = c.memD[c.reg.GPR[isa.RAddr]]
+//				stage++
+//			case 2: // T2 – read byte 1
+//				b[1] = c.memD[c.reg.GPR[isa.RAddr]+1]
+//				stage++
+//			case 3: // T3 – read byte 2
+//				b[2] = c.memD[c.reg.GPR[isa.RAddr]+2]
+//				stage++
+//			case 4: // T4 – read byte 3
+//				b[3] = c.memD[c.reg.GPR[isa.RAddr]+3]
+//				stage++
+//			case 5: // T5 – assemble and write back
+//				val := uint32(b[0]) | uint32(b[1])<<8 | uint32(b[2])<<16 | uint32(b[3])<<24
+//				c.reg.GPR[rd] = val
+//				c.reg.PC++
+//				return true
+//			}
+//			return false
+//		}
+//	}
+func uMovMemReg(rd, _, _ int) microStep {
 	stage := 0
-	var addr uint32
 	return func(c *CPU) bool {
 		switch stage {
-		case 0: // T0 – fetch 2-nd word
-			fmt.Println("MV stage 0")
+		case 0: // fetch addr
 			c.reg.PC++
-			addr = c.memI[c.reg.PC]
-			stage = 1
-		case 1: // T1 – memory read
-			fmt.Println("MV stage 1")
-			c.tmp = c.memD[addr]
-			stage = 2
-		case 2: // T2 – write-back, PC advance
-			fmt.Println("MV stage 2")
-			//TODO: read 4 bytes
-			c.reg.GPR[rd] = uint32(c.tmp)
-			c.reg.PC += 2
-			return true
+			c.reg.GPR[isa.RAddr] = c.memI[c.reg.PC]
+			stage++
+		default:
+			var val uint32
+			if c.read32(c.reg.GPR[isa.RAddr], &stage, &val) {
+				c.reg.GPR[rd] = val
+				c.reg.PC++
+				return true
+			}
 		}
 		return false
+	}
+}
+func uMovImmReg(rd, _, _ int) microStep {
+	return func(c *CPU) bool {
+		c.reg.PC++
+		fmt.Printf("TICK %d - reg%v<-#%d\n", c.tick, isa.GetRegisterMnemonic(rd), c.memI[c.reg.PC])
+		c.reg.GPR[rd] = c.memI[c.reg.PC]
+		c.reg.PC++
+		return true
 	}
 }
 
 func uMovRegReg(rd, rs1, _ int) microStep {
 	return func(c *CPU) bool {
-		fmt.Println("MV REG REG")
-		//c.reg[rd] = c.reg[rs1]
-		//c.reg.PC++
+		c.reg.GPR[rd] = c.reg.GPR[rs1]
+		c.reg.PC++
 		return true
 	}
+}
+
+// read32 consumes 4 u-tacts and возвращает true, когда слово готово
+func (c *CPU) read32(addr uint32, stage *int, out *uint32) bool {
+	switch *stage {
+	case 0:
+		c.tmp = c.memD[addr]
+		*stage++
+	case 1:
+		c.tmp |= c.memD[addr+1] << 8
+		*stage++
+	case 2:
+		c.tmp |= c.memD[addr+2] << 16
+		*stage++
+	case 3:
+		c.tmp |= c.memD[addr+3] << 24
+		*stage++
+	default:
+		*out = uint32(c.tmp)
+		return true
+	}
+	return false
 }

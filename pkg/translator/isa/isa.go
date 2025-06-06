@@ -82,7 +82,7 @@ func init() {
 
 	// registers → strings (0-15)
 	for k, v := range map[int]string{
-		RA: "RA", RM1: "RM1", RM2: "RM2", R3: "R3", R4: "R4",
+		RA: "RA", RM1: "RM1", RM2: "RM2", RAddr: "R3", R4: "R4",
 		ROutAddr: "R_OUT_ADDR", RInAddr: "R_IN_ADDR",
 		SpReg: "SP", FpReg: "FP",
 	} {
@@ -90,8 +90,8 @@ func init() {
 	}
 }
 
-func GetMnemonic(op uint32) string { return opcodeMnemonics[op] }
-func GetAMnemonic(m uint32) string { return amMnemonics[m] }
+func GetOpMnemonic(op uint32) string { return opcodeMnemonics[op] }
+func GetAMnemonic(m uint32) string   { return amMnemonics[m] }
 func GetRegisterMnemonic(r int) string {
 	if r < 0 {
 		return ""

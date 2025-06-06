@@ -61,7 +61,7 @@ func Dec(w uint32) (op, mode uint32, rd, rs1, rs2 int) {
 func (d Decoded) String() string {
 	return fmt.Sprintf(
 		"%s  %s   rd:%s  rs1:%s  rs2:%s}",
-		isa.GetMnemonic(d.Opcode),
+		isa.GetOpMnemonic(d.Opcode),
 		isa.GetAMnemonic(d.Mode),
 		isa.GetRegisterMnemonic(d.Rd),
 		isa.GetRegisterMnemonic(d.Rs1),

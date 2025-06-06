@@ -144,7 +144,7 @@ func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) 
 		fmt.Sprintf("[0x%04X] - %08X - Opc: %02s, Mode: %s, D:%s, S1:%s, S2:%s",
 			cg.nextInstructionAddr,
 			instructionWord,
-			isa.GetMnemonic(opcode),
+			isa.GetOpMnemonic(opcode),
 			isa.GetAMnemonic(mode),
 			isa.GetRegisterMnemonic(dest),
 			isa.GetRegisterMnemonic(s1),
