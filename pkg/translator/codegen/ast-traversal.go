@@ -187,7 +187,7 @@ func (cg *CodeGenerator) VisitProgram(p *ast.BlockStmt) {
 		cg.generateStmt(stmt)
 	}
 
-	cg.emitInstruction(isa.OpHalt, 0, -1, -1, -1)
+	cg.emitInstruction(isa.OpHalt, isa.NoOperands, -1, -1, -1)
 
 	// cg.popScope() // Pop global scope
 }

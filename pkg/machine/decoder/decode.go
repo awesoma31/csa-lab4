@@ -41,6 +41,22 @@ func DecodeInstructionWord(w uint32) Decoded {
 	}
 }
 
+func Dec(w uint32) (op, mode uint32, rd, rs1, rs2 int) {
+	d := DecodeInstructionWord(w)
+
+	op = d.Opcode
+	mode = d.Mode
+	rd = d.Rd
+	rs1 = d.Rs1
+	rs2 = d.Rs2
+	// op   = w >> 26
+	// mode = (w >> 21) & 0x1F
+	// rd   = int((w >> 17) & 0xF)
+	// rs1  = int((w >> 13) & 0xF)
+	// rs2  = int((w >> 9)  & 0xF)
+	return
+}
+
 // String даёт удобное представление (опционально).
 func (d Decoded) String() string {
 	return fmt.Sprintf(

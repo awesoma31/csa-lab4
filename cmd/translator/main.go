@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"log/slog"
 	"os"
 
@@ -58,6 +59,7 @@ func main() {
 	err = bingen.SaveInstructionMemory(instrMemPath, instructionMemory)
 	if err != nil {
 		slog.Error(fmt.Sprintf("error writeing instr mem bin - %s", err.Error()))
+		log.Fatal("fatal")
 	}
 	slog.Info(fmt.Sprintf("instructionMemory saved to %s", instrMemPath))
 

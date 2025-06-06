@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"log/slog"
 	"os"
 
@@ -22,12 +23,16 @@ func main() {
 	machine, err := loadCPUFromConfig(*configPath)
 	if err != nil {
 		slog.Error(fmt.Sprintf("error configuring CPU - %s", err.Error()))
+		log.Fatal()
+
 	}
 	slog.Info("CPU ocnfigured succesfully, starting simulation")
-	machine.Start()
+	machine.Run(1000)
+
+	// machine.Start()
 }
 
-func loadCPUFromConfig(path string) (*machine.Machine, error) {
+func loadCPUFromConfig(path string) (*machine.CPU, error) {
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -46,20 +51,22 @@ func loadCPUFromConfig(path string) (*machine.Machine, error) {
 		return nil, err
 	}
 
-	dp := &machine.DataPath{
-		InstrMem: ins,
-		DataMem:  data,
-		Regs:     &machine.Registers{},
-	}
-	cu := &machine.ControlUnit{
-		PC:        0,
-		TickLimit: cfg.TickLimit,
-		DP:        dp,
-	}
-
-	cpu := &machine.Machine{
-		CU: cu,
-		DP: dp,
-	}
+	// dp := &machine.DataPath{
+	// 	InstrMem: ins,
+	// 	DataMem:  data,
+	// 	Regs:     &machine.Registers{},
+	// }
+	// cu := &machine.ControlUnit{
+	// 	PC:        0,
+	// 	TickLimit: cfg.TickLimit,
+	// 	DP:        dp,
+	// }
+	//
+	// cpu := &machine.CPU{
+	// 	CU: cu,
+	// 	DP: dp,
+	// }
+	//TODO: bus
+	cpu := machine.New(ins, data, nil)
 	return cpu, nil
 }
