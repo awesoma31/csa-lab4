@@ -5,13 +5,17 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log/slog"
 	"os"
 
+	bingen "github.com/awesoma31/csa-lab4/pkg/bin-gen"
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 	"github.com/awesoma31/csa-lab4/pkg/translator/codegen"
 	"github.com/awesoma31/csa-lab4/pkg/translator/parser"
 	"github.com/sanity-io/litter"
 )
+
+var instrAmount int = 0
 
 func main() {
 	flags := &flags{}
@@ -43,12 +47,27 @@ func main() {
 		os.Exit(1)
 	}
 
+	instrAmount = int(cg.NextInstructionAddres())
+
 	printDebugAsm(debugAssembly)
 	printInstrMem(instructionMemory)
 	printDataMem(dataMemory)
 	printSymTable(cg)
 
-	//TODO: write bin
+	instrMemPath := "bin/instr.bin"
+	err = bingen.SaveInstructionMemory(instrMemPath, instructionMemory)
+	if err != nil {
+		slog.Error(fmt.Sprintf("error writeing instr mem bin - %s", err.Error()))
+	}
+	slog.Info(fmt.Sprintf("instructionMemory saved to %s", instrMemPath))
+
+	dataMemPath := "bin/data.bin"
+	err = bingen.SaveDataMemory(dataMemPath, dataMemory)
+	if err != nil {
+		slog.Error(fmt.Sprintf("error writeing data mem bin - %s", err.Error()))
+	}
+	slog.Info(fmt.Sprintf("data memory saved to %s", dataMemPath))
+
 }
 
 func printAst(program ast.BlockStmt) {
@@ -78,13 +97,15 @@ func printDataMem(dataMemory []byte) {
 }
 
 func printInstrMem(instructionMemory []uint32) {
+
 	fmt.Println("-------------------instructionMemory----------------------")
 	for i, instr := range instructionMemory {
-		// fmt.Println(instr)
-		fmt.Println(
-			fmt.Sprintf("[0x%04X|%04d]:", i, i),
-			fmt.Sprintf("0x%08X - %d", instr, instr),
-		)
+		if i <= instrAmount {
+			fmt.Println(
+				fmt.Sprintf("[0x%04X|%04d]:", i, i),
+				fmt.Sprintf("0x%08X - %d", instr, instr),
+			)
+		}
 	}
 }
 

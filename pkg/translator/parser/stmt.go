@@ -18,7 +18,7 @@ func parseStmt(p *parser) ast.Stmt {
 
 func parseExpressionStmt(p *parser) ast.ExpressionStmt {
 	expression := parseExpr(p, defaultBp)
-	p.expect(lexer.SEMI_COLON)
+	p.expect(lexer.SemiColon)
 
 	return ast.ExpressionStmt{
 		Expression: expression,
@@ -26,14 +26,14 @@ func parseExpressionStmt(p *parser) ast.ExpressionStmt {
 }
 
 func parseBlockStmt(p *parser) ast.Stmt {
-	p.expect(lexer.OPEN_CURLY)
+	p.expect(lexer.OpenCurly)
 	var body []ast.Stmt
 
-	for p.hasTokens() && p.currentTokenKind() != lexer.CLOSE_CURLY {
+	for p.hasTokens() && p.currentTokenKind() != lexer.CloseCurly {
 		body = append(body, parseStmt(p))
 	}
 
-	p.expect(lexer.CLOSE_CURLY)
+	p.expect(lexer.CloseCurly)
 	return ast.BlockStmt{
 		Body: body,
 	}
@@ -53,7 +53,7 @@ func parseVarDeclStmt(p *parser) ast.Stmt {
 	}
 
 	var assignmentValue ast.Expr
-	if p.currentTokenKind() != lexer.SEMI_COLON {
+	if p.currentTokenKind() != lexer.SemiColon {
 		p.expect(lexer.ASSIGNMENT)
 		assignmentValue = parseExpr(p, assignment)
 	} else if explicitType == nil {
@@ -61,7 +61,7 @@ func parseVarDeclStmt(p *parser) ast.Stmt {
 		p.addError("Missing explicit type for variable declaration without initial assignment.")
 	}
 
-	p.expect(lexer.SEMI_COLON)
+	p.expect(lexer.SemiColon)
 
 	return ast.VarDeclarationStmt{
 		// Constant:      isConstant,
@@ -74,8 +74,8 @@ func parseVarDeclStmt(p *parser) ast.Stmt {
 func parseFnParamsAndBody(p *parser) ([]ast.Parameter, ast.Type, []ast.Stmt) {
 	functionParams := make([]ast.Parameter, 0)
 
-	p.expect(lexer.OPEN_PAREN)
-	for p.hasTokens() && p.currentTokenKind() != lexer.CLOSE_PAREN {
+	p.expect(lexer.OpenParen)
+	for p.hasTokens() && p.currentTokenKind() != lexer.CloseParen {
 		paramName := p.expect(lexer.IDENTIFIER).Value
 		p.expect(lexer.COLON)
 		paramType := parseType(p, defaultBp)
@@ -85,12 +85,12 @@ func parseFnParamsAndBody(p *parser) ([]ast.Parameter, ast.Type, []ast.Stmt) {
 			Type: paramType,
 		})
 
-		if !p.currentToken().IsOneOfMany(lexer.CLOSE_PAREN, lexer.EOF) {
+		if !p.currentToken().IsOneOfMany(lexer.CloseParen, lexer.EOF) {
 			p.expect(lexer.COMMA)
 		}
 	}
 
-	p.expect(lexer.CLOSE_PAREN)
+	p.expect(lexer.CloseParen)
 	var returnType ast.Type
 
 	if p.currentTokenKind() == lexer.COLON {
@@ -118,27 +118,16 @@ func parseFnDeclaration(p *parser) ast.Stmt {
 
 func parsePrintStmt(p *parser) ast.Stmt {
 	p.expect(lexer.PRINT)
-	p.expect(lexer.OPEN_PAREN)
+	p.expect(lexer.OpenParen)
 
 	arg := parseExpr(p, defaultBp)
 	// fmt.Println(arg) // This is for debugging the parser, not for code generation
 
-	p.expect(lexer.CLOSE_PAREN)
-	p.expect(lexer.SEMI_COLON)
+	p.expect(lexer.CloseParen)
+	p.expect(lexer.SemiColon)
 
 	return ast.PrintStmt{Argument: arg}
 }
-
-// parseReadStmt is removed or commented out because read() is now an expression.
-// If you *do* need `read();` as a standalone statement (which typically returns a value that is then discarded),
-// you would create a ReadStmt node that contains a ReadExpr.
-// func parseReadStmt(p *parser) ast.Stmt {
-// 	p.expect(lexer.READ)
-// 	p.expect(lexer.OPEN_PAREN)
-// 	p.expect(lexer.CLOSE_PAREN)
-// 	p.expect(lexer.SEMI_COLON)
-// 	return ast.ReadStmt{} // Assuming you have a ReadStmt in ast/statements.go
-// }
 
 func parseReadStmt(p *parser) ast.Stmt {
 	panic("impl me")
@@ -171,12 +160,12 @@ func parseReturnStmt(p *parser) ast.Stmt {
 	p.expect(lexer.RETURN)
 
 	var expr ast.Expr
-	if p.currentTokenKind() != lexer.SEMI_COLON {
+	if p.currentTokenKind() != lexer.SemiColon {
 		// Return expression can be any valid expression up to `defalt_bp` (lowest)
 		expr = parseExpr(p, defaultBp)
 	}
 
-	p.expect(lexer.SEMI_COLON)
+	p.expect(lexer.SemiColon)
 
 	return ast.ReturnStmt{
 		Expr: expr,

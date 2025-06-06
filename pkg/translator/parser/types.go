@@ -34,9 +34,9 @@ func createTypeTokenLookups() {
 		}
 	})
 
-	typeNud(lexer.OPEN_BRACKET, func(p *parser) ast.Type {
+	typeNud(lexer.OpenBracket, func(p *parser) ast.Type {
 		p.advance()
-		p.expect(lexer.CLOSE_BRACKET)
+		p.expect(lexer.CloseBracket)
 		insideType := parseType(p, defaultBp)
 
 		return ast.ListType{

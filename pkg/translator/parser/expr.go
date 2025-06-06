@@ -78,16 +78,16 @@ func parseAssignmentExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp, it'
 
 func parsePrintExpr(p *parser) ast.Expr {
 	p.expect(lexer.PRINT)
-	p.expect(lexer.OPEN_PAREN)
+	p.expect(lexer.OpenParen)
 	arg := parseExpr(p, defaultBp)
-	p.expect(lexer.CLOSE_PAREN)
+	p.expect(lexer.CloseParen)
 	return ast.PrintExpr{Argument: arg}
 }
 
 func parseReadExpr(p *parser) ast.Expr {
 	p.expect(lexer.READ)
-	p.expect(lexer.OPEN_PAREN)
-	p.expect(lexer.CLOSE_PAREN)
+	p.expect(lexer.OpenParen)
+	p.expect(lexer.CloseParen)
 	return ast.ReadExpr{} // Возвращаем новый AST-узел ReadExpr
 }
 
@@ -148,14 +148,14 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 func parseMemberExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 	dotOrBracketToken := p.advance() // Consume DOT or OPEN_BRACKET
 
-	isComputed := dotOrBracketToken.Kind == lexer.OPEN_BRACKET
+	isComputed := dotOrBracketToken.Kind == lexer.OpenBracket
 
 	if isComputed {
 		// For computed members (e.g., obj[prop]), the property itself is an expression.
-		// It should be parsed with the lowest possible precedence (0 or defalt_bp)
+		// It should be parsed with the lowest possible precedence (0 or default_bp)
 		// to consume the entire expression inside the brackets.
 		rhs := parseExpr(p, defaultBp)
-		p.expect(lexer.CLOSE_BRACKET)
+		p.expect(lexer.CloseBracket)
 		return ast.ComputedExpr{
 			Member:   left,
 			Property: rhs,
@@ -171,25 +171,25 @@ func parseMemberExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 
 // TODO: delete
 func parseArrayLiteralExpr(p *parser) ast.Expr {
-	p.expect(lexer.OPEN_BRACKET)
+	p.expect(lexer.OpenBracket)
 	arrayContents := make([]ast.Expr, 0)
 
 	// Array elements are typically parsed with a precedence higher than comma,
 	// but allowing for full expressions.
 	// `logical` (or a similar low precedence) is often a good choice here.
-	for p.hasTokens() && p.currentTokenKind() != lexer.CLOSE_BRACKET {
+	for p.hasTokens() && p.currentTokenKind() != lexer.CloseBracket {
 		arrayContents = append(arrayContents, parseExpr(p, assignment)) // Use assignment for array elements, common practice
 
 		if p.currentTokenKind() == lexer.COMMA {
 			p.advance() // Consume the comma
-		} else if p.currentTokenKind() != lexer.CLOSE_BRACKET {
+		} else if p.currentTokenKind() != lexer.CloseBracket {
 			// If not a comma and not closing bracket, something is wrong
 			p.addError(fmt.Sprintf("Expected comma or closing bracket in array literal, but got %s\n", lexer.TokenKindString(p.currentTokenKind())))
 			break // Try to recover by breaking the loop
 		}
 	}
 
-	p.expect(lexer.CLOSE_BRACKET)
+	p.expect(lexer.CloseBracket)
 
 	return ast.ArrayLiteral{
 		Contents: arrayContents,
@@ -197,11 +197,11 @@ func parseArrayLiteralExpr(p *parser) ast.Expr {
 }
 
 func parseGroupingExpr(p *parser) ast.Expr {
-	p.expect(lexer.OPEN_PAREN)
-	// Parse the expression inside the parentheses with the lowest possible precedence (0 or defalt_bp)
+	p.expect(lexer.OpenParen)
+	// Parse the expression inside the parentheses with the lowest possible precedence (0 or default_bp)
 	// so it consumes the entire inner expression.
 	expr := parseExpr(p, defaultBp)
-	p.expect(lexer.CLOSE_PAREN)
+	p.expect(lexer.CloseParen)
 	return expr
 }
 
@@ -209,20 +209,20 @@ func parseCallExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 	p.advance() // Consume the OPEN_PAREN token
 	arguments := make([]ast.Expr, 0)
 
-	for p.hasTokens() && p.currentTokenKind() != lexer.CLOSE_PAREN {
+	for p.hasTokens() && p.currentTokenKind() != lexer.CloseParen {
 		// Arguments are typically parsed with the lowest possible precedence (e.g., assignment or logical)
 		// to allow full expressions within the arguments.
 		arguments = append(arguments, parseExpr(p, assignment))
 
 		if p.currentTokenKind() == lexer.COMMA {
 			p.advance() // Consume the comma
-		} else if p.currentTokenKind() != lexer.CLOSE_PAREN {
+		} else if p.currentTokenKind() != lexer.CloseParen {
 			p.addError(fmt.Sprintf("Expected comma or closing parenthesis in call arguments, but got %s\n", lexer.TokenKindString(p.currentTokenKind())))
 			break // Try to recover
 		}
 	}
 
-	p.expect(lexer.CLOSE_PAREN)
+	p.expect(lexer.CloseParen)
 	return ast.CallExpr{
 		Method:    left,
 		Arguments: arguments,

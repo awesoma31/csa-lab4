@@ -16,22 +16,23 @@ const (
 	IDENTIFIER
 
 	// Grouping & Braces
-	OPEN_BRACKET
-	CLOSE_BRACKET
-	OPEN_CURLY
-	CLOSE_CURLY
-	OPEN_PAREN
-	CLOSE_PAREN
+	OpenBracket
+	CloseBracket
+	OpenCurly
+	CloseCurly
+	OpenParen
+	CloseParen
 
-	// Equivilance
+	// Equivalence
 	ASSIGNMENT
 	EQUALS
-	NOT_EQUALS
+	NotEquals
 	NOT
 
 	// Conditional
+
 	LESS
-	LESS_EQUALS
+	LessEquals
 	GREATER
 	GREATER_EQUALS
 
@@ -41,18 +42,18 @@ const (
 
 	// Symbols
 	DOT
-	DOT_DOT
-	SEMI_COLON
+	DotDot
+	SemiColon
 	COLON
 	QUESTION
 	COMMA
 
 	// Shorthand
-	PLUS_PLUS
-	MINUS_MINUS
-	PLUS_EQUALS
-	MINUS_EQUALS
-	NULLISH_ASSIGNMENT // ??=
+	PlusPlus
+	MinusMinus
+	PlusEquals
+	MinusEquals
+	NullishAssignment // ??=
 
 	//Maths
 	PLUS
@@ -63,7 +64,7 @@ const (
 
 	// Reserved Keywords
 	LET
-	//TODO: delete
+	// CONST TODO: delete
 	CONST
 	CLASS
 	NEW
@@ -88,7 +89,7 @@ const (
 	UNKNOWN
 )
 
-// RESERVED WRODS FOUND HERE
+// RESERVED WORDS FOUND HERE
 var reservedLu = map[string]TokenKind{
 	"true":    TRUE,
 	"false":   FALSE,
@@ -145,29 +146,29 @@ func TokenKindString(kind TokenKind) string {
 		return "false"
 	case IDENTIFIER:
 		return "identifier"
-	case OPEN_BRACKET:
+	case OpenBracket:
 		return "open_bracket"
-	case CLOSE_BRACKET:
+	case CloseBracket:
 		return "close_bracket"
-	case OPEN_CURLY:
+	case OpenCurly:
 		return "open_curly"
-	case CLOSE_CURLY:
+	case CloseCurly:
 		return "close_curly"
-	case OPEN_PAREN:
+	case OpenParen:
 		return "open_paren"
-	case CLOSE_PAREN:
+	case CloseParen:
 		return "close_paren"
 	case ASSIGNMENT:
 		return "assignment"
 	case EQUALS:
 		return "equals"
-	case NOT_EQUALS:
+	case NotEquals:
 		return "not_equals"
 	case NOT:
 		return "not"
 	case LESS:
 		return "less"
-	case LESS_EQUALS:
+	case LessEquals:
 		return "less_equals"
 	case GREATER:
 		return "greater"
@@ -179,9 +180,9 @@ func TokenKindString(kind TokenKind) string {
 		return "and"
 	case DOT:
 		return "dot"
-	case DOT_DOT:
+	case DotDot:
 		return "dot_dot"
-	case SEMI_COLON:
+	case SemiColon:
 		return "semi_colon"
 	case COLON:
 		return "colon"
@@ -189,15 +190,15 @@ func TokenKindString(kind TokenKind) string {
 	// 	return "question"
 	case COMMA:
 		return "comma"
-	case PLUS_PLUS:
+	case PlusPlus:
 		return "plus_plus"
-	case MINUS_MINUS:
+	case MinusMinus:
 		return "minus_minus"
-	case PLUS_EQUALS:
+	case PlusEquals:
 		return "plus_equals"
-	case MINUS_EQUALS:
+	case MinusEquals:
 		return "minus_equals"
-	case NULLISH_ASSIGNMENT:
+	case NullishAssignment:
 		return "nullish_assignment"
 	case PLUS:
 		return "plus"
@@ -231,8 +232,8 @@ func TokenKindString(kind TokenKind) string {
 	// 	return "foreach"
 	case FOR:
 		return "for"
-	// case WHILE:
-	// 	return "while"
+	case WHILE:
+		return "while"
 	// case EXPORT:
 	// 	return "export"
 	// case IN:

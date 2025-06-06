@@ -1,0 +1,4 @@
+instruction_bin: "bin/instr.bin"
+data_bin: "bin/data.bin"
+
+tick_limit: 1000

@@ -3,6 +3,8 @@ package codegen
 import (
 	"fmt"
 
+	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
+
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
 )
@@ -13,7 +15,7 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 	case ast.VarDeclarationStmt:
 		cg.generateVarDeclStmt(s)
 	case ast.ExpressionStmt:
-		cg.generateExpr(s.Expression, RA)
+		cg.generateExpr(s.Expression, isa.RA)
 		// For an expression statement, the result in R0 is usually discarded.
 		// If it's the result of an assignment, the assignment handled saving.
 	case ast.BlockStmt:
@@ -26,33 +28,34 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 		cg.generateIfStmt(s)
 	case ast.PrintStmt: // Обработка оператора Print
 		cg.generatePrintStmt(s)
+	//TODO: while stmt
 	// case ast.WhileStmt: // Added WhileStmt handling
-	// 	cg.generateWhileStmt(s)
-	// Add other statement types as needed (Loop, etc.)
+	// cg.generateWhileStmt(s)
 	default:
 		cg.addError(fmt.Sprintf("Unsupported statement type: %T", s))
 	}
 }
 
-// generatePrintStmt handles PrintStmt (if `print` can be a statement like `print("hello world");`).
 func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
-	cg.generateExpr(s.Argument, R_OUT_ADDR) // str addr is in R_OUT_ADDR [len]byte
+	cg.generateExpr(s.Argument, isa.ROutAddr) // str addr is in R_OUT_ADDR [len]byte
 	switch arg := s.Argument.(type) {
 	case ast.StringExpr:
 		strLen := len(arg.Value)
 		for range strLen {
-			cg.emitInstruction(OP_ADD, MATH_R_I_R, R_OUT_ADDR, R_OUT_ADDR, -1) // R_OUT_ADDR points to string 1 byte
+			cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.ROutAddr, isa.ROutAddr, -1)
 			cg.emitImmediate(1)
 			var port uint8 = 0
-			cg.emitOut(IO_MEM_REG, port, IO_NO_IMM_VAL)
+			cg.emitOut(isa.IoMemReg, port, IoNoImmVal)
 		}
 	case ast.SymbolExpr:
-		panic("print var not implemented")
+		cg.addError("print vars is not supported yet")
+		return
+		// panic("print var not implemented")
 		// val, found := cg.currentScope().Symbols()[arg.Value]
 		// if !found {
 		// 	cg.addError(fmt.Sprintf("could not find variable %s in scope", arg.Value))
 		// }
-		//TODO:
+		//TODO:var printing, need to know str len somehow
 
 	}
 
@@ -62,49 +65,47 @@ func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
 func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 	switch e := expr.(type) {
 	case ast.NumberExpr:
-		cg.emitMov(MV_IMM_REG, rd, int(e.Value), -1)
+		cg.emitMov(isa.MvImmReg, rd, int(e.Value), -1)
 
 	case ast.BinaryExpr:
-		//TODO: check push
-		cg.generateExpr(e.Left, RM1)
-		cg.emitInstruction(OP_PUSH, SINGLE_REG, RM1, -1, -1)
+		cg.generateExpr(e.Left, isa.RM1)
+		cg.emitPushReg(isa.RM1)
 
-		cg.generateExpr(e.Right, RM2)
+		cg.generateExpr(e.Right, isa.RM2)
 
-		cg.emitInstruction(OP_POP, SINGLE_REG, RM1, -1, -1)
+		cg.emitPopToReg(isa.RM1)
 
 		var opcode uint32
 		switch e.Operator.Kind {
 		case lexer.PLUS:
-			opcode = OP_ADD
+			opcode = isa.OpAdd
 		case lexer.MINUS:
-			opcode = OP_SUB
+			opcode = isa.OpSub
 		case lexer.STAR:
-			opcode = OP_MUL
+			opcode = isa.OpMul
 		case lexer.SLASH:
-			opcode = OP_DIV
-		case lexer.EQUALS, lexer.NOT_EQUALS, lexer.GREATER, lexer.GREATER_EQUALS, lexer.LESS, lexer.LESS_EQUALS:
-			opcode = OP_CMP
+			opcode = isa.OpDiv
+		case lexer.EQUALS, lexer.NotEquals, lexer.GREATER, lexer.GREATER_EQUALS, lexer.LESS, lexer.LessEquals:
+			opcode = isa.OpCmp
 			rd = -1
 		default:
 			cg.addError(fmt.Sprintf("Unsupported binary operator: %s", e.Operator.Value))
 			return
 		}
-		// TODO: check addres mode
-		cg.emitInstruction(opcode, MV_REG_REG, rd, RM1, RM2) // R0 = R1 op R0
+		cg.emitInstruction(opcode, isa.MvRegReg, rd, isa.RM1, isa.RM2) // rd = RM1 op RM2
 
 	case ast.SymbolExpr: // Для чтения значения переменной
 		symbol, found := cg.lookupSymbol(e.Value)
 		if !found {
 			cg.addError(fmt.Sprintf("Undeclared variable in assign expr: %s", e.Value))
 			if rd != -1 {
-				cg.emitInstruction(OP_MOV, MV_IMM_REG, rd, -1, -1)
+				cg.emitInstruction(isa.OpMov, isa.MvImmReg, rd, -1, -1)
 				cg.emitImmediate(0) // Загрузить 0 в rd для восстановления
 			}
 			return
 		}
 		if symbol.MemoryArea == "data" {
-			cg.emitInstruction(OP_MOV, MV_MEM_REG, rd, -1, -1) // MOV rd, [symbol_addr] // rd<-var
+			cg.emitInstruction(isa.OpMov, isa.MvMemReg, rd, -1, -1) // MOV rd, [symbol_addr] // rd<-var
 			cg.emitImmediate(symbol.AbsAddress)
 		} else if symbol.MemoryArea == "stack" {
 			//TODO:
@@ -151,9 +152,22 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 	}
 }
 
+func (cg *CodeGenerator) emitPushReg(reg int) {
+	cg.emitInstruction(isa.OpPush, isa.SingleRegMode, reg, -1, -1)
+}
+
+func (cg *CodeGenerator) emitPushImm(imm int32) {
+	cg.emitInstruction(isa.OpPush, isa.StImmMode, -1, -1, -1)
+	cg.emitImmediate(uint32(imm))
+}
+
+func (cg *CodeGenerator) emitPopToReg(reg int) {
+	cg.emitInstruction(isa.OpPop, isa.SingleRegMode, reg, -1, -1)
+}
+
 func (cg *CodeGenerator) generateReadExpr() {
 	panic("impl me assign o read()")
-	cg.emitInstruction(OP_IN, SINGLE_REG, R_IN_ADDR, -1, -1)
+	//cg.emitInstruction(isa.OP_IN, isa.SINGLE_REG, isa.RInAddr, -1, -1)
 }
 
 func (cg *CodeGenerator) generatePrintExpr(e ast.PrintExpr) {
@@ -165,11 +179,15 @@ func (cg *CodeGenerator) VisitProgram(p *ast.BlockStmt) {
 	// Initialize global scope
 	cg.pushScope()
 
+	// init stack
+	cg.emitInstruction(isa.OpMov, isa.MvImmReg, isa.SpReg, -1, -1)
+	cg.emitImmediate(StackStartAddr)
+
 	for _, stmt := range p.Body {
 		cg.generateStmt(stmt)
 	}
 
-	cg.emitInstruction(OP_HALT, 0, -1, -1, -1)
+	cg.emitInstruction(isa.OpHalt, 0, -1, -1, -1)
 
 	// cg.popScope() // Pop global scope
 }
@@ -248,9 +266,9 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			cg.addSymbolToScope(symbolEntry)
 			cg.generateReadExpr()
 
-			cg.emitMov(MV_IMM_REG, RA, 1, -1)            // imm to reg; s1=imm dest = rd
-			cg.emitMov(MV_REG_MEM, int(strAddr), RA, -1) // reg to mem; dest=addr, s1=reg
-			cg.emitMov(MV_REG_MEM, int(strAddr+1), R_IN_ADDR, -1)
+			cg.emitMov(isa.MvImmReg, isa.RA, 1, -1)            // imm to reg; s1=imm dest = rd
+			cg.emitMov(isa.MvRegMem, int(strAddr), isa.RA, -1) // reg to mem; dest=addr, s1=reg
+			cg.emitMov(isa.MvRegMem, int(strAddr+1), isa.RInAddr, -1)
 			return
 
 		case ast.BinaryExpr:
@@ -274,7 +292,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 				Assigne:       ast.SymbolExpr{Value: s.Identifier},
 				AssignedValue: s.AssignedValue,
 			}
-			cg.generateAssignExpr(assign, RA)
+			cg.generateAssignExpr(assign, isa.RA)
 			return
 		case ast.PrefixExpr:
 			//TODO: for now movs expr to placeholder
@@ -295,7 +313,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 				Assigne:       ast.SymbolExpr{Value: s.Identifier},
 				AssignedValue: s.AssignedValue,
 			}
-			cg.generateAssignExpr(assign, RA)
+			cg.generateAssignExpr(assign, isa.RA)
 			return
 
 			// cg.generateExpr(assignedVal, RA)
@@ -325,7 +343,7 @@ func (cg *CodeGenerator) generateAssignExpr(e ast.AssignmentExpr, rd int) {
 		// Store the value from rd into the variable's memory location based on MemoryArea
 		if symbol.MemoryArea == "data" { // Global variable
 			// MOV [absolute_byte_address], rd
-			cg.emitInstruction(OP_MOV, MV_REG_MEM_ABS, -1, rd, -1)
+			cg.emitInstruction(isa.OpMov, isa.MvRegMemAbs, -1, rd, -1)
 			cg.emitImmediate(symbol.AbsAddress) // Absolute byte-address operand (must be word-aligned)
 		} else if symbol.MemoryArea == "stack" { // Local variable (on the stack)
 			//TODO:
@@ -376,30 +394,30 @@ func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) {
 	var jmpToAltOpc uint32
 	switch operator.Kind {
 	case lexer.EQUALS:
-		jmpToAltOpc = OP_JNE
-	case lexer.NOT_EQUALS:
-		jmpToAltOpc = OP_JE
+		jmpToAltOpc = isa.OpJne
+	case lexer.NotEquals:
+		jmpToAltOpc = isa.OpJe
 	case lexer.GREATER:
-		jmpToAltOpc = OP_JLE
+		jmpToAltOpc = isa.OpJle
 	case lexer.LESS:
-		jmpToAltOpc = OP_JGE
+		jmpToAltOpc = isa.OpJge
 	case lexer.GREATER_EQUALS:
-		jmpToAltOpc = OP_JL
-	case lexer.LESS_EQUALS:
-		jmpToAltOpc = OP_JG
+		jmpToAltOpc = isa.OpJl
+	case lexer.LessEquals:
+		jmpToAltOpc = isa.OpJg
 	default:
-		jmpToAltOpc = OP_JMP
+		jmpToAltOpc = isa.OpJmp
 	}
 	cg.emitInstruction(jmpToAltOpc, 0, -1, -1, -1)
 	addrToPatchElse := cg.nextInstructionAddr
 	cg.emitImmediate(0)
 
-	cg.debugAssembly = append(cg.debugAssembly, "IF STMT CONSEQUENSE:")
+	cg.debugAssembly = append(cg.debugAssembly, "IF STMT CONSEQUENCE:")
 	cg.generateStmt(s.Consequent)
 
 	var addrOfAddrToJumpAfterElse uint32 = 4294967295
 	if s.Alternate != nil {
-		cg.emitInstruction(OP_JMP, 0, -1, -1, -1)
+		cg.emitInstruction(isa.OpJmp, 0, -1, -1, -1)
 		addrOfAddrToJumpAfterElse = cg.nextInstructionAddr
 		cg.emitImmediate(0)
 	}
@@ -427,20 +445,20 @@ func (cg *CodeGenerator) generateStringExpr(e ast.StringExpr, rd int) {
 	// Store string in data memory and load its byte-address (pointer) into R0.
 	stringAddr := cg.addString(e.Value) // addString handles writing string to dataMemory (bytes) and alignment
 
-	cg.emitInstruction(OP_MOV, MV_IMM_REG, rd, -1, -1) // MOV R0, #string_byte_address
-	cg.emitImmediate(stringAddr)                       // Emit the byte-address as an immediate word
+	cg.emitInstruction(isa.OpMov, isa.MvImmReg, rd, -1, -1) // MOV R0, #string_byte_address
+	cg.emitImmediate(stringAddr)                            // Emit the byte-address as an immediate word
 }
 
 // TODO: check
 // generateUnaryExpr generates code for unary operations.
 func (cg *CodeGenerator) generateUnaryExpr(e ast.PrefixExpr, rd int) {
-	cg.generateExpr(e.Right, RA) // Evaluate operand, result in R0
+	cg.generateExpr(e.Right, isa.RA) // Evaluate operand, result in R0
 
 	switch e.Operator.Kind { // Access Kind from lexer.Token
 	case lexer.MINUS: // Unary negation (minus sign)
-		cg.emitInstruction(OP_NEG, SINGLE_REG, rd, -1, -1)
+		cg.emitInstruction(isa.OpNeg, isa.SingleRegMode, rd, -1, -1)
 	case lexer.NOT: // Logical NOT
-		cg.emitInstruction(OP_NOT, SINGLE_REG, rd, -1, -1)
+		cg.emitInstruction(isa.OpNot, isa.SingleRegMode, rd, -1, -1)
 	default:
 		cg.addError(fmt.Sprintf("Unsupported unary operator: %s", e.Operator.Value)) // Use Operator.Value
 	}
@@ -467,16 +485,16 @@ func (cg *CodeGenerator) generateCallExpr(e ast.CallExpr) {
 			cg.addError("Print function expects exactly one argument.")
 			return
 		}
-		cg.generateExpr(e.Arguments[0], RA)                  // Evaluate argument, result in R0 (should contain value or string address)
-		cg.emitInstruction(OP_OUT, OUT_REG_PORT, -1, RA, -1) // OUT #0, R0 (assuming port 0 for console output)
-		cg.emitImmediate(0)                                  // Port address for output
+		cg.generateExpr(e.Arguments[0], isa.RA)                       // Evaluate argument, result in R0 (should contain value or string address)
+		cg.emitInstruction(isa.OpOut, isa.OutRegPort, -1, isa.RA, -1) // OUT #0, R0 (assuming port 0 for console output)
+		cg.emitImmediate(0)                                           // Port address for output
 	case "input":
 		if len(e.Arguments) != 0 {
 			cg.addError("Input function expects no arguments.")
 			return
 		}
-		cg.emitInstruction(OP_IN, IN_PORT_REG, RA, -1, -1) // IN R0, #0 (assuming port 0 for console input)
-		cg.emitImmediate(0)                                // Port address for input
+		cg.emitInstruction(isa.OpIn, isa.InPortReg, isa.RA, -1, -1) // IN R0, #0 (assuming port 0 for console input)
+		cg.emitImmediate(0)                                         // Port address for input
 	default:
 		// For user-defined functions, lookup the function symbol and CALL its address.
 		cg.addError(fmt.Sprintf("Unsupported or undeclared function call: %s", calleeName))
@@ -506,8 +524,8 @@ func (cg *CodeGenerator) generateReturnStmt(s ast.ReturnStmt) {
 	// 2. Deallocating local stack frame.
 	// 3. Emitting a RET instruction.
 	if s.Expr != nil {
-		cg.generateExpr(s.Expr, RA) // Evaluate return value into R0
+		cg.generateExpr(s.Expr, isa.RA) // Evaluate return value into R0
 	}
-	cg.emitInstruction(OP_RET, NO_OPERANDS, -1, -1, -1)
+	cg.emitInstruction(isa.OpRet, isa.NoOperands, -1, -1, -1)
 	cg.addError("Return statement code generation not fully implemented (stack cleanup).")
 }

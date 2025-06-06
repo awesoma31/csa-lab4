@@ -1,0 +1,20 @@
+while true {
+    // while tick
+    // ircontroller.checkintterupt
+    // if inptutSchedule.key.contains(tick)
+    // go to int num addr
+    // ex inter
+    // iret
+    // wait for interruption 
+
+    // NOTE: еще можем сделать read( ) не во время прерываний который просто будет брать значение с порта и не влиять на буфер
+}
+exit;
+
+
+interruption 0 {
+    let a = read(0); // read char coming from port 0 when interruption 0 happens
+    print(a); // and send it to output
+    iret;
+}
+

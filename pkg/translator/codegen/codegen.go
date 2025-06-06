@@ -3,6 +3,7 @@ package codegen
 import (
 	"encoding/binary"
 	"fmt"
+	isa2 "github.com/awesoma31/csa-lab4/pkg/translator/isa"
 	"regexp"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
@@ -47,6 +48,16 @@ type CodeGenerator struct {
 	errors              []string
 	currentFrameOffset  int
 }
+
+func (cg *CodeGenerator) NextInstructionAddres() uint32 {
+	return cg.nextInstructionAddr
+}
+
+const (
+	InstrMemSize          = 100
+	StackStartAddr uint32 = DataMemSize
+	DataMemSize           = 200
+)
 
 func NewCodeGenerator() *CodeGenerator {
 	cg := &CodeGenerator{
@@ -126,18 +137,18 @@ func (cg *CodeGenerator) addSymbolToScope(entry SymbolEntry) {
 // emitInstruction adds an instruction to the instruction memory.
 func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) {
 	//TODO: jmp addr mode
-	instructionWord := encodeInstructionWord(opcode, mode, dest, s1, s2)
+	instructionWord := isa2.EncodeInstructionWord(opcode, mode, dest, s1, s2)
 	cg.instructionMemory = append(cg.instructionMemory, instructionWord)
 	cg.debugAssembly = append(
 		cg.debugAssembly,
 		fmt.Sprintf("[0x%04X] - %08X - Opc: %02s, Mode: %s, D:%s, S1:%s, S2:%s",
 			cg.nextInstructionAddr,
 			instructionWord,
-			GetMnemonic(opcode),
-			GetAMnemonic(mode),
-			GetRegisterMnemonic(dest),
-			GetRegisterMnemonic(s1),
-			GetRegisterMnemonic(s2),
+			isa2.GetMnemonic(opcode),
+			isa2.GetAMnemonic(mode),
+			isa2.GetRegisterMnemonic(dest),
+			isa2.GetRegisterMnemonic(s1),
+			isa2.GetRegisterMnemonic(s2),
 		),
 	)
 	cg.nextInstructionAddr++
@@ -146,22 +157,22 @@ func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) 
 func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 	// var instructionWord uint32
 	switch mode {
-	case MV_REG_REG: // reg to reg
-		cg.emitInstruction(OP_MOV, MV_REG_REG, dest, s1, s2)
-	case MV_IMM_REG: // imm to reg; s1=imm dest = rd
-		cg.emitInstruction(OP_MOV, MV_IMM_REG, dest, -1, -1)
+	case isa2.MvRegReg: // reg to reg
+		cg.emitInstruction(isa2.OpMov, isa2.MvRegReg, dest, s1, s2)
+	case isa2.MvImmReg: // imm to reg; s1=imm dest = rd
+		cg.emitInstruction(isa2.OpMov, isa2.MvImmReg, dest, -1, -1)
 		cg.emitImmediate(uint32(s1))
-	case MV_MEM_REG: // mem to reg; s1=addr
-		cg.emitInstruction(OP_MOV, mode, dest, -1, -1)
+	case isa2.MvMemReg: // mem to reg; s1=addr
+		cg.emitInstruction(isa2.OpMov, mode, dest, -1, -1)
 		cg.emitImmediate(uint32(s1))
-	case SPOFFS_REG: // sp+offs to reg
-		cg.emitInstruction(OP_MOV, mode, dest, s1, -1)
-	case MV_MEM_MEM: // mem to mem
-		cg.emitInstruction(OP_MOV, mode, -1, -1, -1)
+	case isa2.MvSpOffsToReg: // sp+offs to reg
+		cg.emitInstruction(isa2.OpMov, mode, dest, s1, -1)
+	case isa2.MvMemMem: // mem to mem
+		cg.emitInstruction(isa2.OpMov, mode, -1, -1, -1)
 		cg.emitImmediate(uint32(s1))
 		cg.emitImmediate(uint32(s2))
-	case MV_REG_MEM: // reg to mem; dest=addr, s1=reg
-		cg.emitInstruction(OP_MOV, mode, -1, s1, -1)
+	case isa2.MvRegMem: // reg to mem; dest=addr, s1=reg
+		cg.emitInstruction(isa2.OpMov, mode, -1, s1, -1)
 		cg.emitImmediate(uint32(dest))
 	}
 	// cg.nextInstructionAddr++
@@ -170,14 +181,14 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 func fits17(v uint32) bool { return v>>17 == 0 }
 
 // port ∈ [0..3] → 2 бита. 19 младших бит — “что угодно” (имм-данные для OUT IMM).
-const IO_NO_IMM_VAL = 0
+const IoNoImmVal = 0
 
 func encodeIOWord(opcode, mode uint32, port uint8, imm int32) uint32 {
 	if port > 3 {
 		panic("port number must be 0-3")
 	}
 	word := uint32(opcode)<<26 | mode<<21 | uint32(port)<<19
-	if mode == IO_IMM_REG {
+	if mode == isa2.IoImmReg {
 		word |= uint32(imm) & 0x7FFFF // 19 бит
 	}
 	return word
@@ -185,9 +196,9 @@ func encodeIOWord(opcode, mode uint32, port uint8, imm int32) uint32 {
 
 func (cg *CodeGenerator) emitOut(mode uint32, port uint8, value int32) {
 	switch mode {
-	case IO_MEM_REG:
+	case isa2.IoMemReg:
 		cg.emitOutMemReg(port)
-	case IO_IMM_REG:
+	case isa2.IoImmReg:
 		cg.emitOutImm(port, value)
 	}
 
@@ -195,7 +206,7 @@ func (cg *CodeGenerator) emitOut(mode uint32, port uint8, value int32) {
 
 // ───────────────────────── OUT ──────────────────────────
 func (cg *CodeGenerator) emitOutMemReg(port uint8) {
-	word := encodeIOWord(OP_OUT, IO_MEM_REG, port, IO_NO_IMM_VAL)
+	word := encodeIOWord(isa2.OpOut, isa2.IoMemReg, port, IoNoImmVal)
 	cg.instructionMemory = append(cg.instructionMemory, word)
 	cg.debugAssembly = append(cg.debugAssembly,
 		fmt.Sprintf("[0x%04X] - %08X - Opc: OUT mem[R_OUT_ADDR]->(R_OUT_DATA)->port[%d]", cg.nextInstructionAddr, word, port))
@@ -203,7 +214,7 @@ func (cg *CodeGenerator) emitOutMemReg(port uint8) {
 }
 
 func (cg *CodeGenerator) emitOutImm(port uint8, value int32) {
-	word := encodeIOWord(OP_OUT, IO_IMM_REG, port, value)
+	word := encodeIOWord(isa2.OpOut, isa2.IoImmReg, port, value)
 	cg.instructionMemory = append(cg.instructionMemory, word)
 	cg.debugAssembly = append(cg.debugAssembly,
 		fmt.Sprintf("[0x%04X] OUT #%d → port[%d]  0x%08X", cg.nextDataAddr, value, port, word))
@@ -220,7 +231,7 @@ func (cg *CodeGenerator) emitImmediate(value uint32) {
 // ReserveWord reserves space for a word in instruction memory and returns its address.
 func (cg *CodeGenerator) ReserveWord() uint32 {
 	addr := cg.nextInstructionAddr
-	cg.emitInstruction(OP_NOP, NO_OPERANDS, -1, -1, -1) // Emit a NOP
+	cg.emitInstruction(isa2.OpNop, isa2.NoOperands, -1, -1, -1) // Emit a NOP
 	//   TODO: should it nextInstructionAddr++?
 	return addr
 }
