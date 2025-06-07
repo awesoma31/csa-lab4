@@ -93,7 +93,7 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 			cg.addError(fmt.Sprintf("Unsupported binary operator: %s", e.Operator.Value))
 			return
 		}
-		cg.emitInstruction(opcode, isa.MvRegReg, rd, isa.RM1, isa.RM2) // rd = RM1 op RM2
+		cg.emitInstruction(opcode, isa.MathRRR, rd, isa.RM1, isa.RM2) // rd = RM1 op RM2
 
 	case ast.SymbolExpr: // Для чтения значения переменной
 		symbol, found := cg.lookupSymbol(e.Value)

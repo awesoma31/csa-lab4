@@ -36,8 +36,17 @@ func init() {
 	ucode[isa.OpPop][isa.SingleRegMode] = uPopReg
 
 	// MATH
+	ucode[isa.OpAdd][isa.MathRRR] = uAddRRR
 	// CALL RET ...
 
+}
+
+func uAddRRR(rd, rs1, rs2 int) microStep {
+	return func(c *CPU) bool {
+		c.reg.GPR[rd] = c.reg.GPR[rs1] + c.reg.GPR[rs2]
+		fmt.Printf("TICK %d - %v<-%v+%v | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
+		return true
+	}
 }
 
 func uPopReg(rd, _, _ int) microStep {
