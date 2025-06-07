@@ -111,8 +111,22 @@ func uMovMemMem(rd, _, _ int) microStep {
 func uMovImmMem(rd, _, _ int) microStep {
 	panic("unimplemeted")
 }
-func uMovRegMem(rd, _, _ int) microStep {
-	panic("unimplemeted")
+func uMovRegMem(_, rs1, _ int) microStep {
+	stage := 0
+	return func(c *CPU) bool {
+		switch stage {
+		case 0: // sp -4
+			c.reg.GPR[isa.RAddr] = c.memI[c.reg.PC]
+			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ \n", c.tick, isa.GetRegMnem(isa.RAddr), c.reg.PC)
+			c.reg.PC++
+			stage++
+		case 1, 2, 3, 4, 5:
+			if write32LE(c, &stage, isa.RAddr, rs1) {
+				return true
+			}
+		}
+		return false
+	}
 }
 func uMovMemReg(rd, _, _ int) microStep {
 	stage := 0

@@ -63,26 +63,26 @@ func init() {
 
 	// address-modes → strings (only the ones that appear in code-gen)
 	for k, v := range map[uint32]string{
-		MvRegReg: "MV_REG_REG", MvImmReg: "MV_IMM_REG",
+		MvRegReg: "MvRegReg", MvImmReg: "MvImmReg",
 		// MvMemAbsReg: "MV_MEM_ABS_REG",
 		// MvRegMemAbs:   "MV_REG_MEM_ABS",
-		MvSpOffsToReg: "SPOFFS_REG", RegMemFp: "REG_MEM_FP",
-		MvMemReg: "MV_MEM_REG", MvRegMem: "MV_REG_MEM", MvMemMem: "MV_MEM_MEM",
-		MvImmMem: "MV_IMM_MEM",
+		MvSpOffsToReg: "SpOffsRef", RegMemFp: "RegMemFp",
+		MvMemReg: "MvMemReg", MvRegMem: "MvRegMem", MvMemMem: "MvMemMem",
+		MvImmMem: "MvImmMem",
 
-		MathRRR: "MATH_R_R_R", MathRMR: "MATH_R_M_R",
-		MathRIR: "MATH_R_I_R", MathMMR: "MATH_M_M_R",
+		MathRRR: "MathRRR", MathRMR: "MathRMR",
+		MathRIR: "MathRIR", MathMMR: "MathMMR",
 
-		JAbsAddr: "J_ABS_ADDR", SingleRegMode: "SINGLE_REG",
+		JAbsAddr: "JAbsAddr", SingleRegMode: "SingleRegMode",
 		InPortReg: "IN_PORT_REG", OutRegPort: "OUT_REG_PORT",
-		NoOperands: "NO_OPERANDS",
+		NoOperands: "NoOperands",
 	} {
 		amMnemonics[k] = v
 	}
 
 	// registers → strings (0-15)
 	for k, v := range map[int]string{
-		RA: "RA", RM1: "RM1", RM2: "RM2", RAddr: "R3", R4: "R4",
+		RA: "RA", RM1: "RM1", RM2: "RM2", RAddr: "RAddr", R4: "R4",
 		ROutAddr: "R_OUT_ADDR", RInAddr: "R_IN_ADDR",
 		SpReg: "SP", FpReg: "FP",
 	} {
