@@ -33,12 +33,33 @@ func init() {
 
 	//stack
 	ucode[isa.OpPush][isa.SingleRegMode] = uPushReg
+	ucode[isa.OpPop][isa.SingleRegMode] = uPopReg
 
 	// MATH
 	// CALL RET ...
 
 }
 
+func uPopReg(rd, _, _ int) microStep {
+	stage := 0
+	return func(c *CPU) bool {
+		switch stage {
+		case 0:
+			c.reg.GPR[isa.RAddr] = c.reg.GPR[isa.SpReg]
+			fmt.Printf("TICK %d - %v<-%v | ", c.tick, isa.GetRegMnem(isa.RAddr), isa.GetRegMnem(isa.SpReg))
+			fmt.Printf("%v\n", c.ReprRegVal(isa.RAddr))
+			stage++
+		case 1, 2, 3, 4, 5:
+			if read32LE(c, &stage, isa.RAddr, rd) {
+				fmt.Printf("TICK %d - SP=SP+4 \n", c.tick)
+				c.reg.GPR[isa.SpReg] += 4
+				stage++
+				return true
+			}
+		}
+		return false
+	}
+}
 func uPushReg(_, rs1, _ int) microStep {
 	stage := 0
 	return func(c *CPU) bool {
@@ -97,8 +118,6 @@ func uMovMemReg(rd, _, _ int) microStep {
 			stage = 1
 		case 1, 2, 3, 4, 5: // T1–T4 – читаем 4 байта
 			if read32LE(c, &stage, isa.RAddr, rd) {
-				// c.reg.PC++
-				// fmt.Printf("TICK %d - PC++ | %v\n", c.tick, c.ReprPC())
 				c.tick--
 				return true
 			}
@@ -153,7 +172,7 @@ func write32LE(c *CPU, stage *int, regWithAddr int, regSource int) bool {
 		c.reg.GPR[regWithAddr]++
 		return true
 	default:
-		// return true // все байты записаны
+		return true // все байты записаны
 	}
 	*stage++
 	return false
