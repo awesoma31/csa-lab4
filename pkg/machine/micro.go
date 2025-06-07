@@ -45,12 +45,13 @@ func uPushReg(_, rs1, _ int) microStep {
 		switch stage {
 		case 0: // sp -4
 			fmt.Printf("TICK %d - SP=SP-4 \n", c.tick)
+			// fmt.Printf("rs1 %d %v\n", rs1, isa.GetRegMnem(rs1))
 			c.reg.GPR[isa.SpReg] -= 4
 			c.reg.GPR[isa.RAddr] = c.reg.GPR[isa.SpReg]
 			c.reg.GPR[isa.RT] = c.reg.GPR[rs1]
 			stage = 1
 		case 1, 2, 3, 4, 5:
-			if write32LE(c, &stage, isa.RAddr) {
+			if write32LE(c, &stage, isa.RAddr, rs1) {
 				return true
 			}
 		}
@@ -90,14 +91,15 @@ func uMovMemReg(rd, _, _ int) microStep {
 		case 0: // fetch addr
 			c.reg.GPR[isa.RAddr] = c.memI[c.reg.PC]
 			fmt.Printf("TICK %d - %v<-memI[%v]; PC++ | ", c.tick, isa.GetRegMnem(isa.RAddr), c.reg.PC)
+			//TODO: prbly cannot pc++ on the same tick
 			c.reg.PC++
 			fmt.Printf("PC=%v %v=0x%X\n", c.reg.PC, isa.GetRegMnem(isa.RAddr), c.reg.GPR[isa.RAddr])
 			stage = 1
 		case 1, 2, 3, 4, 5: // T1–T4 – читаем 4 байта
-			//TODO: check
 			if read32LE(c, &stage, isa.RAddr, rd) {
-				// c.reg.GPR[rd] = c.reg.GPR[isa.RT] // готово
-				c.reg.PC++
+				// c.reg.PC++
+				// fmt.Printf("TICK %d - PC++ | %v\n", c.tick, c.ReprPC())
+				c.tick--
 				return true
 			}
 		}
@@ -121,31 +123,44 @@ func uMovRegReg(rd, rs1, _ int) microStep {
 	}
 }
 
-func write32LE(c *CPU, stage *int, regWithAddr int) bool {
-	addr := c.reg.GPR[regWithAddr]
-	c.ensureDataSize(addr + 3)
+// записывает 32-битное значение little-endian по адресу в regWithAddr
+// возвращает true, когда все 4 байта записаны
+func write32LE(c *CPU, stage *int, regWithAddr int, regSource int) bool {
+	// c.reg.GPR[regWithAddr := c.reg.GPR[regWithAddr]
+	c.ensureDataSize(c.reg.GPR[regWithAddr] + 3)
 
-	val := c.reg.GPR[isa.RT]
+	val := c.reg.GPR[regSource] // источник данных – регистр RT
 	switch *stage {
 	case 1:
-		c.memD[addr] = byte(val)
+		c.memD[c.reg.GPR[regWithAddr]] = byte(val)
+		fmt.Printf("TICK %d - memD[0x%X]<-%v | memD[0x%X]=0x%X\n",
+			c.tick, c.reg.GPR[regWithAddr], isa.GetRegMnem(regSource), c.reg.GPR[regWithAddr], c.memD[c.reg.GPR[regWithAddr]])
+		c.reg.GPR[regWithAddr]++
 	case 2:
-		c.memD[addr+1] = byte(val >> 8)
+		c.memD[c.reg.GPR[regWithAddr]] = byte(val >> 8)
+		fmt.Printf("TICK %d - memD[0x%X]<-%v | memD[0x%X]=0x%X\n",
+			c.tick, c.reg.GPR[regWithAddr], isa.GetRegMnem(regSource), c.reg.GPR[regWithAddr], c.memD[c.reg.GPR[regWithAddr]])
+		c.reg.GPR[regWithAddr]++
 	case 3:
-		c.memD[addr+2] = byte(val >> 16)
+		c.memD[c.reg.GPR[regWithAddr]] = byte(val >> 16)
+		fmt.Printf("TICK %d - memD[0x%X]<-%v | memD[0x%X]=0x%X\n",
+			c.tick, c.reg.GPR[regWithAddr], isa.GetRegMnem(regSource), c.reg.GPR[regWithAddr], c.memD[c.reg.GPR[regWithAddr]])
+		c.reg.GPR[regWithAddr]++
 	case 4:
-		c.memD[addr+3] = byte(val >> 24)
-	default:
+		c.memD[c.reg.GPR[regWithAddr]] = byte(val >> 24)
+		fmt.Printf("TICK %d - memD[0x%X]<-%v | memD[0x%X]=0x%X\n",
+			c.tick, c.reg.GPR[regWithAddr], isa.GetRegMnem(regSource), c.reg.GPR[regWithAddr], c.memD[c.reg.GPR[regWithAddr]])
+		c.reg.GPR[regWithAddr]++
 		return true
+	default:
+		// return true // все байты записаны
 	}
-	c.reg.GPR[regWithAddr]++
 	*stage++
 	return false
 }
 
 // возвращают true, когда все 4 байта обработаны
 func read32LE(c *CPU, stage *int, regWithAddr int, regToStoreTo int) bool {
-	// fmt.Println("read addr -", c.reg.GPR[regWithAddr], "to reg", isa.GetRegMnem(regToStoreTo))
 	switch *stage {
 	case 1:
 		c.reg.GPR[regToStoreTo] = uint32(c.memD[c.reg.GPR[regWithAddr]])

@@ -65,7 +65,7 @@ func init() {
 	for k, v := range map[uint32]string{
 		MvRegReg: "MV_REG_REG", MvImmReg: "MV_IMM_REG",
 		// MvMemAbsReg: "MV_MEM_ABS_REG",
-		MvRegMemAbs:   "MV_REG_MEM_ABS",
+		// MvRegMemAbs:   "MV_REG_MEM_ABS",
 		MvSpOffsToReg: "SPOFFS_REG", RegMemFp: "REG_MEM_FP",
 		MvMemReg: "MV_MEM_REG", MvRegMem: "MV_REG_MEM", MvMemMem: "MV_MEM_MEM",
 		MvImmMem: "MV_IMM_MEM",

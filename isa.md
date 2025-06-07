@@ -1,14 +1,14 @@
 # DATA MOVEMENTS
 
-| Операция | dest | 1 arg | 2 arg | mnemonic                       | ?                          | code                             | n_words |
-| -------- | ---- | ----- | ----- | ------------------------------ | -------------------------- | -------------------------------- | ------- |
-| **MOV**  | reg  | reg   | -     | MOV rd, rs                     | rd <- rs                   | [opc+REG_REG+rd+rs]              | 1       |
-|          | reg  | imm   | -     | MOV rd, imm                    | rd <- imm                  | [opc+IMM_REG+rd][imm]            | 2       |
-|          | reg  | ptr   | -     | MOV rd, [addr]                 | rd <- mem[addr1]           | [opc+MEM_REG+rd][addr]           | 2       |
-|          | reg  | offs  |       | MOV rd, [(sp)+offs]            | rd <- mem[sp+offs]         | [opc+SPOFFS_REG+rd+offs(17bits)] | 1       |
-|          | mem  | ptr   | ptr   | MOV [dest_addr], [source_addr] | mem[d_addr] <- mem[s_addr] | [opc+MEM_MEM][d_addr][s_addr]    | 3       |
-|          | mem  | reg   |       | MOV [addr], rs                 | mem[d_addr] <- rs          | [opc+REG_MEM+rs][d_addr]         | 2       |
-| **PUSH** | mem  | reg   |       | push rs1                       | sp=sp-4; mem[sp] <- rs     | [opc+SingleReg+rs]               | 1       |
+| Операция | dest  | 1 arg | 2 arg | mnemonic                       | ?                          | code                             | n_words |
+| -------- | ----- | ----- | ----- | ------------------------------ | -------------------------- | -------------------------------- | ------- |
+| **MOV**  | reg   | reg   | -     | MOV rd, rs                     | rd <- rs                   | [opc+REG_REG+rd+rs]              | 1       |
+|          | reg   | imm   | -     | MOV rd, imm                    | rd <- imm                  | [opc+IMM_REG+rd][imm]            | 2       |
+|          | reg   | ptr   | -     | MOV rd, [addr]                 | rd <- mem[addr1]           | [opc+MEM_REG+rd][addr]           | 2       |
+|          | reg   | offs  |       | MOV rd, [(sp)+offs]            | rd <- mem[sp+offs]         | [opc+SPOFFS_REG+rd+offs(17bits)] | 1       |
+|          | mem   | ptr   | ptr   | MOV [dest_addr], [source_addr] | mem[d_addr] <- mem[s_addr] | [opc+MEM_MEM][d_addr][s_addr]    | 3       |
+|          | mem   | reg   |       | MOV [addr], rs                 | mem[d_addr] <- rs          | [opc+REG_MEM+rs][d_addr]         | 2       |
+| **PUSH** | stack | reg   |       | push rs1                       | sp=sp-4; mem[sp] <- rs     | [opc+SingleReg+rs]               | 1       |
 
 # MATH
 

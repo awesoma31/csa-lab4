@@ -151,6 +151,9 @@ func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) 
 			isa.GetRegMnem(s2),
 		),
 	)
+	if opcode == isa.OpPush {
+		fmt.Printf("push word 0x%08X\n", instructionWord)
+	}
 	cg.nextInstructionAddr++
 }
 

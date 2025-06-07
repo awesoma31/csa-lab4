@@ -2,7 +2,7 @@ package isa
 
 // ──────────────────────── registers (4 bits) ─────────────────
 const (
-	RA = iota // 1
+	RA = iota // 0
 	RM1
 	RM2
 	RAddr
@@ -15,7 +15,7 @@ const (
 	SpReg
 	FpReg
 	RT
-	ZERO        //14
-	ONE         // 15
-	placeholder // 16
+	ZERO        // 13
+	ONE         // 14
+	placeholder // 15
 )

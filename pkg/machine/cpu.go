@@ -74,7 +74,10 @@ func (c *CPU) fetch() microStep { // returns a μ-routine
 		op, mode, rd, rs1, rs2 := decoder.Dec(c.reg.IR)
 
 		f := ucode[op][mode]
-		fmt.Printf("TICK %d - 0x%08X -  %v %v; PC++ | PC=%X\n", c.tick, c.reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.reg.PC)
+		// if op == isa.OpPush {
+		// 	fmt.Printf("decoded push, reg n %d=%v\n", rs1, isa.GetRegMnem(rs1))
+		// }
+		fmt.Printf("TICK %d - 0x%08X -  %v %v; PC++ | %v\n", c.tick, c.reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC())
 		if f == nil {
 			slog.Warn("unknown instruction", "pc", c.reg.PC, "ir", c.reg.IR)
 			// c.reg.PC++   // пропускаем слово

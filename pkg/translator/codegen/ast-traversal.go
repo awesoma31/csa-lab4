@@ -69,6 +69,7 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 
 	case ast.BinaryExpr:
 		cg.generateExpr(e.Left, isa.RM1)
+		// fmt.Printf("pushing reg n %d=%v\n", isa.RM1, isa.GetRegMnem(isa.RM1))
 		cg.emitPushReg(isa.RM1)
 
 		cg.generateExpr(e.Right, isa.RM2)
@@ -153,7 +154,7 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 }
 
 func (cg *CodeGenerator) emitPushReg(reg int) {
-	cg.emitInstruction(isa.OpPush, isa.SingleRegMode, reg, -1, -1)
+	cg.emitInstruction(isa.OpPush, isa.SingleRegMode, -1, reg, -1)
 }
 
 func (cg *CodeGenerator) emitPushImm(imm int32) {
@@ -343,7 +344,7 @@ func (cg *CodeGenerator) generateAssignExpr(e ast.AssignmentExpr, rd int) {
 		// Store the value from rd into the variable's memory location based on MemoryArea
 		if symbol.MemoryArea == "data" { // Global variable
 			// MOV [absolute_byte_address], rd
-			cg.emitInstruction(isa.OpMov, isa.MvRegMemAbs, -1, rd, -1)
+			cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, rd, -1)
 			cg.emitImmediate(symbol.AbsAddress) // Absolute byte-address operand (must be word-aligned)
 		} else if symbol.MemoryArea == "stack" { // Local variable (on the stack)
 			//TODO:
