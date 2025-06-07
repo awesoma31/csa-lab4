@@ -63,8 +63,8 @@ func (d Decoded) String() string {
 		"%s  %s   rd:%s  rs1:%s  rs2:%s}",
 		isa.GetOpMnemonic(d.Opcode),
 		isa.GetAMnemonic(d.Mode),
-		isa.GetRegisterMnemonic(d.Rd),
-		isa.GetRegisterMnemonic(d.Rs1),
-		isa.GetRegisterMnemonic(d.Rs2),
+		isa.GetRegMnem(d.Rd),
+		isa.GetRegMnem(d.Rs1),
+		isa.GetRegMnem(d.Rs2),
 	)
 }

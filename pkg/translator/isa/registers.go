@@ -14,7 +14,7 @@ const (
 	RCounter
 	SpReg
 	FpReg
-	R5
+	RT
 	ZERO        //14
 	ONE         // 15
 	placeholder // 16

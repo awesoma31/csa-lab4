@@ -92,7 +92,7 @@ func init() {
 
 func GetOpMnemonic(op uint32) string { return opcodeMnemonics[op] }
 func GetAMnemonic(m uint32) string   { return amMnemonics[m] }
-func GetRegisterMnemonic(r int) string {
+func GetRegMnem(r int) string {
 	if r < 0 {
 		return ""
 	}

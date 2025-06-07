@@ -6,9 +6,9 @@
 |          | reg  | imm   | -     | MOV rd, imm                    | rd <- imm                  | [opc+IMM_REG+rd][imm]            | 2       |
 |          | reg  | ptr   | -     | MOV rd, [addr]                 | rd <- mem[addr1]           | [opc+MEM_REG+rd][addr]           | 2       |
 |          | reg  | offs  |       | MOV rd, [(sp)+offs]            | rd <- mem[sp+offs]         | [opc+SPOFFS_REG+rd+offs(17bits)] | 1       |
-|          |      |       |       |                                |                            |                                  |         |
 |          | mem  | ptr   | ptr   | MOV [dest_addr], [source_addr] | mem[d_addr] <- mem[s_addr] | [opc+MEM_MEM][d_addr][s_addr]    | 3       |
 |          | mem  | reg   |       | MOV [addr], rs                 | mem[d_addr] <- rs          | [opc+REG_MEM+rs][d_addr]         | 2       |
+| **PUSH** | mem  | reg   |       | push rs1                       | sp=sp-4; mem[sp] <- rs     | [opc+SingleReg+rs]               | 1       |
 
 # MATH
 
@@ -45,7 +45,7 @@
 | **JLE**  | addr | -   | JLE addr | PC ← addr, если ≤ (signed)      | SF ≠ OF или ZF = 1 | [opc][addr] | 2       |
 
 | Операция | dest | arg1 | arg2 | mnemonic     | Описание             | Кодировка     | n_words |
-|----------|------|------|------|--------------|----------------------|---------------|---------|
+| -------- | ---- | ---- | ---- | ------------ | -------------------- | ------------- | ------- |
 | **JMP**  | addr | -    | -    | JMP addr     | PC ← addr            | \[opc\][addr] | 2       |
 | **CMP**  |      | rs1  | rs2  | CMP rs1, rs2 | NZVC <- cmp rs1, rs2 | [opc+rd1+rs2] | 1       |
 | **CALL** | addr | -    | -    | CALL addr    | PUSH PC; PC ← addr   | [opc][addr]   | 2       |

@@ -146,9 +146,9 @@ func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) 
 			instructionWord,
 			isa.GetOpMnemonic(opcode),
 			isa.GetAMnemonic(mode),
-			isa.GetRegisterMnemonic(dest),
-			isa.GetRegisterMnemonic(s1),
-			isa.GetRegisterMnemonic(s2),
+			isa.GetRegMnem(dest),
+			isa.GetRegMnem(s1),
+			isa.GetRegMnem(s2),
 		),
 	)
 	cg.nextInstructionAddr++

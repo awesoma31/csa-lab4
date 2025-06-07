@@ -1,7 +1,7 @@
-let b = 2;
+let b = 2330;
 let c = 3;
 let d = 7;
-let a = 1;
+let a = 1500;
 let e = 999;
 //e = (10+b*5)-(12/c+4)*(d-a);
 
