@@ -94,6 +94,7 @@ func (cg *CodeGenerator) generateWhileStmt(s ast.WhileStmt) {
 }
 
 func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
+	cg.debugAssembly = append(cg.debugAssembly, "PRINT STMT")
 	cg.generateExpr(s.Argument, isa.ROutAddr) // ROutAddr = strPtr (1 byte not len, check func)
 	switch arg := s.Argument.(type) {
 	case ast.StringExpr:
@@ -162,6 +163,8 @@ func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
 		panic("print number not impl")
 
 	}
+
+	cg.debugAssembly = append(cg.debugAssembly, "PRINT END")
 
 }
 

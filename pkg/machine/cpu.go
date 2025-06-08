@@ -105,14 +105,21 @@ func (c *CPU) PrintAllPortOutputs() {
 		strOutput := strBuilder.String()
 
 		// числовое представление
+		var hexVals []string
+		for _, b := range buf {
+			hexVals = append(hexVals, fmt.Sprintf("%2X", b))
+		}
+		hexOutput := strings.Join(hexVals, " ")
+
 		var byteVals []string
 		for _, b := range buf {
-			byteVals = append(byteVals, fmt.Sprintf("%3d", b)) // или %02X
+			byteVals = append(byteVals, fmt.Sprintf("%3d", b))
 		}
 		byteOutput := strings.Join(byteVals, " ")
 
 		// финальный вывод
 		fmt.Printf("port %d: %s\n", port, strOutput)
+		fmt.Printf("        %s\n", hexOutput)
 		fmt.Printf("        %s\n", byteOutput)
 	}
 }

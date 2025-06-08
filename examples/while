@@ -5,3 +5,4 @@ while a < 5 {
 }
 
 print("done");
+print(a);
