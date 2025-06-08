@@ -28,12 +28,69 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 		cg.generateIfStmt(s)
 	case ast.PrintStmt: // Обработка оператора Print
 		cg.generatePrintStmt(s)
-	//TODO: while stmt
-	// case ast.WhileStmt: // Added WhileStmt handling
-	// cg.generateWhileStmt(s)
+	case ast.WhileStmt:
+		cg.generateWhileStmt(s)
 	default:
 		cg.addError(fmt.Sprintf("Unsupported statement type: %T", s))
 	}
+}
+
+func (cg *CodeGenerator) generateWhileStmt(s ast.WhileStmt) {
+	// 1. Запомнить адрес начала проверки условия
+	conditionAddr := cg.nextInstructionAddr
+	cg.debugAssembly = append(cg.debugAssembly, "WHILE STATEMENT CONDITION:")
+
+	// 2. Сгенерировать код для условия
+	// Аналогично if, предполагаем, что результатом будет установка флагов после сравнения
+	var operator lexer.Token
+	switch cond := s.Condition.(type) {
+	case ast.BinaryExpr:
+		operator = cond.Operator
+	default:
+		// TODO: Добавить обработку для других типов условий (например, bool переменных)
+		cg.addError(fmt.Sprintf("unsupported condition type in while loop: %T", cond))
+		return
+	}
+
+	cg.generateExpr(s.Condition, -1) // -1, так как cmp не требует регистра назначения
+
+	// 3. Определить обратную операцию для условного перехода (выход из цикла, если условие ложно)
+	var jmpToEndOpc uint32
+	switch operator.Kind {
+	case lexer.EQUALS:
+		jmpToEndOpc = isa.OpJne // Jump if Not Equal
+	case lexer.NotEquals:
+		jmpToEndOpc = isa.OpJe // Jump if Equal
+	case lexer.GREATER:
+		jmpToEndOpc = isa.OpJle // Jump if Less or Equal
+	case lexer.LESS:
+		jmpToEndOpc = isa.OpJge // Jump if Greater or Equal
+	case lexer.GREATER_EQUALS:
+		jmpToEndOpc = isa.OpJl // Jump if Less
+	case lexer.LessEquals:
+		jmpToEndOpc = isa.OpJg // Jump if Greater
+	default:
+		cg.addError(fmt.Sprintf("unsupported operator in while condition: %s", operator.Value))
+		// По умолчанию можно просто не входить в цикл, если оператор неизвестен
+		jmpToEndOpc = isa.OpJmp
+	}
+
+	// 4. Сгенерировать инструкцию условного перехода к концу цикла
+	cg.emitInstruction(jmpToEndOpc, isa.JAbsAddr, -1, -1, -1)
+	addrToPatchEnd := cg.ReserveWord() // Резервируем место для адреса конца цикла
+
+	// 5. Сгенерировать код для тела цикла
+	cg.debugAssembly = append(cg.debugAssembly, "WHILE STMT BODY:")
+	cg.generateStmt(s.Body)
+
+	// 6. Сгенерировать безусловный переход к началу проверки условия
+	cg.emitInstruction(isa.OpJmp, isa.JAbsAddr, -1, -1, -1)
+	cg.emitImmediate(conditionAddr) // Адрес для возврата к проверке условия
+
+	// 7. Установить (запатчить) адрес для выхода из цикла
+	afterLoopAddr := cg.nextInstructionAddr
+	cg.PatchWord(addrToPatchEnd, afterLoopAddr)
+	cg.debugAssembly = append(cg.debugAssembly, "END OF WHILE STMT")
 }
 
 func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
@@ -140,7 +197,12 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 			cg.addError(fmt.Sprintf("Unsupported binary operator: %s", e.Operator.Value))
 			return
 		}
-		cg.emitInstruction(opcode, isa.MathRRR, rd, isa.RM1, isa.RM2) // rd = RM1 op RM2
+		if opcode != isa.OpCmp {
+			cg.emitInstruction(opcode, isa.MathRRR, rd, isa.RM1, isa.RM2) // rd = RM1 op RM2
+		} else {
+			cg.emitInstruction(opcode, isa.RegReg, rd, isa.RM1, isa.RM2) // rd = RM1 op RM2
+
+		}
 
 	case ast.SymbolExpr: // Для чтения значения переменной
 		symbol, found := cg.lookupSymbol(e.Value)

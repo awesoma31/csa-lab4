@@ -35,7 +35,8 @@ func init() {
 	ucode[isa.OpCmp][isa.RegReg] = uCmpRR
 
 	ucode[isa.OpJmp][isa.JAbsAddr] = uJump
-	ucode[isa.OpJe][isa.JAbsAddr] = uJumpEquals
+	ucode[isa.OpJe][isa.JAbsAddr] = uJEq
+	ucode[isa.OpJge][isa.JAbsAddr] = uJGE
 
 	//stack
 	ucode[isa.OpPush][isa.SingleRegMode] = uPushReg
@@ -83,7 +84,7 @@ func uCmpRR(_, rs1, rs2 int) microStep {
 		c.V = ((a^b)&(uint32(diff)^a))>>31 == 1 // overflow
 		c.C = a < b                             // borrow/carry
 
-		fmt.Printf("TICK %d - CMP %v, %v | %v\n", c.Tick, isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprFlags())
+		fmt.Printf("TICK %d - CMP %v, %v | %v; %v %v\n", c.Tick, isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprFlags(), c.ReprRegVal(rs1), c.ReprRegVal(rs2))
 
 		return true
 	}
@@ -108,7 +109,7 @@ func uJump(_, _, _ int) microStep {
 		return false
 	}
 }
-func uJumpEquals(_, _, _ int) microStep {
+func uJEq(_, _, _ int) microStep {
 	stage := 0
 	r := isa.RAddr
 	return func(c *CPU) bool {
@@ -125,6 +126,30 @@ func uJumpEquals(_, _, _ int) microStep {
 				return true
 			}
 			fmt.Printf("TICK %d - no jump | %v; %v\n", c.Tick, c.ReprPC(), c.ReprFlags())
+			return true
+		}
+		return false
+	}
+}
+func uJGE(_, _, _ int) microStep {
+	stage := 0
+	r := isa.RAddr
+	return func(c *CPU) bool {
+		switch stage {
+		case 0:
+			c.Reg.GPR[r] = c.memI[c.Reg.PC]
+			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ | %v\n", c.Tick, isa.GetRegMnem(r), c.Reg.PC, c.ReprRegVal(r))
+			c.Reg.PC++
+			stage++
+		case 1:
+			if c.Z || !c.N {
+				c.Reg.PC = c.Reg.GPR[r]
+				fmt.Printf("TICK %d - JGE taken → PC<-%v | %v\n",
+					c.Tick, isa.GetRegMnem(r), c.ReprPC())
+				return true
+			}
+			fmt.Printf("TICK %d - JGE not taken | %v %v\n",
+				c.Tick, c.ReprPC(), c.ReprFlags())
 			return true
 		}
 		return false

@@ -144,6 +144,7 @@ func createTokenLookups() {
 	// stmt(lexer.CONST, parseVarDeclStmt)
 	stmt(lexer.FN, parseFnDeclaration) // Function Declaration (Statement)
 	stmt(lexer.IF, parseIfStmt)
+	stmt(lexer.WHILE, parseWhileStmt)
 	// stmt(lexer.IMPORT, parseImportStmt)
 	// stmt(lexer.FOREACH, parseForeachStmt)
 	// stmt(lexer.CLASS, parseClassDeclarationStmt)

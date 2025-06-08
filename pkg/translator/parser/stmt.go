@@ -156,6 +156,13 @@ func parseIfStmt(p *parser) ast.Stmt {
 	}
 }
 
+func parseWhileStmt(p *parser) ast.Stmt {
+	p.advance()
+	cond := parseExpr(p, assignment)
+	body := parseBlockStmt(p)
+	return ast.WhileStmt{Condition: cond, Body: body}
+}
+
 func parseReturnStmt(p *parser) ast.Stmt {
 	p.expect(lexer.RETURN)
 

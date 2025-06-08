@@ -2,6 +2,7 @@ package machine
 
 import (
 	"fmt"
+	"log"
 	"log/slog"
 	"strings"
 
@@ -93,13 +94,12 @@ func (c *CPU) PrintAllPortOutputs() {
 			continue
 		}
 
-		// строковое представление (ASCII)
 		var strBuilder strings.Builder
 		for _, b := range buf {
 			if b >= 32 && b <= 126 {
 				strBuilder.WriteByte(b)
 			} else {
-				strBuilder.WriteString(".") // непечатаемые → точка
+				strBuilder.WriteString("*") // непечатаемые → точка
 			}
 		}
 		strOutput := strBuilder.String()
@@ -113,7 +113,7 @@ func (c *CPU) PrintAllPortOutputs() {
 
 		// финальный вывод
 		fmt.Printf("port %d: %s\n", port, strOutput)
-		fmt.Printf("         %s\n", byteOutput)
+		fmt.Printf("        %s\n", byteOutput)
 	}
 }
 
@@ -130,7 +130,8 @@ func (c *CPU) fetch() microStep {
 		f := ucode[op][mode]
 		fmt.Printf("TICK %d @ 0x%08X -  %v %v; PC++ | %v\n", c.Tick, c.Reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC())
 		if f == nil {
-			slog.Warn("unknown instruction", "PC", c.Reg.PC-1, "IR", c.Reg.IR)
+			slog.Error("unknown instruction", "PC", c.Reg.PC-1, "IR", c.Reg.IR)
+			log.Fatal()
 			return false
 		}
 		c.step = f(rd, rs1, rs2)

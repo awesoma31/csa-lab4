@@ -1,7 +1,7 @@
 instruction_bin: "bin/instr.bin"
 data_bin: "bin/data.bin"
 
-tick_limit: 300
+tick_limit: 500
 # schedule:
 #   - tick: 100
 #     input:
