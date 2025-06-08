@@ -95,25 +95,25 @@ func (cg *CodeGenerator) generateWhileStmt(s ast.WhileStmt) {
 
 func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
 	cg.debugAssembly = append(cg.debugAssembly, "PRINT STMT")
-	cg.generateExpr(s.Argument, isa.ROutAddr) // ROutAddr = strPtr (1 byte not len, check func)
 	switch arg := s.Argument.(type) {
+	// Случай 1: Печать строкового литерала, например print("hello")
 	case ast.StringExpr:
-		//TODO: check counter (only 1 byte)
+		// generateExpr загружает адрес строки в ROutAddr
+		cg.generateExpr(s.Argument, isa.ROutAddr)
+		// Получаем длину строки из AST-узла
 		strLen := len(arg.Value)
 		if strLen > 255 {
-			cg.addError(fmt.Sprintf("String lenthg cannot be more than 1 byte(255)\n%d - %s", strLen, arg.Value))
+			cg.addError(fmt.Sprintf("String length cannot be more than 1 byte (255): %d - %s", strLen, arg.Value))
 			return
 		}
-		cg.emitMov(isa.MvImmReg, isa.RC, strLen, -1) // imm to reg; s1=imm dest = rd
-		cg.emitInstruction(isa.OpAnd, isa.ImmReg, isa.RC, isa.RC, -1)
-		cg.emitImmediate(0xFF)
+		// Загружаем длину в счетчик RC и запускаем цикл для посимвольной печати через PORT1
+		cg.emitMov(isa.MvImmReg, isa.RC, strLen, -1)
 
 		cmpAddr := cg.nextInstructionAddr
 		cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
 		cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
 		jToEndAddr := cg.ReserveWord()
 		cg.emitMov(isa.MvLowRegIndReg, isa.ROutData, isa.ROutAddr, -1)
-
 		cg.emitInstruction(isa.OpOut, isa.NoOperands, isa.PORT1, -1, -1)
 		cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RC, isa.RC, -1)
 		cg.emitImmediate(1)
@@ -121,51 +121,66 @@ func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
 		cg.emitImmediate(1)
 		cg.emitInstruction(isa.OpJmp, isa.JAbsAddr, -1, -1, -1)
 		cg.emitImmediate(cmpAddr)
-
 		afterEndAddr := cg.nextInstructionAddr
 		cg.PatchWord(jToEndAddr, afterEndAddr)
 
+	// Случай 2: Печать переменной, например print(a)
 	case ast.SymbolExpr:
-		// addr of str len in routaddr
-		cg.emitMov(isa.MvRegIndReg, isa.RC, isa.ROutAddr, -1) // mov rc <- mem[routaddr]
-		cg.emitInstruction(isa.OpAnd, isa.ImmReg, isa.RC, isa.RC, -1)
-		cg.emitImmediate(0xFF)
-		// add 1 to routaddr bcs generateExpr will store ptr to str len initially
-		cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.ROutAddr, isa.ROutAddr, -1)
-		cg.emitImmediate(1)
-		// routaddr = addr of str 1 char
-		// rcounter addr len
-
-		_, found := cg.lookupSymbol(arg.Value)
+		// Находим информацию о переменной в таблице символов
+		symbol, found := cg.lookupSymbol(arg.Value)
 		if !found {
 			cg.addError(fmt.Sprintf("Undeclared variable in print expr: %s", arg.Value))
+			return
 		}
 
-		cmpAddr := cg.nextInstructionAddr
-		cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
-		cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
-		jToEndAddr := cg.ReserveWord()
-		cg.emitMov(isa.MvLowRegIndReg, isa.ROutData, isa.ROutAddr, -1)
+		if !symbol.IsStr {
+			cg.generateExpr(arg, isa.ROutData)
+			cg.emitInstruction(isa.OpOut, isa.NoOperands, isa.PORT2, -1, -1)
+		} else {
+			cg.generateExpr(s.Argument, isa.ROutAddr)
+			cg.emitMov(isa.MvRegIndReg, isa.RC, isa.ROutAddr, -1) // mov rc <- mem[routaddr]
+			cg.emitInstruction(isa.OpAnd, isa.ImmReg, isa.RC, isa.RC, -1)
+			cg.emitImmediate(0xFF)
+			// add 1 to routaddr bcs generateExpr will store ptr to str len initially
+			cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.ROutAddr, isa.ROutAddr, -1)
+			cg.emitImmediate(1)
+			// routaddr = addr of str 1 char
+			// rcounter addr len
 
-		cg.emitInstruction(isa.OpOut, isa.NoOperands, isa.PORT1, -1, -1)
-		cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RC, isa.RC, -1)
-		cg.emitImmediate(1)
-		cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.ROutAddr, isa.ROutAddr, -1)
-		cg.emitImmediate(1)
-		cg.emitInstruction(isa.OpJmp, isa.JAbsAddr, -1, -1, -1)
-		//to cmp addr
-		cg.emitImmediate(cmpAddr)
+			_, found := cg.lookupSymbol(arg.Value)
+			if !found {
+				cg.addError(fmt.Sprintf("Undeclared variable in print expr: %s", arg.Value))
+			}
 
-		afterEndAddr := cg.nextInstructionAddr
-		cg.PatchWord(jToEndAddr, afterEndAddr)
+			cmpAddr := cg.nextInstructionAddr
+			cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
+			cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
+			jToEndAddr := cg.ReserveWord()
+			cg.emitMov(isa.MvLowRegIndReg, isa.ROutData, isa.ROutAddr, -1)
 
+			cg.emitInstruction(isa.OpOut, isa.NoOperands, isa.PORT1, -1, -1)
+			cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RC, isa.RC, -1)
+			cg.emitImmediate(1)
+			cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.ROutAddr, isa.ROutAddr, -1)
+			cg.emitImmediate(1)
+			cg.emitInstruction(isa.OpJmp, isa.JAbsAddr, -1, -1, -1)
+			//to cmp addr
+			cg.emitImmediate(cmpAddr)
+
+			afterEndAddr := cg.nextInstructionAddr
+			cg.PatchWord(jToEndAddr, afterEndAddr)
+		}
+
+	// Случай 3: Печать числового литерала, например print(42)
 	case ast.NumberExpr:
-		panic("print number not impl")
+		// Загружаем число в регистр для вывода
+		cg.generateExpr(arg, isa.ROutData)
+		// Отправляем на PORT2 для вывода чисел
+		cg.emitInstruction(isa.OpOut, isa.NoOperands, isa.PORT2, -1, -1)
 
+	default:
+		cg.addError(fmt.Sprintf("Unsupported argument type for print: %T", arg))
 	}
-
-	cg.debugAssembly = append(cg.debugAssembly, "PRINT END")
-
 }
 
 // generateExpr generates code for a given expression, leaving its result in specified register.
@@ -337,6 +352,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			symbolEntry.SizeInBytes = WordSizeBytes
 			symbolEntry.NumberValue = int32(strAddr)
 			symbolEntry.AbsAddress = ptrAddr
+			symbolEntry.IsStr = true
 
 			//store as pointer
 			if len(cg.scopeStack) == 1 {
@@ -355,6 +371,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			symbolEntry.NumberValue = int32(strAddr)
 			//TODO: check when local, stack
 			symbolEntry.AbsAddress = ptrAddr
+			symbolEntry.IsStr = true
 
 			if len(cg.scopeStack) == 1 { // if global
 				symbolEntry.MemoryArea = "data"

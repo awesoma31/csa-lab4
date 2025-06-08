@@ -20,6 +20,7 @@ type SymbolEntry struct {
 	SizeInBytes int
 	NumberValue int32
 	StringValue string
+	IsStr       bool
 
 	NumParams     int
 	LocalVarCount int // Total size of local variables in bytes
