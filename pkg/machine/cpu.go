@@ -118,7 +118,7 @@ func (c *CPU) PrintAllPortOutputs() {
 		byteOutput := strings.Join(byteVals, " ")
 
 		// финальный вывод
-		fmt.Printf("port %d: %s\n", port, strOutput)
+		fmt.Printf("port % 4d: %s\n", port, strOutput)
 		fmt.Printf("        %s\n", hexOutput)
 		fmt.Printf("        %s\n", byteOutput)
 	}
@@ -135,7 +135,7 @@ func (c *CPU) fetch() microStep {
 		op, mode, rd, rs1, rs2 := decoder.Dec(c.Reg.IR)
 
 		f := ucode[op][mode]
-		fmt.Printf("TICK %d @ 0x%08X -  %v %v; PC++ | %v\n", c.Tick, c.Reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC())
+		fmt.Printf("TICK % 4d @ 0x%08X -  %v %v; PC++ | %v\n", c.Tick, c.Reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC())
 		if f == nil {
 			slog.Error("unknown instruction", "PC", c.Reg.PC-1, "IR", c.Reg.IR)
 			log.Fatal()
@@ -167,7 +167,7 @@ func (c *CPU) raiseIRQ(vec uint8) {
 	c.pending, c.pendNum = true, int(vec)
 }
 func (c *CPU) enterISR() {
-	fmt.Printf("Entering Interruption, nmb=%d", c.pendNum)
+	fmt.Printf("Entering Interruption, nmb=% 4d", c.pendNum)
 	c.push(c.Reg.PC)             // адрес возврата
 	c.Reg.PC = uint32(c.pendNum) // (пока) вектор = номер
 	c.SaveGPRValues()
@@ -219,7 +219,7 @@ func (c *CPU) Repr() string {
 }
 
 func (c *CPU) ReprPC() string {
-	return fmt.Sprintf("PC=%d/0x%X", c.Reg.PC, c.Reg.PC)
+	return fmt.Sprintf("PC=% 4d/0x%X", c.Reg.PC, c.Reg.PC)
 }
 
 func (c *CPU) ReprFlags() string {
@@ -239,7 +239,7 @@ func (c *CPU) ReprFlags() string {
 }
 
 func (c *CPU) DumpState(stage string) {
-	fmt.Printf("TICK %d\n", c.Tick)
+	fmt.Printf("TICK % 4d\n", c.Tick)
 	fmt.Println("────────────────────────────────────────────")
 	fmt.Printf("[INSTR] PC=0x%02X  IR=0x%08X  %s\n",
 		c.Reg.PC, c.Reg.IR, Disasm(c.Reg.IR))
@@ -254,28 +254,28 @@ func (c *CPU) DumpState(stage string) {
 	// }
 	// fmt.Println("[IO    ]")
 	// for i, dev := range c.io.Devs {
-	// 	fmt.Printf(" PORT %d IN = %q  OUT = %q\n", i, dev.InBuf, dev.OutBuf)
+	// 	fmt.Printf(" PORT % 4d IN = %q  OUT = %q\n", i, dev.InBuf, dev.OutBuf)
 	// }
 	fmt.Printf(" INTERRUPT PENDING: %v  IN_ISR: %v\n", c.pending, c.inISR)
 	fmt.Println("────────────────────────────────────────────")
 }
 
 func (c *CPU) ReprRegVal(r int) any {
-	return fmt.Sprintf("%v=%d/0x%X", isa.GetRegMnem(r), c.Reg.GPR[r], c.Reg.GPR[r])
+	return fmt.Sprintf("%v=% 4d/0x%X", isa.GetRegMnem(r), c.Reg.GPR[r], c.Reg.GPR[r])
 }
 
 func Disasm(ir uint32) string {
 	op, mode, rd, rs1, _ := decoder.Dec(ir)
 	switch {
 	case op == isa.OpMov && mode == isa.MvImmReg:
-		return fmt.Sprintf("MOV r%d<-#0x%X", rd, ir&0xFFFF)
+		return fmt.Sprintf("MOV r% 4d<-#0x%X", rd, ir&0xFFFF)
 	case op == isa.OpMov && mode == isa.MvRegReg:
-		return fmt.Sprintf("MOV r%d<-r%d", rd, rs1)
+		return fmt.Sprintf("MOV r% 4d<-r% 4d", rd, rs1)
 	case op == isa.OpMov && mode == isa.MvMemReg:
-		return fmt.Sprintf("MOV r%d<-[addr]", rd)
+		return fmt.Sprintf("MOV r% 4d<-[addr]", rd)
 	// ...
 	default:
-		return fmt.Sprintf("??? op=%d mode=%d", op, mode)
+		return fmt.Sprintf("??? op=% 4d mode=% 4d", op, mode)
 	}
 }
 
