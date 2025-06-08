@@ -24,3 +24,8 @@ const (
 	PORT1 = R4
 	PORT2 = FpReg
 )
+
+var PortLU = map[int]int{
+	PORT1: 1,
+	PORT2: 2,
+}

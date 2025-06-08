@@ -9,27 +9,27 @@ import (
 
 	bingen "github.com/awesoma31/csa-lab4/pkg/bin-gen"
 	"github.com/awesoma31/csa-lab4/pkg/machine"
+	"github.com/awesoma31/csa-lab4/pkg/machine/io"
 	"gopkg.in/yaml.v3"
 )
 
-type config struct {
-	InstrMemPath string `yaml:"instruction_bin"`
-	DataMemPath  string `yaml:"data_bin"`
-	TickLimit    int    `yaml:"tick_limit"`
+type cpuConfig struct {
+	InstrMemPath string         `yaml:"instruction_bin"`
+	DataMemPath  string         `yaml:"data_bin"`
+	TickLimit    int            `yaml:"tick_limit"`
+	Schedule     []io.TickEntry `yaml:"schedule"`
 }
 
 func main() {
 	configPath := flag.String("config", "config/config.yaml", "path to cpu config yml")
-	machine, err := loadCPUFromConfig(*configPath)
+	cpu, err := loadCPUFromConfig(*configPath)
 	if err != nil {
 		slog.Error(fmt.Sprintf("error configuring CPU - %s", err.Error()))
 		log.Fatal()
-
 	}
+	fmt.Println("--------------------------------------------------------------")
 	slog.Info("CPU ocnfigured succesfully, starting simulation")
-	machine.Run(1000)
-
-	// machine.Start()
+	cpu.Run()
 }
 
 func loadCPUFromConfig(path string) (*machine.CPU, error) {
@@ -37,10 +37,12 @@ func loadCPUFromConfig(path string) (*machine.CPU, error) {
 	if err != nil {
 		return nil, err
 	}
-	var cfg config
+	var cfg cpuConfig
 	if err := yaml.Unmarshal(raw, &cfg); err != nil {
 		return nil, fmt.Errorf("parse yaml: %w", err)
 	}
+
+	ioc := io.NewIOController(cfg.Schedule)
 
 	ins, err := bingen.LoadInstructionMemory(cfg.InstrMemPath)
 	if err != nil {
@@ -51,7 +53,6 @@ func loadCPUFromConfig(path string) (*machine.CPU, error) {
 		return nil, err
 	}
 
-	//TODO: bus
-	cpu := machine.New(ins, data, nil)
+	cpu := machine.New(ins, data, ioc, cfg.TickLimit)
 	return cpu, nil
 }

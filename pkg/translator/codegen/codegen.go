@@ -179,6 +179,8 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 		cg.emitImmediate(uint32(dest))
 	case isa.MvRegIndReg:
 		cg.emitInstruction(isa.OpMov, isa.MvRegIndReg, dest, s1, -1)
+	case isa.MvLowRegIndReg:
+		cg.emitInstruction(isa.OpMov, isa.MvLowRegIndReg, dest, s1, -1)
 	default:
 		panic("unknown mov mode")
 	}

@@ -30,10 +30,12 @@ func init() {
 	ucode[isa.OpMov][isa.MvRegMem] = uMovRegMem
 	ucode[isa.OpMov][isa.MvMemMem] = uMovMemMem
 	ucode[isa.OpMov][isa.MvRegIndReg] = uMovRegIndReg
+	ucode[isa.OpMov][isa.MvLowRegIndReg] = uMovLowRegIndReg
 
 	// JUMP BRENCH
 	ucode[isa.OpCmp][isa.RegReg] = uCmpRR
 
+	ucode[isa.OpJmp][isa.JAbsAddr] = uJump
 	ucode[isa.OpJe][isa.JAbsAddr] = uJumpEquals
 
 	//stack
@@ -44,6 +46,7 @@ func init() {
 	ucode[isa.OpAdd][isa.MathRRR] = uAddRRR
 	ucode[isa.OpAdd][isa.MathRIR] = uAddRIR
 	ucode[isa.OpSub][isa.MathRRR] = uSubRRR
+	ucode[isa.OpSub][isa.MathRIR] = uSubRIR
 	ucode[isa.OpMul][isa.MathRRR] = uMulRRR
 	ucode[isa.OpDiv][isa.MathRRR] = uDivRRR
 
@@ -53,14 +56,26 @@ func init() {
 
 	// CALL RET ...
 
-	ucode[isa.OpOut][isa.SingleRegMode] = uDivRRR
+	ucode[isa.OpOut][isa.NoOperands] = uOut
 
+}
+
+func uOut(rd, _, _ int) microStep {
+	return func(c *CPU) bool {
+		//TODO: if print then always 1
+		port := uint8(1)
+		data := byte(c.Reg.GPR[isa.ROutData])
+		c.Ioc.WritePort(port, data)
+		fmt.Printf("TICK %d - OUT port %d <- %s (0x%02X) | %v\n",
+			c.Tick, port, isa.GetRegMnem(isa.ROutData), data, c.Ioc.Output)
+		return true
+	}
 }
 
 func uCmpRR(_, rs1, rs2 int) microStep {
 	return func(c *CPU) bool {
-		a := uint32(c.reg.GPR[rs1])
-		b := uint32(c.reg.GPR[rs2])
+		a := uint32(c.Reg.GPR[rs1])
+		b := uint32(c.Reg.GPR[rs2])
 		diff := int32(a) - int32(b)
 
 		//TODO: check
@@ -69,30 +84,48 @@ func uCmpRR(_, rs1, rs2 int) microStep {
 		c.V = ((a^b)&(uint32(diff)^a))>>31 == 1 // overflow
 		c.C = a < b                             // borrow/carry
 
-		fmt.Printf("TICK %d - CMP %v, %v | %v\n", c.tick, isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprFlags())
+		fmt.Printf("TICK %d - CMP %v, %v | %v\n", c.Tick, isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprFlags())
 
 		return true
 	}
 }
 
+func uJump(_, _, _ int) microStep {
+	//TODO: should be 1 tick?
+	stage := 0
+	r := isa.RT
+	return func(c *CPU) bool {
+		switch stage {
+		case 0:
+			c.Reg.GPR[r] = c.memI[c.Reg.PC]
+			fmt.Printf("TICK %d - %v<-memI[0x%X]| %v\n", c.Tick, isa.GetRegMnem(r), c.Reg.PC, c.ReprRegVal(r))
+			// c.Reg.PC++
+			stage++
+		case 1:
+			c.Reg.PC = c.Reg.GPR[r]
+			fmt.Printf("TICK %d - PC<-%v | %v\n", c.Tick, isa.GetRegMnem(r), c.ReprPC())
+			return true
+		}
+		return false
+	}
+}
 func uJumpEquals(_, _, _ int) microStep {
 	stage := 0
 	r := isa.RAddr
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
-			c.reg.GPR[r] = c.memI[c.reg.PC]
-			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ | %v\n", c.tick, isa.GetRegMnem(r), c.reg.PC, c.ReprRegVal(r))
-			c.reg.PC++
+			c.Reg.GPR[r] = c.memI[c.Reg.PC]
+			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ | %v\n", c.Tick, isa.GetRegMnem(r), c.Reg.PC, c.ReprRegVal(r))
+			c.Reg.PC++
 			stage++
 		case 1:
 			if c.Z {
-				c.reg.PC = c.reg.GPR[r]
-				fmt.Printf("TICK %d - PC<-%v | PC=%v\n", c.tick, isa.GetRegMnem(r), c.ReprPC())
+				c.Reg.PC = c.Reg.GPR[r]
+				fmt.Printf("TICK %d - PC<-%v | PC=%v\n", c.Tick, isa.GetRegMnem(r), c.ReprPC())
 				return true
 			}
-			c.reg.PC++
-			fmt.Printf("TICK %d - %v, no jump; PC++ | %v\n", c.tick, c.ReprFlags(), c.ReprPC())
+			fmt.Printf("TICK %d - no jump | %v; %v\n", c.Tick, c.ReprPC(), c.ReprFlags())
 			return true
 		}
 		return false
@@ -104,13 +137,13 @@ func uAndIR(rd, rs1, _ int) microStep {
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
-			c.reg.GPR[isa.RT] = c.memI[c.reg.PC]
-			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ | %v\n", c.tick, isa.GetRegMnem(isa.RT), c.reg.PC, c.ReprRegVal(isa.RT))
-			c.reg.PC++
+			c.Reg.GPR[isa.RT] = c.memI[c.Reg.PC]
+			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ | %v\n", c.Tick, isa.GetRegMnem(isa.RT), c.Reg.PC, c.ReprRegVal(isa.RT))
+			c.Reg.PC++
 			stage++
 		case 1:
-			c.reg.GPR[rd] = c.reg.GPR[rs1] & c.reg.GPR[isa.RT]
-			fmt.Printf("TICK %d - %v<-%v & %X | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), c.reg.GPR[isa.RT], c.ReprRegVal(rd))
+			c.Reg.GPR[rd] = c.Reg.GPR[rs1] & c.Reg.GPR[isa.RT]
+			fmt.Printf("TICK %d - %v<-%v & %X | %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), c.Reg.GPR[isa.RT], c.ReprRegVal(rd))
 			return true
 		}
 		return false
@@ -118,8 +151,8 @@ func uAndIR(rd, rs1, _ int) microStep {
 }
 func uAndRR(rd, rs1, rs2 int) microStep {
 	return func(c *CPU) bool {
-		c.reg.GPR[rd] = c.reg.GPR[rs1] & c.reg.GPR[rs2]
-		fmt.Printf("TICK %d - %v<-%v & %v | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
+		c.Reg.GPR[rd] = c.Reg.GPR[rs1] & c.Reg.GPR[rs2]
+		fmt.Printf("TICK %d - %v<-%v & %v | %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
 		return true
 	}
 }
@@ -135,9 +168,9 @@ func uAddRIR(rd, rs1, _ int) microStep {
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
-			c.reg.GPR[isa.RT] = c.memI[c.reg.PC]
-			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ | %v\n", c.tick, isa.GetRegMnem(isa.RT), c.reg.PC, c.ReprRegVal(isa.RT))
-			c.reg.PC++
+			c.Reg.GPR[isa.RT] = c.memI[c.Reg.PC]
+			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ | %v\n", c.Tick, isa.GetRegMnem(isa.RT), c.Reg.PC, c.ReprRegVal(isa.RT))
+			c.Reg.PC++
 			stage++
 		case 1:
 			MathRRR(c, rd, rs1, isa.RT, isa.OpAdd)
@@ -151,6 +184,22 @@ func uSubRRR(rd, rs1, rs2 int) microStep {
 	return func(c *CPU) bool {
 		MathRRR(c, rd, rs1, rs2, isa.OpSub)
 		return true
+	}
+}
+func uSubRIR(rd, rs1, _ int) microStep {
+	stage := 0
+	return func(c *CPU) bool {
+		switch stage {
+		case 0:
+			c.Reg.GPR[isa.RT] = c.memI[c.Reg.PC]
+			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ | %v\n", c.Tick, isa.GetRegMnem(isa.RT), c.Reg.PC, c.ReprRegVal(isa.RT))
+			c.Reg.PC++
+			stage++
+		case 1:
+			MathRRR(c, rd, rs1, isa.RT, isa.OpSub)
+			return true
+		}
+		return false
 	}
 }
 func uMulRRR(rd, rs1, rs2 int) microStep {
@@ -167,8 +216,9 @@ func uDivRRR(rd, rs1, rs2 int) microStep {
 }
 
 func MathRRR(c *CPU, rd, rs1, rs2 int, opc uint32) {
-	a := uint32(c.reg.GPR[rs1])
-	b := uint32(c.reg.GPR[rs2])
+	//TODO: check flag setting
+	a := uint32(c.Reg.GPR[rs1])
+	b := uint32(c.Reg.GPR[rs2])
 
 	clrF := func() { c.N, c.Z, c.V, c.C = false, false, false, false }
 
@@ -177,7 +227,7 @@ func MathRRR(c *CPU, rd, rs1, rs2 int, opc uint32) {
 		res64 := uint64(a) + uint64(b)
 		res := uint32(res64)
 
-		c.reg.GPR[rd] = res
+		c.Reg.GPR[rd] = res
 		clrF()
 		c.N = res&0x8000_0000 != 0
 		c.Z = res == 0
@@ -188,7 +238,7 @@ func MathRRR(c *CPU, rd, rs1, rs2 int, opc uint32) {
 		res64 := uint64(a) - uint64(b)
 		res := uint32(res64)
 
-		c.reg.GPR[rd] = res
+		c.Reg.GPR[rd] = res
 		clrF()
 		c.N = res&0x8000_0000 != 0
 		c.Z = res == 0
@@ -199,7 +249,7 @@ func MathRRR(c *CPU, rd, rs1, rs2 int, opc uint32) {
 		prod := int64(int32(a)) * int64(int32(b))
 		res := uint32(prod)
 
-		c.reg.GPR[rd] = res
+		c.Reg.GPR[rd] = res
 		clrF()
 		c.N = res&0x8000_0000 != 0
 		c.Z = res == 0
@@ -215,7 +265,7 @@ func MathRRR(c *CPU, rd, rs1, rs2 int, opc uint32) {
 		quot := int32(a) / int32(b)
 		res := uint32(quot)
 
-		c.reg.GPR[rd] = res
+		c.Reg.GPR[rd] = res
 		c.N = res&0x8000_0000 != 0
 		c.Z = res == 0
 		// V, C уже обнулены
@@ -232,7 +282,7 @@ func MathRRR(c *CPU, rd, rs1, rs2 int, opc uint32) {
 	}
 
 	fmt.Printf("TICK %d - %v<-(%v%v%v) | %v %v\n",
-		c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), aluOpLu[opc], isa.GetRegMnem(rs2), c.ReprRegVal(rd), c.ReprFlags())
+		c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), aluOpLu[opc], isa.GetRegMnem(rs2), c.ReprRegVal(rd), c.ReprFlags())
 }
 
 func uPopReg(rd, _, _ int) microStep {
@@ -240,14 +290,14 @@ func uPopReg(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
-			c.reg.GPR[isa.RAddr] = c.reg.GPR[isa.SpReg]
-			fmt.Printf("TICK %d - %v<-%v | ", c.tick, isa.GetRegMnem(isa.RAddr), isa.GetRegMnem(isa.SpReg))
+			c.Reg.GPR[isa.RAddr] = c.Reg.GPR[isa.SpReg]
+			fmt.Printf("TICK %d - %v<-%v | ", c.Tick, isa.GetRegMnem(isa.RAddr), isa.GetRegMnem(isa.SpReg))
 			fmt.Printf("%v\n", c.ReprRegVal(isa.RAddr))
 			stage++
 		case 1, 2, 3, 4, 5:
 			if read32LE(c, &stage, isa.RAddr, rd) {
-				fmt.Printf("TICK %d - SP=SP+4 \n", c.tick)
-				c.reg.GPR[isa.SpReg] += 4
+				fmt.Printf("TICK %d - SP=SP+4 \n", c.Tick)
+				c.Reg.GPR[isa.SpReg] += 4
 				stage++
 				return true
 			}
@@ -260,11 +310,11 @@ func uPushReg(_, rs1, _ int) microStep {
 	return func(c *CPU) bool {
 		switch stage {
 		case 0: // sp -4
-			fmt.Printf("TICK %d - SP=SP-4 \n", c.tick)
+			fmt.Printf("TICK %d - SP=SP-4 \n", c.Tick)
 			// fmt.Printf("rs1 %d %v\n", rs1, isa.GetRegMnem(rs1))
-			c.reg.GPR[isa.SpReg] -= 4
-			c.reg.GPR[isa.RAddr] = c.reg.GPR[isa.SpReg]
-			c.reg.GPR[isa.RT] = c.reg.GPR[rs1]
+			c.Reg.GPR[isa.SpReg] -= 4
+			c.Reg.GPR[isa.RAddr] = c.Reg.GPR[isa.SpReg]
+			c.Reg.GPR[isa.RT] = c.Reg.GPR[rs1]
 			stage = 1
 		case 1, 2, 3, 4, 5:
 			if write32LE(c, &stage, isa.RAddr, rs1) {
@@ -277,8 +327,8 @@ func uPushReg(_, rs1, _ int) microStep {
 
 func uNop(_, _, _ int) microStep {
 	return func(c *CPU) bool {
-		fmt.Printf("TICK %d - NOP, PC++\n", c.tick)
-		c.reg.PC++
+		fmt.Printf("TICK %d - NOP, PC++\n", c.Tick)
+		c.Reg.PC++
 		return true
 	}
 }
@@ -302,17 +352,27 @@ func uMovRegIndReg(rd, rs1, _ int) microStep {
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
-			c.reg.GPR[isa.RAddr] = c.reg.GPR[rs1]
-			fmt.Printf("TICK %d - %v<-*%v | addr=%v\n",
-				c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), c.ReprRegVal(isa.RAddr))
-			stage = 1
+			c.Reg.GPR[isa.RAddr] = c.Reg.GPR[rs1]
+			fmt.Printf("TICK %d - %v<-*%v | %v\n",
+				c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), c.ReprRegVal(rd))
+			stage++
 		case 1, 2, 3, 4, 5: // читаем 4 байта LE -> rd
 			if read32LE(c, &stage, isa.RAddr, rd) {
-				fmt.Printf("TICK %d - %v\n", c.tick, c.ReprRegVal(rd))
+				fmt.Printf("TICK %d - %v\n", c.Tick, c.ReprRegVal(rd))
 				return true // микро-рутина завершена
 			}
 		}
 		return false
+	}
+}
+func uMovLowRegIndReg(rd, rs1, _ int) microStep {
+	return func(c *CPU) bool {
+		addr := c.Reg.GPR[rs1]
+		c.ensureDataSize(addr)
+		c.Reg.GPR[rd] = uint32(c.memD[addr])
+		fmt.Printf("TICK %d - %s <- memD[%X] | %v\n",
+			c.Tick, isa.GetRegMnem(rd), addr, c.ReprRegVal(rd))
+		return true
 	}
 }
 func uMovRegMem(_, rs1, _ int) microStep {
@@ -320,9 +380,9 @@ func uMovRegMem(_, rs1, _ int) microStep {
 	return func(c *CPU) bool {
 		switch stage {
 		case 0: // sp -4
-			c.reg.GPR[isa.RAddr] = c.memI[c.reg.PC]
-			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ \n", c.tick, isa.GetRegMnem(isa.RAddr), c.reg.PC)
-			c.reg.PC++
+			c.Reg.GPR[isa.RAddr] = c.memI[c.Reg.PC]
+			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ \n", c.Tick, isa.GetRegMnem(isa.RAddr), c.Reg.PC)
+			c.Reg.PC++
 			stage++
 		case 1, 2, 3, 4, 5:
 			if write32LE(c, &stage, isa.RAddr, rs1) {
@@ -337,16 +397,16 @@ func uMovMemReg(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
 		switch stage {
 		case 0: // fetch addr
-			c.reg.GPR[isa.RAddr] = c.memI[c.reg.PC]
-			fmt.Printf("TICK %d - %v<-memI[%v]; PC++ | ", c.tick, isa.GetRegMnem(isa.RAddr), c.reg.PC)
+			c.Reg.GPR[isa.RAddr] = c.memI[c.Reg.PC]
+			fmt.Printf("TICK %d - %v<-memI[%v]; PC++ | ", c.Tick, isa.GetRegMnem(isa.RAddr), c.Reg.PC)
 			//TODO: prbly cannot pc++ on the same tick
-			c.reg.PC++
-			fmt.Printf("%v %v=0x%X\n", c.ReprPC(), isa.GetRegMnem(isa.RAddr), c.reg.GPR[isa.RAddr])
+			c.Reg.PC++
+			fmt.Printf("%v %v=0x%X\n", c.ReprPC(), isa.GetRegMnem(isa.RAddr), c.Reg.GPR[isa.RAddr])
 			stage = 1
 		case 1, 2, 3, 4, 5: // T1–T4 – читаем 4 байта
 			if read32LE(c, &stage, isa.RAddr, rd) {
 				//TODO: check of need tick--
-				c.tick--
+				c.Tick--
 				return true
 			}
 		}
@@ -355,17 +415,17 @@ func uMovMemReg(rd, _, _ int) microStep {
 }
 func uMovImmReg(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
-		c.reg.GPR[rd] = c.memI[c.reg.PC]
-		fmt.Printf("TICK %d - %v<-#%d; PC++ | %v\n", c.tick, isa.GetRegMnem(rd), c.memI[c.reg.PC], c.ReprRegVal(isa.SpReg))
-		c.reg.PC++
+		c.Reg.GPR[rd] = c.memI[c.Reg.PC]
+		fmt.Printf("TICK %d - %v<-#%d; PC++ | %v\n", c.Tick, isa.GetRegMnem(rd), c.memI[c.Reg.PC], c.ReprRegVal(isa.SpReg))
+		c.Reg.PC++
 		return true
 	}
 }
 func uMovRegReg(rd, rs1, _ int) microStep {
 	return func(c *CPU) bool {
-		c.reg.GPR[rd] = c.reg.GPR[rs1]
-		c.reg.PC++
-		fmt.Printf("TICK %d - %v<-%v; PC++\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rd))
+		c.Reg.GPR[rd] = c.Reg.GPR[rs1]
+		c.Reg.PC++
+		fmt.Printf("TICK %d - %v<-%v; PC++\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rd))
 		return true
 	}
 }
@@ -374,30 +434,30 @@ func uMovRegReg(rd, rs1, _ int) microStep {
 // возвращает true, когда все 4 байта записаны
 func write32LE(c *CPU, stage *int, regWithAddr int, regSource int) bool {
 	// c.reg.GPR[regWithAddr := c.reg.GPR[regWithAddr]
-	c.ensureDataSize(c.reg.GPR[regWithAddr] + 3)
+	c.ensureDataSize(c.Reg.GPR[regWithAddr] + 3)
 
-	val := c.reg.GPR[regSource] // источник данных – регистр RT
+	val := c.Reg.GPR[regSource] // источник данных – регистр RT
 	switch *stage {
 	case 1:
-		c.memD[c.reg.GPR[regWithAddr]] = byte(val)
+		c.memD[c.Reg.GPR[regWithAddr]] = byte(val)
 		fmt.Printf("TICK %d - memD[0x%X]<-%v | memD[0x%X]=0x%X\n",
-			c.tick, c.reg.GPR[regWithAddr], isa.GetRegMnem(regSource), c.reg.GPR[regWithAddr], c.memD[c.reg.GPR[regWithAddr]])
-		c.reg.GPR[regWithAddr]++
+			c.Tick, c.Reg.GPR[regWithAddr], isa.GetRegMnem(regSource), c.Reg.GPR[regWithAddr], c.memD[c.Reg.GPR[regWithAddr]])
+		c.Reg.GPR[regWithAddr]++
 	case 2:
-		c.memD[c.reg.GPR[regWithAddr]] = byte(val >> 8)
+		c.memD[c.Reg.GPR[regWithAddr]] = byte(val >> 8)
 		fmt.Printf("TICK %d - memD[0x%X]<-%v | memD[0x%X]=0x%X\n",
-			c.tick, c.reg.GPR[regWithAddr], isa.GetRegMnem(regSource), c.reg.GPR[regWithAddr], c.memD[c.reg.GPR[regWithAddr]])
-		c.reg.GPR[regWithAddr]++
+			c.Tick, c.Reg.GPR[regWithAddr], isa.GetRegMnem(regSource), c.Reg.GPR[regWithAddr], c.memD[c.Reg.GPR[regWithAddr]])
+		c.Reg.GPR[regWithAddr]++
 	case 3:
-		c.memD[c.reg.GPR[regWithAddr]] = byte(val >> 16)
+		c.memD[c.Reg.GPR[regWithAddr]] = byte(val >> 16)
 		fmt.Printf("TICK %d - memD[0x%X]<-%v | memD[0x%X]=0x%X\n",
-			c.tick, c.reg.GPR[regWithAddr], isa.GetRegMnem(regSource), c.reg.GPR[regWithAddr], c.memD[c.reg.GPR[regWithAddr]])
-		c.reg.GPR[regWithAddr]++
+			c.Tick, c.Reg.GPR[regWithAddr], isa.GetRegMnem(regSource), c.Reg.GPR[regWithAddr], c.memD[c.Reg.GPR[regWithAddr]])
+		c.Reg.GPR[regWithAddr]++
 	case 4:
-		c.memD[c.reg.GPR[regWithAddr]] = byte(val >> 24)
+		c.memD[c.Reg.GPR[regWithAddr]] = byte(val >> 24)
 		fmt.Printf("TICK %d - memD[0x%X]<-%v | memD[0x%X]=0x%X\n",
-			c.tick, c.reg.GPR[regWithAddr], isa.GetRegMnem(regSource), c.reg.GPR[regWithAddr], c.memD[c.reg.GPR[regWithAddr]])
-		c.reg.GPR[regWithAddr]++
+			c.Tick, c.Reg.GPR[regWithAddr], isa.GetRegMnem(regSource), c.Reg.GPR[regWithAddr], c.memD[c.Reg.GPR[regWithAddr]])
+		c.Reg.GPR[regWithAddr]++
 		return true
 	default:
 		return true // все байты записаны
@@ -408,27 +468,28 @@ func write32LE(c *CPU, stage *int, regWithAddr int, regSource int) bool {
 
 // возвращают true, когда все 4 байта обработаны
 func read32LE(c *CPU, stage *int, regWithAddr int, regToStoreTo int) bool {
+	c.ensureDataSize(c.Reg.GPR[regWithAddr] + 3)
 	switch *stage {
 	case 1:
-		c.reg.GPR[regToStoreTo] = uint32(c.memD[c.reg.GPR[regWithAddr]])
-		fmt.Printf("TICK %d - %v<-memD[%X] | %v\n", c.tick, isa.GetRegMnem(regToStoreTo),
-			c.reg.GPR[regWithAddr], c.ReprRegVal(regToStoreTo))
-		c.reg.GPR[regWithAddr]++
+		c.Reg.GPR[regToStoreTo] = uint32(c.memD[c.Reg.GPR[regWithAddr]])
+		fmt.Printf("TICK %d - %v<-memD[%X] | %v\n", c.Tick, isa.GetRegMnem(regToStoreTo),
+			c.Reg.GPR[regWithAddr], c.ReprRegVal(regToStoreTo))
+		c.Reg.GPR[regWithAddr]++
 	case 2:
-		c.reg.GPR[regToStoreTo] |= uint32(c.memD[c.reg.GPR[regWithAddr]]) << 8
-		fmt.Printf("TICK %d - %v<-memD[%X] | %v\n", c.tick, isa.GetRegMnem(regToStoreTo),
-			c.reg.GPR[regWithAddr], c.ReprRegVal(regToStoreTo))
-		c.reg.GPR[regWithAddr]++
+		c.Reg.GPR[regToStoreTo] |= uint32(c.memD[c.Reg.GPR[regWithAddr]]) << 8
+		fmt.Printf("TICK %d - %v<-memD[%X] | %v\n", c.Tick, isa.GetRegMnem(regToStoreTo),
+			c.Reg.GPR[regWithAddr], c.ReprRegVal(regToStoreTo))
+		c.Reg.GPR[regWithAddr]++
 	case 3:
-		c.reg.GPR[regToStoreTo] |= uint32(c.memD[c.reg.GPR[regWithAddr]]) << 16
-		fmt.Printf("TICK %d - %v<-memD[%X] | %v\n", c.tick, isa.GetRegMnem(regToStoreTo),
-			c.reg.GPR[regWithAddr], c.ReprRegVal(regToStoreTo))
-		c.reg.GPR[regWithAddr]++
+		c.Reg.GPR[regToStoreTo] |= uint32(c.memD[c.Reg.GPR[regWithAddr]]) << 16
+		fmt.Printf("TICK %d - %v<-memD[%X] | %v\n", c.Tick, isa.GetRegMnem(regToStoreTo),
+			c.Reg.GPR[regWithAddr], c.ReprRegVal(regToStoreTo))
+		c.Reg.GPR[regWithAddr]++
 	case 4:
-		c.reg.GPR[regToStoreTo] |= uint32(c.memD[c.reg.GPR[regWithAddr]]) << 24
-		fmt.Printf("TICK %d - %v<-memD[%X] | %v=%d/0x%X\n", c.tick, isa.GetRegMnem(regToStoreTo),
-			c.reg.GPR[regWithAddr], isa.GetRegMnem(regToStoreTo), c.reg.GPR[regToStoreTo], c.reg.GPR[regToStoreTo])
-		c.reg.GPR[regWithAddr]++
+		c.Reg.GPR[regToStoreTo] |= uint32(c.memD[c.Reg.GPR[regWithAddr]]) << 24
+		fmt.Printf("TICK %d - %v<-memD[%X] | %v=%d/0x%X\n", c.Tick, isa.GetRegMnem(regToStoreTo),
+			c.Reg.GPR[regWithAddr], isa.GetRegMnem(regToStoreTo), c.Reg.GPR[regToStoreTo], c.Reg.GPR[regToStoreTo])
+		c.Reg.GPR[regWithAddr]++
 	default:
 		return true
 	}

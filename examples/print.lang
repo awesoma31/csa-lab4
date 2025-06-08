@@ -1,6 +1,4 @@
 let b = 1;
 let a = "gol";
-//print(a);
-
 
 print(a);

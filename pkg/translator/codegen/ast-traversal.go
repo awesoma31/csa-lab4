@@ -50,10 +50,11 @@ func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
 		cg.emitInstruction(isa.OpAnd, isa.ImmReg, isa.RC, isa.RC, -1)
 		cg.emitImmediate(0xFF)
 
+		cmpAddr := cg.nextInstructionAddr
 		cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
 		cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
 		jToEndAddr := cg.ReserveWord()
-		cg.emitMov(isa.MvRegIndReg, isa.ROutData, isa.RAddr, -1)
+		cg.emitMov(isa.MvLowRegIndReg, isa.ROutData, isa.ROutAddr, -1)
 
 		cg.emitInstruction(isa.OpOut, isa.NoOperands, isa.PORT1, -1, -1)
 		cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RC, isa.RC, -1)
@@ -61,7 +62,7 @@ func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
 		cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.ROutAddr, isa.ROutAddr, -1)
 		cg.emitImmediate(1)
 		cg.emitInstruction(isa.OpJmp, isa.JAbsAddr, -1, -1, -1)
-		cg.emitImmediate(jToEndAddr)
+		cg.emitImmediate(cmpAddr)
 
 		afterEndAddr := cg.nextInstructionAddr
 		cg.PatchWord(jToEndAddr, afterEndAddr)
@@ -82,10 +83,11 @@ func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
 			cg.addError(fmt.Sprintf("Undeclared variable in print expr: %s", arg.Value))
 		}
 
+		cmpAddr := cg.nextInstructionAddr
 		cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
 		cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
 		jToEndAddr := cg.ReserveWord()
-		cg.emitMov(isa.MvRegIndReg, isa.ROutData, isa.RAddr, -1)
+		cg.emitMov(isa.MvLowRegIndReg, isa.ROutData, isa.ROutAddr, -1)
 
 		cg.emitInstruction(isa.OpOut, isa.NoOperands, isa.PORT1, -1, -1)
 		cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RC, isa.RC, -1)
@@ -93,7 +95,8 @@ func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
 		cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.ROutAddr, isa.ROutAddr, -1)
 		cg.emitImmediate(1)
 		cg.emitInstruction(isa.OpJmp, isa.JAbsAddr, -1, -1, -1)
-		cg.emitImmediate(jToEndAddr)
+		//to cmp addr
+		cg.emitImmediate(cmpAddr)
 
 		afterEndAddr := cg.nextInstructionAddr
 		cg.PatchWord(jToEndAddr, afterEndAddr)
@@ -201,11 +204,6 @@ func (cg *CodeGenerator) emitPushReg(reg int) {
 	cg.emitInstruction(isa.OpPush, isa.SingleRegMode, -1, reg, -1)
 }
 
-func (cg *CodeGenerator) emitPushImm(imm int32) {
-	cg.emitInstruction(isa.OpPush, isa.StImmMode, -1, -1, -1)
-	cg.emitImmediate(uint32(imm))
-}
-
 func (cg *CodeGenerator) emitPopToReg(reg int) {
 	cg.emitInstruction(isa.OpPop, isa.SingleRegMode, reg, -1, -1)
 }
@@ -224,22 +222,14 @@ func (cg *CodeGenerator) VisitProgram(p *ast.BlockStmt) {
 	// Initialize global scope
 	cg.pushScope()
 
-	// init stack
-	cg.emitInstruction(isa.OpMov, isa.MvImmReg, isa.SpReg, -1, -1)
-	cg.emitImmediate(StackStartAddr)
-
 	for _, stmt := range p.Body {
 		cg.generateStmt(stmt)
 	}
 
 	cg.emitInstruction(isa.OpHalt, isa.NoOperands, -1, -1, -1)
-
-	// cg.popScope() // Pop global scope
 }
 
-// generateVarDeclStmt generates code for a variable declaration.
 func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
-	// Check if the variable is already declared in the current scope
 	if _, found := cg.currentScope().symbols[s.Identifier]; found {
 		cg.addError(fmt.Sprintf("Variable '%s' already declared in this scope.", s.Identifier))
 		return
@@ -249,7 +239,6 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 		Name: s.Identifier,
 	}
 
-	// Determine the type and size based on the assigned value (simple inference)
 	if s.AssignedValue != nil {
 		switch assignedVal := s.AssignedValue.(type) {
 		case ast.NumberExpr:

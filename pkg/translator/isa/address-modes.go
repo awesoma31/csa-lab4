@@ -18,9 +18,10 @@ const (
 	IoMemReg uint32 = 0x0A
 	ImmReg   uint32 = 0x0B
 
-	StImmMode  uint32 = 0x0C
-	CMPRegMode uint32 = 0x0D
-	RegReg     uint32 = 0x0E
+	StImmMode      uint32 = 0x0C
+	CMPRegMode     uint32 = 0x0D
+	RegReg         uint32 = 0x0E
+	MvLowRegIndReg uint32 = 0x0F
 
 	// arithmetic “ternary” forms
 	MathRRR uint32 = 0x10 // rd ← rs1 op rs2

@@ -5,115 +5,104 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/awesoma31/csa-lab4/pkg/machine/decoder"
-	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
 	"slices"
+
+	"github.com/awesoma31/csa-lab4/pkg/machine/decoder"
+	"github.com/awesoma31/csa-lab4/pkg/machine/io"
+	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
+)
+
+const (
+	StackSize = 0x100
 )
 
 var (
-	StackStart uint32 = 0x0300
+	StackStart uint32 = 0x100
 )
 
 type CPU struct {
 	memI []uint32
 	memD []byte
-	io   *IOBus
 
-	reg struct {
-		GPR    [14]uint32
-		PC, IR uint32
+	Ioc *io.IOController
+
+	Reg struct {
+		GPR      [14]uint32
+		PC, IR   uint32
+		savedGPR [14]uint32
 	}
 	N, Z, V, C bool
+	IF         bool
 
 	// control
-	step    microStep // current micro-routine
-	inISR   bool      // already inside ISR?
-	pending bool      // slot for deferred IRQ
-	pendNum int
-	tick    uint64
+	step      microStep // current micro-routine
+	inISR     bool
+	pending   bool // slot for deferred IRQ
+	pendNum   int
+	Tick      int
+	TickLimit int
 }
 
 func (c *CPU) ReprRegVal(r int) any {
-	return fmt.Sprintf("%v=%d/0x%X", isa.GetRegMnem(r), c.reg.GPR[r], c.reg.GPR[r])
+	return fmt.Sprintf("%v=%d/0x%X", isa.GetRegMnem(r), c.Reg.GPR[r], c.Reg.GPR[r])
 }
 
-// vectors fixed at word-addresses 0x80, 0x84 …
-var vectors = [2]uint32{0x80, 0x84}
-
-//	func New(memI []uint32, memD []byte, bus *IOBus) *CPU {
-//		//TODO: mem capacity
-//		mI := make([]uint32, 0, 1000)
-//		mD := make([]byte, 0, 1000)
-//		mI = append(mI, memI...)
-//		mD = append(mD, memD...)
-//		c := &CPU{memI: mI, memD: mD, io: bus}
-//		c.step = c.fetch() // start with fetch
-//		return c
-//	}
-func New(memI []uint32, memD []byte, bus *IOBus) *CPU {
+func New(memI []uint32, memD []byte, ioc *io.IOController, tickLimit int) *CPU {
 	c := &CPU{
-		memI: slices.Clone(memI),
-		memD: slices.Clone(memD),
-		io:   bus,
+		memI:      slices.Clone(memI),
+		memD:      slices.Clone(memD),
+		Ioc:       ioc,
+		TickLimit: tickLimit,
 	}
 
-	// Стек растёт вниз, поэтому SP ставим сразу «ниже» данных.
 	if StackStart < uint32(len(c.memD)) {
-		StackStart = uint32(len(c.memD) + 0x100)
+		StackStart = uint32(len(c.memD) + StackSize)
 	}
-	c.reg.GPR[isa.SpReg] = StackStart
+	c.Reg.GPR[isa.SpReg] = StackStart
 
 	c.step = c.fetch()
 	return c
 }
 
-func (c *CPU) fetch() microStep { // returns a μ-routine
-	return func(c *CPU) bool {
-		c.reg.IR = c.memI[c.reg.PC]
-		c.reg.PC++
-		op, mode, rd, rs1, rs2 := decoder.Dec(c.reg.IR)
+// Run – execute at most nTicks; stop earlier on HALT
+func (c *CPU) Run() {
+	for c.Tick = 0; c.Tick < c.TickLimit; c.Tick++ {
+		//TODO: ─── devices update + IRQ sampling (always!) ─────────
 
-		f := ucode[op][mode]
-		// if op == isa.OpPush {
-		// 	fmt.Printf("decoded push, reg n %d=%v\n", rs1, isa.GetRegMnem(rs1))
-		// }
-		fmt.Printf("TICK %d @ 0x%08X -  %v %v; PC++ | %v\n", c.tick, c.reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC())
-		if f == nil {
-			slog.Warn("unknown instruction", "PC", c.reg.PC-1, "IR", c.reg.IR)
-			return false // ← fetch в следующем такте
+		if gotIrq, irqNumber := c.Ioc.CheckTick(c.Tick); gotIrq {
+			c.raiseIRQ(irqNumber)
 		}
-		c.step = f(rd, rs1, rs2)
-		return false
+
+		finished := c.step(c)
+
+		if finished {
+			if c.pending && !c.inISR {
+				c.enterISR()
+			}
+
+			c.step = c.fetch()
+		}
 	}
 }
 
-// Run – execute at most nTicks; stop earlier on HALT
-func (c *CPU) Run(nTicks uint64) {
-	for c.tick = 0; c.tick < nTicks; c.tick++ {
-		//TODO: ─── devices update + IRQ sampling (always!) ─────────
+func (c *CPU) fetch() microStep {
+	return func(c *CPU) bool {
 
-		// for _, d := range c.io.Devs {
-		// 	if d.step(c.tick) && !c.inISR && !c.pending {
-		// 		c.pending, c.pendNum = true, d.IrqNum
-		// 	}
-		// }
+		// if !c.inISR && c.pending
+		//go check if interruption request at this tick or irq
 
-		// ─── execute ONE micro-step ──────────────────────────
-		didFinish := c.step(c)
+		c.Reg.IR = c.memI[c.Reg.PC]
+		c.Reg.PC++
+		op, mode, rd, rs1, rs2 := decoder.Dec(c.Reg.IR)
 
-		// ─── after macro-instruction finished … ──────────────
-		if didFinish {
-			if c.pending && !c.inISR {
-				// enter ISR
-				slog.Info("Entering Interruption")
-				c.pending = false
-				vec := vectors[c.pendNum]
-				c.push(c.reg.PC + 1) // return address
-				c.reg.PC = vec
-				c.inISR = true
-			}
-			c.step = c.fetch()
+		f := ucode[op][mode]
+		fmt.Printf("TICK %d @ 0x%08X -  %v %v; PC++ | %v\n", c.Tick, c.Reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC())
+		if f == nil {
+			slog.Warn("unknown instruction", "PC", c.Reg.PC-1, "IR", c.Reg.IR)
+			return false
 		}
+		c.step = f(rd, rs1, rs2)
+		return false
 	}
 }
 
@@ -127,7 +116,34 @@ func (c *CPU) pop() uint32 {
 	// v := c.memD[c.reg.GPR[SpReg]]
 	// c.reg.GPR[SpReg]++
 	// return v
-	return 0
+	// return 0
+}
+
+func (c *CPU) raiseIRQ(vec uint8) {
+	if c.inISR || c.pending {
+		fmt.Printf("interruption ignored, either in one or one is already pending, %v\n", vec)
+		return
+	}
+	c.pending, c.pendNum = true, int(vec)
+}
+func (c *CPU) enterISR() {
+	fmt.Printf("Entering Interruption, nmb=%d", c.pendNum)
+	c.push(c.Reg.PC)             // адрес возврата
+	c.Reg.PC = uint32(c.pendNum) // (пока) вектор = номер
+	c.SaveGPRValues()
+	c.inISR = true
+	c.pending = false
+}
+
+func (c *CPU) SaveGPRValues() {
+	for i := range len(c.Reg.GPR) {
+		c.Reg.savedGPR[i] = c.Reg.GPR[i]
+	}
+}
+func (c *CPU) RestoreGPRValues() {
+	for i := range len(c.Reg.savedGPR) {
+		c.Reg.GPR[i] = c.Reg.savedGPR[i]
+	}
 }
 
 // --------------------------------------------------------------------
@@ -136,43 +152,34 @@ func (c *CPU) pop() uint32 {
 func init() {
 	ucode[isa.OpRet][isa.NoOperands] = func(_, _, _ int) microStep {
 		return func(c *CPU) bool {
-			c.reg.PC = c.pop()
+			c.Reg.PC = c.pop()
 			c.inISR = false
 			return true
 		}
 	}
 }
 
-//	func (c *CPU) Repr() string {
-//		s := fmt.Sprintf("tick=%d PC=0x%02X IR=0x%08X\n", c.tick, c.reg.PC, c.reg.IR)
-//		for i := range len(c.reg.GPR) {
-//			s += fmt.Sprintf(" R%-2d: 0x%08X\n", i, c.reg.GPR[i])
-//		}
-//		return s
-//	}
 func (c *CPU) Repr() string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "tick=%-6d PC=%02X IR=%08X\n",
-		c.tick, c.reg.PC, c.reg.IR)
+	_, _ = fmt.Fprintf(&b, "tick=%-6d PC=%02X IR=%08X\n",
+		c.Tick, c.Reg.PC, c.Reg.IR)
 
-	// флаги, если будут
-	// fmt.Fprintf(&b, "NZVC=%d%d%d%d  inISR=%v  pending=%v\n",
-	//    c.reg.Z, c.reg.N, c.reg.V, c.reg.C, c.inISR, c.pending)
+	c.ReprFlags()
 
-	for i, v := range c.reg.GPR {
-		fmt.Fprintf(&b, " R%-2d:%08X", i, v)
+	for i, v := range c.Reg.GPR {
+		_, _ = fmt.Fprintf(&b, " R%-2d:%08X", i, v)
 		if (i+1)%4 == 0 {
 			b.WriteByte('\n')
 		}
 	}
-	// if len(c.reg.GPR)%4 != 0 {
-	// 	b.WriteByte('\n')
-	// }
+	if len(c.Reg.GPR)%4 != 0 {
+		b.WriteByte('\n')
+	}
 	return b.String()
 }
 
 func (c *CPU) ReprPC() string {
-	return fmt.Sprintf("PC=%X", c.reg.PC)
+	return fmt.Sprintf("PC=%d/0x%X", c.Reg.PC, c.Reg.PC)
 }
 
 func (c *CPU) ReprFlags() string {
@@ -192,13 +199,13 @@ func (c *CPU) ReprFlags() string {
 }
 
 func (c *CPU) DumpState(stage string) {
-	fmt.Printf("TICK %d\n", c.tick)
+	fmt.Printf("TICK %d\n", c.Tick)
 	fmt.Println("────────────────────────────────────────────")
 	fmt.Printf("[INSTR] PC=0x%02X  IR=0x%08X  %s\n",
-		c.reg.PC, c.reg.IR, Disasm(c.reg.IR))
+		c.Reg.PC, c.Reg.IR, Disasm(c.Reg.IR))
 	fmt.Printf("[μSTEP] %s\n", stage)
 	fmt.Println("[REGS ]")
-	fmt.Printf(" PC = 0x%02X  SP = 0x%02X  IR = 0x%08X\n", c.reg.PC, c.reg.GPR[isa.SpReg], c.reg.IR)
+	fmt.Printf(" PC = 0x%02X  SP = 0x%02X  IR = 0x%08X\n", c.Reg.PC, c.Reg.GPR[isa.SpReg], c.Reg.IR)
 	// for i := 0; i < 16; i += 4 {
 	// 	for j := 0; j < 4; j++ {
 	// 		fmt.Printf(" R%-2d= 0x%08X  ", i+j, c.reg.GPR[i+j])

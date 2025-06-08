@@ -3,7 +3,8 @@
 | Операция | dest  | 1 arg | 2 arg | mnemonic                       | ?                          | code                             | n_words |
 | -------- | ----- | ----- | ----- | ------------------------------ | -------------------------- | -------------------------------- | ------- |
 | **MOV**  | reg   | reg   | -     | MOV rd, rs                     | rd <- rs                   | [opc+MvRegReg+rd+rs1]            | 1       |
-|          | reg   | reg   | -     | MOV rd, mem[rs]                | rd <- mem[rs]              | [opc+MvRegIndReg+rd+rs1]         | 1       |
+|          | reg   | reg   | -     | MOV rd, mem[rs:rs+4]           | rd <- mem[rs:rs+4]         | [opc+MvRegIndReg+rd+rs1]         | 1       |
+|          | reg   | reg   | -     | MOV rd, byte mem[rs]           | rd <- mem[rs]              | [opc+MvLowRegIndReg+rd+rs1]      | 1       |
 |          | reg   | imm   | -     | MOV rd, imm                    | rd <- imm                  | [opc+IMM_REG+rd][imm]            | 2       |
 |          | reg   | ptr   | -     | MOV rd, [addr]                 | rd <- mem[addr1]           | [opc+MEM_REG+rd][addr]           | 2       |
 |          | reg   | offs  |       | MOV rd, [(sp)+offs]            | rd <- mem[sp+offs]         | [opc+SPOFFS_REG+rd+offs(17bits)] | 1       |
