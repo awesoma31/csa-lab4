@@ -26,6 +26,7 @@ const (
 	OpJmp  uint32 = 0x20
 	OpCall uint32 = 0x21
 	OpRet  uint32 = 0x22
+	OpAnd  uint32 = 0x23
 
 	// 0x30-0x3F: conditional jumps (depend on flags)
 	OpJe  uint32 = 0x30

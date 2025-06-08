@@ -177,6 +177,10 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 	case isa.MvRegMem: // reg to mem; dest=addr, s1=reg
 		cg.emitInstruction(isa.OpMov, mode, -1, s1, -1)
 		cg.emitImmediate(uint32(dest))
+	case isa.MvRegIndReg:
+		cg.emitInstruction(isa.OpMov, isa.MvRegIndReg, dest, s1, -1)
+	default:
+		panic("unknown mov mode")
 	}
 	// cg.nextInstructionAddr++
 }
@@ -191,7 +195,7 @@ func encodeIOWord(opcode, mode uint32, port uint8, imm int32) uint32 {
 		panic("port number must be 0-3")
 	}
 	word := uint32(opcode)<<26 | mode<<21 | uint32(port)<<19
-	if mode == isa.IoImmReg {
+	if mode == isa.ImmReg {
 		word |= uint32(imm) & 0x7FFFF // 19 бит
 	}
 	return word
@@ -201,7 +205,7 @@ func (cg *CodeGenerator) emitOut(mode uint32, port uint8, value int32) {
 	switch mode {
 	case isa.IoMemReg:
 		cg.emitOutMemReg(port)
-	case isa.IoImmReg:
+	case isa.ImmReg:
 		cg.emitOutImm(port, value)
 	}
 
@@ -217,7 +221,7 @@ func (cg *CodeGenerator) emitOutMemReg(port uint8) {
 }
 
 func (cg *CodeGenerator) emitOutImm(port uint8, value int32) {
-	word := encodeIOWord(isa.OpOut, isa.IoImmReg, port, value)
+	word := encodeIOWord(isa.OpOut, isa.ImmReg, port, value)
 	cg.instructionMemory = append(cg.instructionMemory, word)
 	cg.debugAssembly = append(cg.debugAssembly,
 		fmt.Sprintf("[0x%04X] OUT #%d → port[%d]  0x%08X", cg.nextDataAddr, value, port, word))

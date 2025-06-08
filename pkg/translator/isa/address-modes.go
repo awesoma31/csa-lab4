@@ -6,7 +6,7 @@ const (
 	MvRegReg uint32 = 0x00
 	MvImmReg uint32 = 0x01
 	// MvMemAbsReg uint32 = 0x02
-	MvRegMemAbs   uint32 = 0x03
+	MvRegIndReg   uint32 = 0x03
 	MvSpOffsToReg uint32 = 0x04 // rd ← [SP+offs]   /  [SP+offs] ← rs
 	RegMemFp      uint32 = 0x05 // frame-pointer relative
 	MvMemReg      uint32 = 0x06 // rd ← [addr]
@@ -16,9 +16,11 @@ const (
 	MvImmMem uint32 = 0x09 // [addr] ← imm
 
 	IoMemReg uint32 = 0x0A
-	IoImmReg uint32 = 0x0B
+	ImmReg   uint32 = 0x0B
 
-	StImmMode uint32 = 0x0C
+	StImmMode  uint32 = 0x0C
+	CMPRegMode uint32 = 0x0D
+	RegReg     uint32 = 0x0E
 
 	// arithmetic “ternary” forms
 	MathRRR uint32 = 0x10 // rd ← rs1 op rs2

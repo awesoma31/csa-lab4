@@ -11,11 +11,16 @@ const (
 	ROutData
 	RInAddr
 	RInData
-	RCounter
+	RC
 	SpReg
 	FpReg
 	RT
 	ZERO        // 13
 	ONE         // 14
 	placeholder // 15
+)
+
+const (
+	PORT1 = R4
+	PORT2 = FpReg
 )

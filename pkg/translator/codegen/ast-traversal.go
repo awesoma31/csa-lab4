@@ -37,25 +37,69 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 }
 
 func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
-	cg.generateExpr(s.Argument, isa.ROutAddr) // str addr is in R_OUT_ADDR [len]byte
+	cg.generateExpr(s.Argument, isa.ROutAddr) // ROutAddr = strPtr (1 byte not len, check func)
 	switch arg := s.Argument.(type) {
 	case ast.StringExpr:
+		//TODO: check counter (only 1 byte)
 		strLen := len(arg.Value)
-		for range strLen {
-			cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.ROutAddr, isa.ROutAddr, -1)
-			cg.emitImmediate(1)
-			var port uint8 = 0
-			cg.emitOut(isa.IoMemReg, port, IoNoImmVal)
+		if strLen > 255 {
+			cg.addError(fmt.Sprintf("String lenthg cannot be more than 1 byte(255)\n%d - %s", strLen, arg.Value))
+			return
 		}
+		cg.emitMov(isa.MvImmReg, isa.RC, strLen, -1) // imm to reg; s1=imm dest = rd
+		cg.emitInstruction(isa.OpAnd, isa.ImmReg, isa.RC, isa.RC, -1)
+		cg.emitImmediate(0xFF)
+
+		cg.emitInstruction(isa.OpCmp, isa.CMPRegMode, -1, isa.RC, isa.ZERO)
+		cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
+		jToEndAddr := cg.ReserveWord()
+		cg.emitMov(isa.MvRegIndReg, isa.ROutData, isa.RAddr, -1)
+
+		cg.emitInstruction(isa.OpOut, isa.NoOperands, isa.PORT1, -1, -1)
+		cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RC, isa.RC, -1)
+		cg.emitImmediate(1)
+		cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.ROutAddr, isa.ROutAddr, -1)
+		cg.emitImmediate(1)
+		cg.emitInstruction(isa.OpJmp, isa.JAbsAddr, -1, -1, -1)
+		cg.emitImmediate(jToEndAddr)
+
+		afterEndAddr := cg.nextInstructionAddr
+		cg.PatchWord(jToEndAddr, afterEndAddr)
+
 	case ast.SymbolExpr:
-		cg.addError("print vars is not supported yet")
-		return
-		// panic("print var not implemented")
-		// val, found := cg.currentScope().Symbols()[arg.Value]
-		// if !found {
-		// 	cg.addError(fmt.Sprintf("could not find variable %s in scope", arg.Value))
-		// }
-		//TODO:var printing, need to know str len somehow
+		// addr of str len in routaddr
+		cg.emitMov(isa.MvRegIndReg, isa.RC, isa.ROutAddr, -1) // mov rc <- mem[routaddr]
+		cg.emitInstruction(isa.OpAnd, isa.ImmReg, isa.RC, isa.RC, -1)
+		cg.emitImmediate(0xFF)
+		// add 1 to routaddr bcs generateExpr will store ptr to str len initially
+		cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.ROutAddr, isa.ROutAddr, -1)
+		cg.emitImmediate(1)
+		// routaddr = addr of str 1 char
+		// rcounter addr len
+
+		_, found := cg.lookupSymbol(arg.Value)
+		if !found {
+			cg.addError(fmt.Sprintf("Undeclared variable in print expr: %s", arg.Value))
+		}
+
+		cg.emitInstruction(isa.OpCmp, isa.CMPRegMode, -1, isa.RC, isa.ZERO)
+		cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
+		jToEndAddr := cg.ReserveWord()
+		cg.emitMov(isa.MvRegIndReg, isa.ROutData, isa.RAddr, -1)
+
+		cg.emitInstruction(isa.OpOut, isa.NoOperands, isa.PORT1, -1, -1)
+		cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RC, isa.RC, -1)
+		cg.emitImmediate(1)
+		cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.ROutAddr, isa.ROutAddr, -1)
+		cg.emitImmediate(1)
+		cg.emitInstruction(isa.OpJmp, isa.JAbsAddr, -1, -1, -1)
+		cg.emitImmediate(jToEndAddr)
+
+		afterEndAddr := cg.nextInstructionAddr
+		cg.PatchWord(jToEndAddr, afterEndAddr)
+
+	case ast.NumberExpr:
+		panic("print number not impl")
 
 	}
 
@@ -110,6 +154,7 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 			cg.emitImmediate(symbol.AbsAddress)
 		} else if symbol.MemoryArea == "stack" {
 			//TODO:
+
 			// cg.emitInstruction(OP_MOV, MEM_FP_REG, rd, -1, -1) // LDR rd, [FP + offset]
 			// cg.emitImmediate(uint32(symbol.FPOffset))
 		} else {
@@ -118,7 +163,6 @@ func (cg *CodeGenerator) generateExpr(expr ast.Expr, rd int) {
 	case ast.FunctionExpr:
 		cg.addError("FunctionExpr code generation not implemented.")
 	case ast.StringExpr:
-		// panic("impl me StringExpr")
 		cg.generateStringExpr(e, rd) // Обновление: передаем rd
 	case ast.PrefixExpr: // Для унарных операторов
 		newExpr := ast.NumberExpr{}
@@ -442,12 +486,13 @@ func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) {
 }
 
 // generateStringExpr generates code for string literals.
+// stores addr of STR 1 byte, not len
 func (cg *CodeGenerator) generateStringExpr(e ast.StringExpr, rd int) {
 	// Store string in data memory and load its byte-address (pointer) into R0.
 	stringAddr := cg.addString(e.Value) // addString handles writing string to dataMemory (bytes) and alignment
 
 	cg.emitInstruction(isa.OpMov, isa.MvImmReg, rd, -1, -1) // MOV R0, #string_byte_address
-	cg.emitImmediate(stringAddr)                            // Emit the byte-address as an immediate word
+	cg.emitImmediate(stringAddr + 1)                        // Emit the byte-address as an immediate word
 }
 
 // TODO: check

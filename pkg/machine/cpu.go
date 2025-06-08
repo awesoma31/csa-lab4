@@ -79,8 +79,7 @@ func (c *CPU) fetch() microStep { // returns a μ-routine
 		// }
 		fmt.Printf("TICK %d - 0x%08X -  %v %v; PC++ | %v\n", c.tick, c.reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC())
 		if f == nil {
-			slog.Warn("unknown instruction", "pc", c.reg.PC, "ir", c.reg.IR)
-			// c.reg.PC++   // пропускаем слово
+			slog.Warn("unknown instruction", "PC", c.reg.PC-1, "IR", c.reg.IR)
 			return false // ← fetch в следующем такте
 		}
 		c.step = f(rd, rs1, rs2)

@@ -2,6 +2,7 @@ package machine
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
@@ -28,6 +29,7 @@ func init() {
 	ucode[isa.OpMov][isa.MvImmMem] = uMovImmMem
 	ucode[isa.OpMov][isa.MvRegMem] = uMovRegMem
 	ucode[isa.OpMov][isa.MvMemMem] = uMovMemMem
+	ucode[isa.OpMov][isa.MvRegIndReg] = uMovRegIndReg
 
 	// JUMP BRENCH
 
@@ -37,15 +39,107 @@ func init() {
 
 	// MATH
 	ucode[isa.OpAdd][isa.MathRRR] = uAddRRR
+	ucode[isa.OpAdd][isa.MathRIR] = uAddRIR
+	ucode[isa.OpSub][isa.MathRRR] = uSubRRR
+	ucode[isa.OpMul][isa.MathRRR] = uMulRRR
+	ucode[isa.OpDiv][isa.MathRRR] = uDivRRR
+
+	ucode[isa.OpAnd][isa.ImmReg] = uAndIR
+	ucode[isa.OpAnd][isa.RegReg] = uAndRR
+
 	// CALL RET ...
 
+	ucode[isa.OpOut][isa.SingleRegMode] = uDivRRR
+
+}
+
+func uAndIR(rd, rs1, _ int) microStep {
+	stage := 0
+	return func(c *CPU) bool {
+		switch stage {
+		case 0:
+			c.reg.GPR[isa.RT] = c.memI[c.reg.PC]
+			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ | %v\n", c.tick, isa.GetRegMnem(isa.RT), c.reg.PC, c.ReprRegVal(isa.RT))
+			c.reg.PC++
+			stage++
+		case 1:
+			c.reg.GPR[rd] = c.reg.GPR[rs1] & c.reg.GPR[isa.RT]
+			fmt.Printf("TICK %d - %v<-%v & %X | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), c.reg.GPR[isa.RT], c.ReprRegVal(rd))
+			return true
+		}
+		return false
+	}
+}
+func uAndRR(rd, rs1, rs2 int) microStep {
+	return func(c *CPU) bool {
+		c.reg.GPR[rd] = c.reg.GPR[rs1] & c.reg.GPR[rs2]
+		fmt.Printf("TICK %d - %v<-%v & %v | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
+		return true
+	}
 }
 
 func uAddRRR(rd, rs1, rs2 int) microStep {
 	return func(c *CPU) bool {
-		c.reg.GPR[rd] = c.reg.GPR[rs1] + c.reg.GPR[rs2]
-		fmt.Printf("TICK %d - %v<-%v+%v | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
+		MathRRR(c, rd, rs1, rs2, isa.OpAdd)
 		return true
+	}
+}
+func uAddRIR(rd, rs1, _ int) microStep {
+	stage := 0
+	return func(c *CPU) bool {
+		switch stage {
+		case 0:
+			c.reg.GPR[isa.RT] = c.memI[c.reg.PC]
+			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ | %v\n", c.tick, isa.GetRegMnem(isa.RT), c.reg.PC, c.ReprRegVal(isa.RT))
+			c.reg.PC++
+			stage++
+		case 1:
+			MathRRR(c, rd, rs1, isa.RT, isa.OpAdd)
+			return true
+		}
+		return false
+	}
+}
+
+func uSubRRR(rd, rs1, rs2 int) microStep {
+	return func(c *CPU) bool {
+		MathRRR(c, rd, rs1, rs2, isa.OpSub)
+		return true
+	}
+}
+func uMulRRR(rd, rs1, rs2 int) microStep {
+	return func(c *CPU) bool {
+		MathRRR(c, rd, rs1, rs2, isa.OpMul)
+		return true
+	}
+}
+func uDivRRR(rd, rs1, rs2 int) microStep {
+	return func(c *CPU) bool {
+		MathRRR(c, rd, rs1, rs2, isa.OpDiv)
+		return true
+	}
+}
+
+func MathRRR(c *CPU, rd int, rs1 int, rs2 int, opc uint32) {
+	//TODO: flags
+	switch opc {
+	case isa.OpAdd:
+		c.reg.GPR[rd] = uint32(int32(c.reg.GPR[rs1]) + int32(c.reg.GPR[rs2]))
+		fmt.Printf("TICK %d - %v<-%v+%v | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
+	case isa.OpSub:
+		c.reg.GPR[rd] = uint32(int32(c.reg.GPR[rs1]) + int32(c.reg.GPR[rs2]))
+		fmt.Printf("TICK %d - %v<-%v+%v | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
+	case isa.OpMul:
+		//TODO: check or dont do in 1 tact
+		c.reg.GPR[rd] = uint32(int32(c.reg.GPR[rs1]) * int32(c.reg.GPR[rs2]))
+		fmt.Printf("TICK %d - %v<-%v+%v | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
+	case isa.OpDiv:
+		//TODO: check or dont do in 1 tact
+		c.reg.GPR[rd] = uint32(int32(c.reg.GPR[rs1]) / int32(c.reg.GPR[rs2]))
+		fmt.Printf("TICK %d - %v<-%v+%v | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
+	default:
+		slog.Error(fmt.Sprintf("UNKNOWN ALU OP - %v", isa.GetOpMnemonic(opc)))
+
 	}
 }
 
@@ -111,6 +205,24 @@ func uMovMemMem(rd, _, _ int) microStep {
 func uMovImmMem(rd, _, _ int) microStep {
 	panic("unimplemeted")
 }
+func uMovRegIndReg(rd, rs1, _ int) microStep {
+	stage := 0
+	return func(c *CPU) bool {
+		switch stage {
+		case 0:
+			c.reg.GPR[isa.RAddr] = c.reg.GPR[rs1]
+			fmt.Printf("TICK %d - %v<-*%v | addr=%v\n",
+				c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), c.ReprRegVal(isa.RAddr))
+			stage = 1
+		case 1, 2, 3, 4, 5: // читаем 4 байта LE -> rd
+			if read32LE(c, &stage, isa.RAddr, rd) {
+				fmt.Printf("TICK %d - %v\n", c.tick, c.ReprRegVal(rd))
+				return true // микро-рутина завершена
+			}
+		}
+		return false
+	}
+}
 func uMovRegMem(_, rs1, _ int) microStep {
 	stage := 0
 	return func(c *CPU) bool {
@@ -137,10 +249,11 @@ func uMovMemReg(rd, _, _ int) microStep {
 			fmt.Printf("TICK %d - %v<-memI[%v]; PC++ | ", c.tick, isa.GetRegMnem(isa.RAddr), c.reg.PC)
 			//TODO: prbly cannot pc++ on the same tick
 			c.reg.PC++
-			fmt.Printf("PC=%v %v=0x%X\n", c.reg.PC, isa.GetRegMnem(isa.RAddr), c.reg.GPR[isa.RAddr])
+			fmt.Printf("%v %v=0x%X\n", c.ReprPC(), isa.GetRegMnem(isa.RAddr), c.reg.GPR[isa.RAddr])
 			stage = 1
 		case 1, 2, 3, 4, 5: // T1–T4 – читаем 4 байта
 			if read32LE(c, &stage, isa.RAddr, rd) {
+				//TODO: check of need tick--
 				c.tick--
 				return true
 			}

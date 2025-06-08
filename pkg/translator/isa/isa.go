@@ -50,6 +50,7 @@ func init() {
 		OpNeg: "NEG", OpNot: "NOT", OpHalt: "HALT",
 
 		OpAdd: "ADD", OpSub: "SUB", OpMul: "MUL", OpDiv: "DIV", OpCmp: "CMP",
+		OpAnd: "AND",
 
 		OpIn: "IN", OpOut: "OUT",
 
@@ -64,11 +65,13 @@ func init() {
 	// address-modes → strings (only the ones that appear in code-gen)
 	for k, v := range map[uint32]string{
 		MvRegReg: "MvRegReg", MvImmReg: "MvImmReg",
-		// MvMemAbsReg: "MV_MEM_ABS_REG",
-		// MvRegMemAbs:   "MV_REG_MEM_ABS",
+		MvRegIndReg:   "MvRegIndReg",
 		MvSpOffsToReg: "SpOffsRef", RegMemFp: "RegMemFp",
 		MvMemReg: "MvMemReg", MvRegMem: "MvRegMem", MvMemMem: "MvMemMem",
-		MvImmMem: "MvImmMem",
+		MvImmMem:   "MvImmMem",
+		CMPRegMode: "CMPRegMode",
+		ImmReg:     "ImmReg",
+		RegReg:     "RegReg",
 
 		MathRRR: "MathRRR", MathRMR: "MathRMR",
 		MathRIR: "MathRIR", MathMMR: "MathMMR",
@@ -83,8 +86,11 @@ func init() {
 	// registers → strings (0-15)
 	for k, v := range map[int]string{
 		RA: "RA", RM1: "RM1", RM2: "RM2", RAddr: "RAddr", R4: "R4",
-		ROutAddr: "R_OUT_ADDR", RInAddr: "R_IN_ADDR",
-		SpReg: "SP", FpReg: "FP",
+		RC:       "RC",
+		ZERO:     "zero",
+		ROutData: "ROutData",
+		ROutAddr: "ROutAddr", RInAddr: "RInAddr",
+		SpReg: "SP", FpReg: "FP", RT: "RT",
 	} {
 		registerMnemonics[k] = v
 	}

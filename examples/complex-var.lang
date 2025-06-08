@@ -7,3 +7,4 @@ let e = 999;
 
 e = a + b;
 
+print(e);

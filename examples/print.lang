@@ -1,4 +1,6 @@
-//let a = "hello world";
+let b = 1;
+let a = "gol";
 //print(a);
 
-print("gol");
+
+print(a);

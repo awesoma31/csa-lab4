@@ -2,7 +2,8 @@
 
 | Операция | dest  | 1 arg | 2 arg | mnemonic                       | ?                          | code                             | n_words |
 | -------- | ----- | ----- | ----- | ------------------------------ | -------------------------- | -------------------------------- | ------- |
-| **MOV**  | reg   | reg   | -     | MOV rd, rs                     | rd <- rs                   | [opc+REG_REG+rd+rs1]             | 1       |
+| **MOV**  | reg   | reg   | -     | MOV rd, rs                     | rd <- rs                   | [opc+MvRegReg+rd+rs1]            | 1       |
+|          | reg   | reg   | -     | MOV rd, mem[rs]                | rd <- mem[rs]              | [opc+MvRegIndReg+rd+rs1]         | 1       |
 |          | reg   | imm   | -     | MOV rd, imm                    | rd <- imm                  | [opc+IMM_REG+rd][imm]            | 2       |
 |          | reg   | ptr   | -     | MOV rd, [addr]                 | rd <- mem[addr1]           | [opc+MEM_REG+rd][addr]           | 2       |
 |          | reg   | offs  |       | MOV rd, [(sp)+offs]            | rd <- mem[sp+offs]         | [opc+SPOFFS_REG+rd+offs(17bits)] | 1       |
@@ -32,6 +33,8 @@
 | **DIV**  | reg  | rs1   | rs2   | DIV rd, rs1, rs2         | rd <- rs1 / rs2               | [opc+MATH_R_R_R+rd+rs1+rs2]       | 1       |
 |          | reg  | rs1   | addr  | DIV rd, rs1, [addr]      | rd <- rs1 / mem[addr]         | [opc+MATH_R_M_R+rd+rs1][addr]     | 2       |
 |          | reg  | addr1 | addr2 | DIV rd, [addr1], [addr2] | rd <- mem[addr1] / mem[add2]  | [opc+MATH_M_M_R+rs][addr1][addr2] | 3       |
+| **AND**  | reg  | rs1   | rs2   | AND rd, rs1, rs2         | rs <- rs1 && rs2              | [opc+ImmReg+rd+rs1+rs2]           | 1       |
+|          | reg  | rs1   |       | AND rd, rs1, imm         | rs <- rs1 && imm              | [opc+ImmReg+rd+rs1][imm]          | 2       |
 |          |      |       |       |                          |                               |                                   |         |
 
 # CONTROL FLOW
@@ -45,16 +48,15 @@
 | **JGE**  | addr | -   | JGE addr | PC ← addr, если ≥ (signed)      | SF = OF            | [opc][addr] | 2       |
 | **JLE**  | addr | -   | JLE addr | PC ← addr, если ≤ (signed)      | SF ≠ OF или ZF = 1 | [opc][addr] | 2       |
 
-| Операция | dest | arg1 | arg2 | mnemonic     | Описание             | Кодировка     | n_words |
-| -------- | ---- | ---- | ---- | ------------ | -------------------- | ------------- | ------- |
-| **JMP**  | addr | -    | -    | JMP addr     | PC ← addr            | \[opc\][addr] | 2       |
-| **CMP**  |      | rs1  | rs2  | CMP rs1, rs2 | NZVC <- cmp rs1, rs2 | [opc+rd1+rs2] | 1       |
-| **CALL** | addr | -    | -    | CALL addr    | PUSH PC; PC ← addr   | [opc][addr]   | 2       |
-| **RET**  | -    | -    | -    | RET          | PC ← POP()           | [opc]         | 1       |
-|          |      |      |      |              |                      |               |         |
-| **HALT** |      | -    | -    | HALT         |                      | [opc]         | 1       |
-| **NOP**  |      |      |      |              | NO OPERATION         | [opc]         | 1       |
-|          |      |      |      |              |                      |               |         |
+| Операция | dest | arg1 | arg2 | mnemonic     | Описание             | Кодировка                | n_words |
+| -------- | ---- | ---- | ---- | ------------ | -------------------- | ------------------------ | ------- |
+| **JMP**  | addr | -    | -    | JMP addr     | PC ← addr            | \[opc\][addr]            | 2       |
+| **CMP**  |      | rs1  | rs2  | CMP rs1, rs2 | NZVC <- cmp rs1, rs2 | [opc+CMPRegMode+rs1+rs2] | 1       |
+| **CALL** | addr | -    | -    | CALL addr    | PUSH PC; PC ← addr   | [opc][addr]              | 2       |
+| **RET**  | -    | -    | -    | RET          | PC ← POP()           | [opc]                    | 1       |
+|          |      |      |      |              |                      |                          |         |
+| **HALT** |      | -    | -    | HALT         |                      | [opc]                    | 1       |
+| **NOP**  |      |      |      |              | NO OPERATION         | [opc]                    | 1       |
 
 #IO
 
