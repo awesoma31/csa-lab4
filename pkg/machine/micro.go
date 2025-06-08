@@ -166,27 +166,73 @@ func uDivRRR(rd, rs1, rs2 int) microStep {
 	}
 }
 
-func MathRRR(c *CPU, rd int, rs1 int, rs2 int, opc uint32) {
-	//TODO: flags
+func MathRRR(c *CPU, rd, rs1, rs2 int, opc uint32) {
+	a := uint32(c.reg.GPR[rs1])
+	b := uint32(c.reg.GPR[rs2])
+
+	clrF := func() { c.N, c.Z, c.V, c.C = false, false, false, false }
+
 	switch opc {
 	case isa.OpAdd:
-		c.reg.GPR[rd] = uint32(int32(c.reg.GPR[rs1]) + int32(c.reg.GPR[rs2]))
-		fmt.Printf("TICK %d - %v<-%v+%v | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
-	case isa.OpSub:
-		c.reg.GPR[rd] = uint32(int32(c.reg.GPR[rs1]) + int32(c.reg.GPR[rs2]))
-		fmt.Printf("TICK %d - %v<-%v+%v | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
-	case isa.OpMul:
-		//TODO: check or dont do in 1 tact
-		c.reg.GPR[rd] = uint32(int32(c.reg.GPR[rs1]) * int32(c.reg.GPR[rs2]))
-		fmt.Printf("TICK %d - %v<-%v+%v | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
-	case isa.OpDiv:
-		//TODO: check or dont do in 1 tact
-		c.reg.GPR[rd] = uint32(int32(c.reg.GPR[rs1]) / int32(c.reg.GPR[rs2]))
-		fmt.Printf("TICK %d - %v<-%v+%v | %v\n", c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
-	default:
-		slog.Error(fmt.Sprintf("UNKNOWN ALU OP - %v", isa.GetOpMnemonic(opc)))
+		res64 := uint64(a) + uint64(b)
+		res := uint32(res64)
 
+		c.reg.GPR[rd] = res
+		clrF()
+		c.N = res&0x8000_0000 != 0
+		c.Z = res == 0
+		c.C = res64 > 0xFFFF_FFFF                                    // carry-out (unsigned)
+		c.V = ((a^b)&0x8000_0000 == 0) && ((a^res)&0x8000_0000 != 0) // signed overflow
+
+	case isa.OpSub:
+		res64 := uint64(a) - uint64(b)
+		res := uint32(res64)
+
+		c.reg.GPR[rd] = res
+		clrF()
+		c.N = res&0x8000_0000 != 0
+		c.Z = res == 0
+		c.C = a >= b // 1 = no borrow
+		c.V = ((a^b)&0x8000_0000 != 0) && ((a^res)&0x8000_0000 != 0)
+
+	case isa.OpMul:
+		prod := int64(int32(a)) * int64(int32(b))
+		res := uint32(prod)
+
+		c.reg.GPR[rd] = res
+		clrF()
+		c.N = res&0x8000_0000 != 0
+		c.Z = res == 0
+		c.V = prod < int64(int32(-0x8000_0000)) || prod > int64(int32(0x7FFF_FFFF))
+		// C не определяем – остаётся 0
+
+	case isa.OpDiv:
+		clrF()
+		if b == 0 {
+			c.V = true // деление на ноль → overflow
+			return
+		}
+		quot := int32(a) / int32(b)
+		res := uint32(quot)
+
+		c.reg.GPR[rd] = res
+		c.N = res&0x8000_0000 != 0
+		c.Z = res == 0
+		// V, C уже обнулены
+
+	default:
+		slog.Error("UNKNOWN ALU OP", "op", isa.GetOpMnemonic(opc))
 	}
+
+	aluOpLu := map[uint32]string{
+		isa.OpAdd: "+",
+		isa.OpSub: "-",
+		isa.OpMul: "*",
+		isa.OpDiv: "/",
+	}
+
+	fmt.Printf("TICK %d - %v<-(%v%v%v) | %v %v\n",
+		c.tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), aluOpLu[opc], isa.GetRegMnem(rs2), c.ReprRegVal(rd), c.ReprFlags())
 }
 
 func uPopReg(rd, _, _ int) microStep {
