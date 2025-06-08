@@ -20,10 +20,10 @@ type CPU struct {
 	io   *IOBus
 
 	reg struct {
-		GPR    [16]uint32
+		GPR    [14]uint32
 		PC, IR uint32
 	}
-	tmp byte
+	N, Z, V, C bool
 
 	// control
 	step    microStep // current micro-routine
@@ -77,7 +77,7 @@ func (c *CPU) fetch() microStep { // returns a μ-routine
 		// if op == isa.OpPush {
 		// 	fmt.Printf("decoded push, reg n %d=%v\n", rs1, isa.GetRegMnem(rs1))
 		// }
-		fmt.Printf("TICK %d - 0x%08X -  %v %v; PC++ | %v\n", c.tick, c.reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC())
+		fmt.Printf("TICK %d @ 0x%08X -  %v %v; PC++ | %v\n", c.tick, c.reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC())
 		if f == nil {
 			slog.Warn("unknown instruction", "PC", c.reg.PC-1, "IR", c.reg.IR)
 			return false // ← fetch в следующем такте
@@ -173,6 +173,22 @@ func (c *CPU) Repr() string {
 
 func (c *CPU) ReprPC() string {
 	return fmt.Sprintf("PC=%X", c.reg.PC)
+}
+
+func (c *CPU) ReprFlags() string {
+	boolToIntStr := func(b bool) string {
+		if b {
+			return "1"
+		}
+		return "0"
+	}
+
+	return fmt.Sprintf("N=%s,Z=%s,V=%s,C=%s",
+		boolToIntStr(c.N),
+		boolToIntStr(c.Z),
+		boolToIntStr(c.V),
+		boolToIntStr(c.C),
+	)
 }
 
 func (c *CPU) DumpState(stage string) {

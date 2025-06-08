@@ -48,15 +48,15 @@
 | **JGE**  | addr | -   | JGE addr | PC ← addr, если ≥ (signed)      | SF = OF            | [opc][addr] | 2       |
 | **JLE**  | addr | -   | JLE addr | PC ← addr, если ≤ (signed)      | SF ≠ OF или ZF = 1 | [opc][addr] | 2       |
 
-| Операция | dest | arg1 | arg2 | mnemonic     | Описание             | Кодировка                | n_words |
-| -------- | ---- | ---- | ---- | ------------ | -------------------- | ------------------------ | ------- |
-| **JMP**  | addr | -    | -    | JMP addr     | PC ← addr            | \[opc\][addr]            | 2       |
-| **CMP**  |      | rs1  | rs2  | CMP rs1, rs2 | NZVC <- cmp rs1, rs2 | [opc+CMPRegMode+rs1+rs2] | 1       |
-| **CALL** | addr | -    | -    | CALL addr    | PUSH PC; PC ← addr   | [opc][addr]              | 2       |
-| **RET**  | -    | -    | -    | RET          | PC ← POP()           | [opc]                    | 1       |
-|          |      |      |      |              |                      |                          |         |
-| **HALT** |      | -    | -    | HALT         |                      | [opc]                    | 1       |
-| **NOP**  |      |      |      |              | NO OPERATION         | [opc]                    | 1       |
+| Операция | dest | arg1 | arg2 | mnemonic     | Описание             | Кодировка            | n_words |
+| -------- | ---- | ---- | ---- | ------------ | -------------------- | -------------------- | ------- |
+| **JMP**  | addr | -    | -    | JMP addr     | PC ← addr            | \[opc\][addr]        | 2       |
+| **CMP**  |      | rs1  | rs2  | CMP rs1, rs2 | NZVC <- cmp rs1, rs2 | [opc+RegReg+rs1+rs2] | 1       |
+| **CALL** | addr | -    | -    | CALL addr    | PUSH PC; PC ← addr   | [opc][addr]          | 2       |
+| **RET**  | -    | -    | -    | RET          | PC ← POP()           | [opc]                | 1       |
+|          |      |      |      |              |                      |                      |         |
+| **HALT** |      | -    | -    | HALT         |                      | [opc]                | 1       |
+| **NOP**  |      |      |      |              | NO OPERATION         | [opc]                | 1       |
 
 #IO
 

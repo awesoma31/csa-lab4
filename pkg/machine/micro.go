@@ -32,6 +32,9 @@ func init() {
 	ucode[isa.OpMov][isa.MvRegIndReg] = uMovRegIndReg
 
 	// JUMP BRENCH
+	ucode[isa.OpCmp][isa.RegReg] = uCmpRR
+
+	ucode[isa.OpJe][isa.JAbsAddr] = uJumpEquals
 
 	//stack
 	ucode[isa.OpPush][isa.SingleRegMode] = uPushReg
@@ -44,6 +47,7 @@ func init() {
 	ucode[isa.OpMul][isa.MathRRR] = uMulRRR
 	ucode[isa.OpDiv][isa.MathRRR] = uDivRRR
 
+	// LOGICAL
 	ucode[isa.OpAnd][isa.ImmReg] = uAndIR
 	ucode[isa.OpAnd][isa.RegReg] = uAndRR
 
@@ -51,6 +55,48 @@ func init() {
 
 	ucode[isa.OpOut][isa.SingleRegMode] = uDivRRR
 
+}
+
+func uCmpRR(_, rs1, rs2 int) microStep {
+	return func(c *CPU) bool {
+		a := uint32(c.reg.GPR[rs1])
+		b := uint32(c.reg.GPR[rs2])
+		diff := int32(a) - int32(b)
+
+		//TODO: check
+		c.N = diff < 0                          // negative
+		c.Z = diff == 0                         // zero
+		c.V = ((a^b)&(uint32(diff)^a))>>31 == 1 // overflow
+		c.C = a < b                             // borrow/carry
+
+		fmt.Printf("TICK %d - CMP %v, %v | %v\n", c.tick, isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprFlags())
+
+		return true
+	}
+}
+
+func uJumpEquals(_, _, _ int) microStep {
+	stage := 0
+	r := isa.RAddr
+	return func(c *CPU) bool {
+		switch stage {
+		case 0:
+			c.reg.GPR[r] = c.memI[c.reg.PC]
+			fmt.Printf("TICK %d - %v<-memI[0x%X]; PC++ | %v\n", c.tick, isa.GetRegMnem(r), c.reg.PC, c.ReprRegVal(r))
+			c.reg.PC++
+			stage++
+		case 1:
+			if c.Z {
+				c.reg.PC = c.reg.GPR[r]
+				fmt.Printf("TICK %d - PC<-%v | PC=%v\n", c.tick, isa.GetRegMnem(r), c.ReprPC())
+				return true
+			}
+			c.reg.PC++
+			fmt.Printf("TICK %d - %v, no jump; PC++ | %v\n", c.tick, c.ReprFlags(), c.ReprPC())
+			return true
+		}
+		return false
+	}
 }
 
 func uAndIR(rd, rs1, _ int) microStep {
@@ -264,7 +310,7 @@ func uMovMemReg(rd, _, _ int) microStep {
 func uMovImmReg(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
 		c.reg.GPR[rd] = c.memI[c.reg.PC]
-		fmt.Printf("TICK %d - %v<-#%d; PC++\n", c.tick, isa.GetRegMnem(rd), c.memI[c.reg.PC])
+		fmt.Printf("TICK %d - %v<-#%d; PC++ | %v\n", c.tick, isa.GetRegMnem(rd), c.memI[c.reg.PC], c.ReprRegVal(isa.SpReg))
 		c.reg.PC++
 		return true
 	}

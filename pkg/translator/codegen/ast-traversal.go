@@ -50,7 +50,7 @@ func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
 		cg.emitInstruction(isa.OpAnd, isa.ImmReg, isa.RC, isa.RC, -1)
 		cg.emitImmediate(0xFF)
 
-		cg.emitInstruction(isa.OpCmp, isa.CMPRegMode, -1, isa.RC, isa.ZERO)
+		cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
 		cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
 		jToEndAddr := cg.ReserveWord()
 		cg.emitMov(isa.MvRegIndReg, isa.ROutData, isa.RAddr, -1)
@@ -82,7 +82,7 @@ func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
 			cg.addError(fmt.Sprintf("Undeclared variable in print expr: %s", arg.Value))
 		}
 
-		cg.emitInstruction(isa.OpCmp, isa.CMPRegMode, -1, isa.RC, isa.ZERO)
+		cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
 		cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
 		jToEndAddr := cg.ReserveWord()
 		cg.emitMov(isa.MvRegIndReg, isa.ROutData, isa.RAddr, -1)
