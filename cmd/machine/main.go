@@ -51,21 +51,6 @@ func loadCPUFromConfig(path string) (*machine.CPU, error) {
 		return nil, err
 	}
 
-	// dp := &machine.DataPath{
-	// 	InstrMem: ins,
-	// 	DataMem:  data,
-	// 	Regs:     &machine.Registers{},
-	// }
-	// cu := &machine.ControlUnit{
-	// 	PC:        0,
-	// 	TickLimit: cfg.TickLimit,
-	// 	DP:        dp,
-	// }
-	//
-	// cpu := &machine.CPU{
-	// 	CU: cu,
-	// 	DP: dp,
-	// }
 	//TODO: bus
 	cpu := machine.New(ins, data, nil)
 	return cpu, nil
