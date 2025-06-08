@@ -34,17 +34,13 @@ type CPU struct {
 	N, Z, V, C bool
 	IF         bool
 
-	// control
 	step      microStep // current micro-routine
 	inISR     bool
 	pending   bool // slot for deferred IRQ
 	pendNum   int
 	Tick      int
 	TickLimit int
-}
-
-func (c *CPU) ReprRegVal(r int) any {
-	return fmt.Sprintf("%v=%d/0x%X", isa.GetRegMnem(r), c.Reg.GPR[r], c.Reg.GPR[r])
+	halted    bool
 }
 
 func New(memI []uint32, memD []byte, ioc *io.IOController, tickLimit int) *CPU {
@@ -53,6 +49,7 @@ func New(memI []uint32, memD []byte, ioc *io.IOController, tickLimit int) *CPU {
 		memD:      slices.Clone(memD),
 		Ioc:       ioc,
 		TickLimit: tickLimit,
+		halted:    false,
 	}
 
 	if StackStart < uint32(len(c.memD)) {
@@ -67,6 +64,9 @@ func New(memI []uint32, memD []byte, ioc *io.IOController, tickLimit int) *CPU {
 // Run – execute at most nTicks; stop earlier on HALT
 func (c *CPU) Run() {
 	for c.Tick = 0; c.Tick < c.TickLimit; c.Tick++ {
+		if c.halted {
+			break
+		}
 		//TODO: ─── devices update + IRQ sampling (always!) ─────────
 
 		if gotIrq, irqNumber := c.Ioc.CheckTick(c.Tick); gotIrq {
@@ -82,6 +82,38 @@ func (c *CPU) Run() {
 
 			c.step = c.fetch()
 		}
+	}
+	c.PrintAllPortOutputs()
+}
+
+func (c *CPU) PrintAllPortOutputs() {
+	fmt.Println("───── Port Outputs ─────")
+	for port, buf := range c.Ioc.OutBufAll() {
+		if len(buf) == 0 {
+			continue
+		}
+
+		// строковое представление (ASCII)
+		var strBuilder strings.Builder
+		for _, b := range buf {
+			if b >= 32 && b <= 126 {
+				strBuilder.WriteByte(b)
+			} else {
+				strBuilder.WriteString(".") // непечатаемые → точка
+			}
+		}
+		strOutput := strBuilder.String()
+
+		// числовое представление
+		var byteVals []string
+		for _, b := range buf {
+			byteVals = append(byteVals, fmt.Sprintf("%3d", b)) // или %02X
+		}
+		byteOutput := strings.Join(byteVals, " ")
+
+		// финальный вывод
+		fmt.Printf("port %d: %s\n", port, strOutput)
+		fmt.Printf("         %s\n", byteOutput)
 	}
 }
 
@@ -218,6 +250,10 @@ func (c *CPU) DumpState(stage string) {
 	// }
 	fmt.Printf(" INTERRUPT PENDING: %v  IN_ISR: %v\n", c.pending, c.inISR)
 	fmt.Println("────────────────────────────────────────────")
+}
+
+func (c *CPU) ReprRegVal(r int) any {
+	return fmt.Sprintf("%v=%d/0x%X", isa.GetRegMnem(r), c.Reg.GPR[r], c.Reg.GPR[r])
 }
 
 func Disasm(ir uint32) string {

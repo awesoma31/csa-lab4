@@ -1,13 +1,15 @@
 package io
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type IOController struct {
-	Sched    map[int]Input // {tick:(event)}
-	portsVal map[uint8]byte
-	Output   []byte
+	Sched    map[int]Input    // расписание IRQ
+	portsVal map[uint8]byte   // “регистры”-входы (последний принятый байт)
+	outBuf   map[uint8][]byte // ***отдельный буфер на каждый порт***
+}
+
+func (ioc *IOController) OutBufAll() map[uint8][]byte {
+	return ioc.outBuf
 }
 
 func NewIOController(entries []TickEntry) *IOController {
@@ -18,14 +20,18 @@ func NewIOController(entries []TickEntry) *IOController {
 	return &IOController{
 		Sched:    m,
 		portsVal: make(map[uint8]byte),
+		outBuf:   make(map[uint8][]byte),
 	}
 }
 
-func (ioc *IOController) CheckTick(tick int) (irq bool, IrqNumber uint8) {
+/* ——— вход (IRQ) остаётся как был ——— */
+
+func (ioc *IOController) CheckTick(tick int) (bool, uint8) {
 	inp, ok := ioc.Sched[tick]
 	if !ok {
 		return false, 0
 	}
+
 	port := uint8(inp.IntrNumber)
 	ioc.portsVal[port] = toByte(inp.Value)
 	delete(ioc.Sched, tick)
@@ -33,22 +39,31 @@ func (ioc *IOController) CheckTick(tick int) (irq bool, IrqNumber uint8) {
 }
 
 func (ioc *IOController) ReadPort(p uint8) byte {
-	fmt.Printf("Reading %v from port %d\n", ioc.portsVal[p], p)
 	return ioc.portsVal[p]
 }
+
 func (ioc *IOController) WritePort(p uint8, v byte) {
-	// fmt.Printf("Writing %v to port %d | %v\n", v, p, ioc.Output)
-	ioc.Output = append(ioc.Output, v)
+	ioc.outBuf[p] = append(ioc.outBuf[p], v)
+}
+
+func (ioc *IOController) Output(port uint8) []byte {
+	return ioc.outBuf[port]
+}
+
+func (ioc *IOController) OutputAll() []byte {
+	var all []byte
+	for _, b := range ioc.outBuf {
+		all = append(all, b...)
+	}
+	return all
 }
 
 func toByte(v any) byte {
 	switch t := v.(type) {
-	case int:
-		return byte(t)
-	case int64:
-		return byte(t)
-	case uint32:
-		return byte(t)
+	case int, int8, int16, int32, int64:
+		return byte(fmt.Sprint(t)[0])
+	case uint, uint16, uint32, uint64:
+		return byte(fmt.Sprint(t)[0])
 	case string:
 		if len(t) > 0 {
 			return t[0]

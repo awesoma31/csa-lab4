@@ -3,7 +3,6 @@ package machine
 import (
 	"fmt"
 	"log/slog"
-	"os"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
 )
@@ -67,7 +66,7 @@ func uOut(rd, _, _ int) microStep {
 		data := byte(c.Reg.GPR[isa.ROutData])
 		c.Ioc.WritePort(port, data)
 		fmt.Printf("TICK %d - OUT port %d <- %s (0x%02X) | %v\n",
-			c.Tick, port, isa.GetRegMnem(isa.ROutData), data, c.Ioc.Output)
+			c.Tick, port, isa.GetRegMnem(isa.ROutData), data, c.Ioc.Output(port))
 		return true
 	}
 }
@@ -335,8 +334,8 @@ func uNop(_, _, _ int) microStep {
 
 func uHalt(_, _, _ int) microStep {
 	return func(c *CPU) bool {
-		fmt.Println("simultaion stopped")
-		os.Exit(0)
+		fmt.Printf("TICK %d - simultaion stopped\n", c.Tick)
+		c.halted = true
 		return true
 	}
 }

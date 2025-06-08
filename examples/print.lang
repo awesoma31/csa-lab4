@@ -1,4 +1,3 @@
-let b = 1;
-let a = "gol";
+let a = "hello yopta";
 
 print(a);
