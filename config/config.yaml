@@ -1,16 +1,16 @@
 instruction_bin: "bin/instr.bin"
 data_bin: "bin/data.bin"
 
-tick_limit: 500
+tick_limit: 400
 # schedule:
 #   - tick: 100
 #     input:
-#       interrupt: 0
+#       interrupt: 1
 #       value: "A"
-#   - tick: 250
+#   - tick: 200
 #     input:
 #       interrupt: 1
-#       value: 123
+#       value: "C"
 #   - tick: 400
 #     input:
 #       interrupt: 0
@@ -19,3 +19,5 @@ tick_limit: 500
 #     input:
 #       interrupt: 0
 #       value: "C"
+
+max_interruptions: 2

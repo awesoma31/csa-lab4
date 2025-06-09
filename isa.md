@@ -10,6 +10,7 @@
 |          | reg   | offs  |       | MOV rd, [(sp)+offs]            | rd <- mem[sp+offs]         | [opc+SPOFFS_REG+rd+offs(17bits)] | 1       |
 |          | mem   | ptr   | ptr   | MOV [dest_addr], [source_addr] | mem[d_addr] <- mem[s_addr] | [opc+MEM_MEM][d_addr][s_addr]    | 3       |
 |          | mem   | reg   |       | MOV [addr], rs                 | mem[d_addr] <- rs          | [opc+REG_MEM+rs1][d_addr]        | 2       |
+|          | mem   | reg   |       | MOV [addr], byte(rs)           | mem[d_addr] <- byte(rs)    | [opc+MvRegBMem+rs1][d_addr]      | 2       |
 | **PUSH** | stack | reg   |       | push rs1                       | sp=sp-4; mem[sp] <- rs     | [opc+SingleReg+rs1]              | 1       |
 | **POP**  | reg   | -     |       | pop to rd                      | rd <- mem[sp]; sp=sp+4;    | [opc+SingleReg+rd]               | 1       |
 

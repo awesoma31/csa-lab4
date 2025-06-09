@@ -84,6 +84,7 @@ const (
 
 	PRINT
 	READ
+	READINT
 	QOUTE
 
 	RETURN
@@ -113,6 +114,7 @@ var reservedLu = map[string]TokenKind{
 	"in":      IN,
 	"print":   PRINT,
 	"read":    READ,
+	"readInt": READINT,
 	"inter":   INTER,
 }
 

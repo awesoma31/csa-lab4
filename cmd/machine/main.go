@@ -10,14 +10,16 @@ import (
 	bingen "github.com/awesoma31/csa-lab4/pkg/bin-gen"
 	"github.com/awesoma31/csa-lab4/pkg/machine"
 	"github.com/awesoma31/csa-lab4/pkg/machine/io"
+	"github.com/sanity-io/litter"
 	"gopkg.in/yaml.v3"
 )
 
 type cpuConfig struct {
-	InstrMemPath string         `yaml:"instruction_bin"`
-	DataMemPath  string         `yaml:"data_bin"`
-	TickLimit    int            `yaml:"tick_limit"`
-	Schedule     []io.TickEntry `yaml:"schedule"`
+	InstrMemPath     string         `yaml:"instruction_bin"`
+	DataMemPath      string         `yaml:"data_bin"`
+	TickLimit        int            `yaml:"tick_limit"`
+	Schedule         []io.TickEntry `yaml:"schedule"`
+	MaxInterruptions int            `yaml:"max_interruptions"`
 }
 
 func main() {
@@ -27,8 +29,8 @@ func main() {
 		slog.Error(fmt.Sprintf("error configuring CPU - %s", err.Error()))
 		log.Fatal()
 	}
-	fmt.Println("--------------------------------------------------------------")
 	slog.Info("CPU ocnfigured succesfully, starting simulation")
+	fmt.Println("--------------------------------------------------------------")
 	cpu.Run()
 }
 
@@ -43,6 +45,7 @@ func loadCPUFromConfig(path string) (*machine.CPU, error) {
 	}
 
 	ioc := io.NewIOController(cfg.Schedule)
+	litter.Dump(cfg.Schedule)
 
 	ins, err := bingen.LoadInstructionMemory(cfg.InstrMemPath)
 	if err != nil {
@@ -53,6 +56,6 @@ func loadCPUFromConfig(path string) (*machine.CPU, error) {
 		return nil, err
 	}
 
-	cpu := machine.New(ins, data, ioc, cfg.TickLimit)
+	cpu := machine.New(ins, data, ioc, cfg.MaxInterruptions, cfg.TickLimit)
 	return cpu, nil
 }

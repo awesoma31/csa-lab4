@@ -1,9 +1,16 @@
-let a = 0;
+let f = 1;
 
-a = (1 + 2) - 3 * 5;
+let b = "n";
 
-print(a);
+while f == 1 {
+    print(f);
+    print(b);
+}
 
-//inter 0 {
-//    print("in inter");
-//}
+print(b);
+
+inter 1 {
+    b = read();
+    f = 0;
+}
+

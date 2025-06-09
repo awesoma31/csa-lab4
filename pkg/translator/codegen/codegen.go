@@ -3,28 +3,31 @@ package codegen
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
 	"regexp"
+
+	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 )
 
-const WordSizeBytes = 4
+const (
+	DataMemSize                   = 200
+	StackStartAddr         uint32 = DataMemSize
+	WordSizeBytes                 = 4
+	intVectorTableBaseAddr uint32 = 0
+	maxInterrupts          uint32 = 2
+)
 
 type SymbolEntry struct {
 	Name        string
-	Type        ast.Type
-	MemoryArea  string // "data", "stack", "code" (for functions)
+	Type        ast.Type // TODO: if its a ptr then do ptr type
+	MemoryArea  string
 	AbsAddress  uint32 // addr of it in dataMemory
 	FPOffset    int
 	SizeInBytes int
 	NumberValue int32
 	StringValue string
 	IsStr       bool
-
-	NumParams     int
-	LocalVarCount int // Total size of local variables in bytes
-
 }
 
 type Scope struct {
@@ -54,19 +57,16 @@ func (cg *CodeGenerator) NextInstructionAddres() uint32 {
 	return cg.nextInstructionAddr
 }
 
-const (
-	InstrMemSize          = 100
-	StackStartAddr uint32 = DataMemSize
-	DataMemSize           = 200
-)
-
 func NewCodeGenerator() *CodeGenerator {
+	zeros := make([]uint32, maxInterrupts)
+	memI := make([]uint32, 0)
+	memI = append(memI, zeros...) //reserve space for 2 addreses of interruptions
 	cg := &CodeGenerator{
-		instructionMemory:   make([]uint32, 0),
+		instructionMemory:   memI,
 		dataMemory:          make([]byte, 0),
 		debugAssembly:       make([]string, 0),
 		scopeStack:          make([]Scope, 0),
-		nextInstructionAddr: 0,
+		nextInstructionAddr: intVectorTableBaseAddr + maxInterrupts,
 		nextDataAddr:        0,
 		errors:              make([]string, 0),
 	}
@@ -81,26 +81,6 @@ func (cg *CodeGenerator) Generate(program ast.BlockStmt) ([]uint32, []byte, []st
 	cg.VisitProgram(&program)
 
 	return cg.instructionMemory, cg.dataMemory, cg.debugAssembly, cg.errors
-}
-
-func (cg *CodeGenerator) GetMachineCode() []uint32 {
-	return cg.instructionMemory
-}
-func (cg *CodeGenerator) GetDataMemory() []byte {
-	return cg.dataMemory
-}
-func (cg *CodeGenerator) GetDebugAssembly() []string {
-	return cg.debugAssembly
-}
-func (cg *CodeGenerator) GetErrors() []string {
-	return cg.errors
-}
-func (cg *CodeGenerator) addError(msg string) {
-	cg.errors = append(cg.errors, msg)
-}
-
-func (cg *CodeGenerator) pushScope() {
-	cg.scopeStack = append(cg.scopeStack, Scope{symbols: make(map[string]SymbolEntry)})
 }
 
 func (cg *CodeGenerator) popScope() {
@@ -131,15 +111,21 @@ func (cg *CodeGenerator) lookupSymbol(name string) (SymbolEntry, bool) {
 }
 
 func (cg *CodeGenerator) addSymbolToScope(entry SymbolEntry) {
-	// fmt.Printf("added var-[%s] to scope %d with value=%d\n", entry.Name, len(cg.scopeStack), entry.NumberValue)
 	cg.currentScope().symbols[entry.Name] = entry
 }
 
-// emitInstruction adds an instruction to the instruction memory.
+// emitInstruction encodes an instruction to the instruction memory and stores dubeg info in debugAssembly.
 func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) {
-	//TODO: jmp addr mode
 	instructionWord := isa.EncodeInstructionWord(opcode, mode, dest, s1, s2)
 	cg.instructionMemory = append(cg.instructionMemory, instructionWord)
+	var rdMnem string
+	switch opcode {
+	case isa.OpIn, isa.OpOut, isa.OpOutB:
+		rdMnem = isa.GetPortMnem(dest)
+	default:
+		rdMnem = isa.GetRegMnem(dest)
+	}
+
 	cg.debugAssembly = append(
 		cg.debugAssembly,
 		fmt.Sprintf("[0x%04X] - %08X - Opc: %02s, Mode: %s, D:%s, S1:%s, S2:%s",
@@ -147,14 +133,11 @@ func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) 
 			instructionWord,
 			isa.GetOpMnemonic(opcode),
 			isa.GetAMnemonic(mode),
-			isa.GetRegMnem(dest),
+			rdMnem,
 			isa.GetRegMnem(s1),
 			isa.GetRegMnem(s2),
 		),
 	)
-	if opcode == isa.OpPush {
-		fmt.Printf("push word 0x%08X\n", instructionWord)
-	}
 	cg.nextInstructionAddr++
 }
 
@@ -171,10 +154,6 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 		cg.emitImmediate(uint32(s1))
 	case isa.MvSpOffsToReg: // sp+offs to reg
 		cg.emitInstruction(isa.OpMov, mode, dest, s1, -1)
-	case isa.MvMemMem: // mem to mem
-		cg.emitInstruction(isa.OpMov, mode, -1, -1, -1)
-		cg.emitImmediate(uint32(s1))
-		cg.emitImmediate(uint32(s2))
 	case isa.MvRegMem: // reg to mem; dest=addr, s1=reg
 		cg.emitInstruction(isa.OpMov, mode, -1, s1, -1)
 		cg.emitImmediate(uint32(dest))
@@ -182,6 +161,9 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 		cg.emitInstruction(isa.OpMov, isa.MvRegIndReg, dest, s1, -1)
 	case isa.MvLowRegIndReg:
 		cg.emitInstruction(isa.OpMov, isa.MvLowRegIndReg, dest, s1, -1)
+	case isa.MvRegLowMem:
+		cg.emitInstruction(isa.OpMov, isa.MvRegLowMem, -1, s1, -1)
+		cg.emitImmediate(uint32(dest))
 	default:
 		panic("unknown mov mode")
 	}
@@ -202,33 +184,6 @@ func encodeIOWord(opcode, mode uint32, port uint8, imm int32) uint32 {
 		word |= uint32(imm) & 0x7FFFF // 19 бит
 	}
 	return word
-}
-
-func (cg *CodeGenerator) emitOut(mode uint32, port uint8, value int32) {
-	switch mode {
-	case isa.IoMemReg:
-		cg.emitOutMemReg(port)
-	case isa.ImmReg:
-		cg.emitOutImm(port, value)
-	}
-
-}
-
-// ───────────────────────── OUT ──────────────────────────
-func (cg *CodeGenerator) emitOutMemReg(port uint8) {
-	word := encodeIOWord(isa.OpOut, isa.IoMemReg, port, IoNoImmVal)
-	cg.instructionMemory = append(cg.instructionMemory, word)
-	cg.debugAssembly = append(cg.debugAssembly,
-		fmt.Sprintf("[0x%04X] - %08X - Opc: OUT mem[R_OUT_ADDR]->(R_OUT_DATA)->port[%d]", cg.nextInstructionAddr, word, port))
-	cg.nextInstructionAddr++
-}
-
-func (cg *CodeGenerator) emitOutImm(port uint8, value int32) {
-	word := encodeIOWord(isa.OpOut, isa.ImmReg, port, value)
-	cg.instructionMemory = append(cg.instructionMemory, word)
-	cg.debugAssembly = append(cg.debugAssembly,
-		fmt.Sprintf("[0x%04X] OUT #%d → port[%d]  0x%08X", cg.nextDataAddr, value, port, word))
-	cg.nextInstructionAddr++
 }
 
 // emitImmediate adds an immediate value as an operand to the instruction memory.
@@ -329,4 +284,24 @@ func allignDataMem(cg *CodeGenerator) {
 		cg.dataMemory = append(cg.dataMemory, 0) // Add padding bytes
 		cg.nextDataAddr++
 	}
+}
+
+func (cg *CodeGenerator) GetMachineCode() []uint32 {
+	return cg.instructionMemory
+}
+func (cg *CodeGenerator) GetDataMemory() []byte {
+	return cg.dataMemory
+}
+func (cg *CodeGenerator) GetDebugAssembly() []string {
+	return cg.debugAssembly
+}
+func (cg *CodeGenerator) GetErrors() []string {
+	return cg.errors
+}
+func (cg *CodeGenerator) addError(msg string) {
+	cg.errors = append(cg.errors, msg)
+}
+
+func (cg *CodeGenerator) pushScope() {
+	cg.scopeStack = append(cg.scopeStack, Scope{symbols: make(map[string]SymbolEntry)})
 }

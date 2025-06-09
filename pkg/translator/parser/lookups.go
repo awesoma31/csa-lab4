@@ -133,7 +133,8 @@ func createTokenLookups() {
 
 	// Built-in fnuctions
 	nud(lexer.PRINT, parsePrintExpr)
-	nud(lexer.READ, parseReadExpr)
+	nud(lexer.READ, parseReadChEx)
+	nud(lexer.READINT, parseReadIntEx)
 	// stmt(lexer.PRINT, parsePrintStmt)
 	// stmt(lexer.READ, parseReadStmt)
 

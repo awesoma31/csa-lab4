@@ -84,11 +84,17 @@ func parsePrintExpr(p *parser) ast.Expr {
 	return ast.PrintExpr{Argument: arg}
 }
 
-func parseReadExpr(p *parser) ast.Expr {
+func parseReadChEx(p *parser) ast.Expr {
 	p.expect(lexer.READ)
 	p.expect(lexer.OpenParen)
 	p.expect(lexer.CloseParen)
-	return ast.ReadExpr{} // Возвращаем новый AST-узел ReadExpr
+	return ast.ReadChExpr{}
+}
+func parseReadIntEx(p *parser) ast.Expr {
+	p.expect(lexer.READINT)
+	p.expect(lexer.OpenParen)
+	p.expect(lexer.CloseParen)
+	return ast.ReadIntExpr{}
 }
 
 // parseRangeExpr handles range operators (e.g., 1..10)

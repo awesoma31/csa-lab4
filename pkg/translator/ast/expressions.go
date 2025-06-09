@@ -26,9 +26,13 @@ type SymbolExpr struct {
 
 func (n SymbolExpr) expr() {}
 
-type ReadExpr struct{}
+type ReadChExpr struct{}
 
-func (n ReadExpr) expr() {}
+func (n ReadChExpr) expr() {}
+
+type ReadIntExpr struct{}
+
+func (n ReadIntExpr) expr() {}
 
 // TODO: should be only standalone stmt so remove
 type PrintExpr struct {

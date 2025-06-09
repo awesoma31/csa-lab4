@@ -6,6 +6,6 @@ type TickEntry struct {
 }
 
 type Input struct {
-	IntrNumber int `yaml:"interrupt"`
-	Value      any `yaml:"value"`
+	IrqNumber int `yaml:"interrupt"`
+	Value     any `yaml:"value"`
 }

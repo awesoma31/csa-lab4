@@ -1,10 +1,13 @@
-let b = 2330;
+let b = 20;
 let c = 3;
 let d = 7;
 let a = 1500;
 let e = 999;
-//e = (10+b*5)-(12/c+4)*(d-a);
+e = 30 - 150*2;
 
-e = a + b;
+if e >= 0 {
+    print("pos");
+} else {
+    print("neg");
+}
 
-print(e);

@@ -19,9 +19,10 @@ const (
 	OpCmp uint32 = 0x14
 
 	// 0x18-0x1F: I/O
-	OpIn   uint32 = 0x18
-	OpOut  uint32 = 0x19
-	OpOutD uint32 = 0x1A
+	OpIn uint32 = 0x18
+	// OpOutB uint32 = 0x19
+	OpOut  uint32 = 0x1A
+	OpOutB uint32 = 0x1B
 
 	// 0x20-0x2F: control-flow (unconditional & calls)
 	OpJmp  uint32 = 0x20

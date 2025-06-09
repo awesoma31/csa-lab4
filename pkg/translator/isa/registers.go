@@ -9,11 +9,11 @@ const (
 	R4
 	ROutAddr
 	ROutData
-	RInAddr
+	R6
 	RInData
 	RC
 	SpReg
-	FpReg
+	R5
 	RT
 	ZERO        // 13
 	ONE         // 14
@@ -21,11 +21,6 @@ const (
 )
 
 const (
-	PORT1 = R4
-	PORT2 = FpReg
+	PortCh = 1
+	PortD  = 0
 )
-
-var PortLU = map[int]int{
-	PORT1: 1,
-	PORT2: 2,
-}

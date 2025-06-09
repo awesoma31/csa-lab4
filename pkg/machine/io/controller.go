@@ -2,22 +2,22 @@ package io
 
 import "fmt"
 
-type IOController struct {
+type Controller struct {
 	Sched    map[int]Input    // расписание IRQ
 	portsVal map[uint8]byte   // “регистры”-входы (последний принятый байт)
 	outBuf   map[uint8][]byte // ***отдельный буфер на каждый порт***
 }
 
-func (ioc *IOController) OutBufAll() map[uint8][]byte {
+func (ioc *Controller) OutBufAll() map[uint8][]byte {
 	return ioc.outBuf
 }
 
-func NewIOController(entries []TickEntry) *IOController {
+func NewIOController(entries []TickEntry) *Controller {
 	m := make(map[int]Input, len(entries))
 	for _, e := range entries {
 		m[e.Tick] = e.Input
 	}
-	return &IOController{
+	return &Controller{
 		Sched:    m,
 		portsVal: make(map[uint8]byte),
 		outBuf:   make(map[uint8][]byte),
@@ -26,31 +26,31 @@ func NewIOController(entries []TickEntry) *IOController {
 
 /* ——— вход (IRQ) остаётся как был ——— */
 
-func (ioc *IOController) CheckTick(tick int) (bool, uint8) {
+func (ioc *Controller) CheckTick(tick int) (bool, uint8) {
 	inp, ok := ioc.Sched[tick]
 	if !ok {
 		return false, 0
 	}
 
-	port := uint8(inp.IntrNumber)
+	port := byte(inp.IrqNumber)
 	ioc.portsVal[port] = toByte(inp.Value)
 	delete(ioc.Sched, tick)
 	return true, port
 }
 
-func (ioc *IOController) ReadPort(p uint8) byte {
+func (ioc *Controller) ReadPort(p uint8) byte {
 	return ioc.portsVal[p]
 }
 
-func (ioc *IOController) WritePort(p uint8, v byte) {
+func (ioc *Controller) WritePort(p uint8, v byte) {
 	ioc.outBuf[p] = append(ioc.outBuf[p], v)
 }
 
-func (ioc *IOController) Output(port uint8) []byte {
+func (ioc *Controller) Output(port uint8) []byte {
 	return ioc.outBuf[port]
 }
 
-func (ioc *IOController) OutputAll() []byte {
+func (ioc *Controller) OutputAll() []byte {
 	var all []byte
 	for _, b := range ioc.outBuf {
 		all = append(all, b...)
