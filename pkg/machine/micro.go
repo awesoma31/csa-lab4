@@ -57,6 +57,7 @@ func init() {
 	// CALL RET ...
 
 	ucode[isa.OpOut][isa.NoOperands] = uOut
+	ucode[isa.OpOutD][isa.NoOperands] = uOutD
 
 }
 
@@ -66,7 +67,19 @@ func uOut(rd, _, _ int) microStep {
 		port := uint8(1)
 		data := byte(c.Reg.GPR[isa.ROutData])
 		c.Ioc.WritePort(port, data)
-		fmt.Printf("TICK % 4d - OUT port % 4d <- %s (0x%02X) | %v\n",
+		fmt.Printf("TICK % 4d - OUT port %d <- %s (0x%02X) | %v\n",
+			c.Tick, port, isa.GetRegMnem(isa.ROutData), data, c.Ioc.Output(port))
+		return true
+	}
+}
+
+func uOutD(rd, _, _ int) microStep {
+	return func(c *CPU) bool {
+		//TODO: if print then always 1
+		port := uint8(1)
+		data := byte(c.Reg.GPR[isa.ROutData])
+		c.Ioc.WritePort(port, data)
+		fmt.Printf("TICK % 4d - OUTD port %d <- %s (0x%02X) | %v\n",
 			c.Tick, port, isa.GetRegMnem(isa.ROutData), data, c.Ioc.Output(port))
 		return true
 	}

@@ -2,8 +2,10 @@ package parser
 
 import (
 	"fmt"
+
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
+	"github.com/sanity-io/litter"
 )
 
 func parseStmt(p *parser) ast.Stmt {
@@ -121,16 +123,11 @@ func parsePrintStmt(p *parser) ast.Stmt {
 	p.expect(lexer.OpenParen)
 
 	arg := parseExpr(p, defaultBp)
-	// fmt.Println(arg) // This is for debugging the parser, not for code generation
 
 	p.expect(lexer.CloseParen)
 	p.expect(lexer.SemiColon)
 
 	return ast.PrintStmt{Argument: arg}
-}
-
-func parseReadStmt(p *parser) ast.Stmt {
-	panic("impl me")
 }
 
 func parseIfStmt(p *parser) ast.Stmt {
@@ -157,10 +154,34 @@ func parseIfStmt(p *parser) ast.Stmt {
 }
 
 func parseWhileStmt(p *parser) ast.Stmt {
+	//TODO: expect while token
 	p.advance()
 	cond := parseExpr(p, assignment)
 	body := parseBlockStmt(p)
 	return ast.WhileStmt{Condition: cond, Body: body}
+}
+
+func parseInterStmt(p *parser) ast.Stmt {
+	p.expect(lexer.INTER)
+	// p.expect(lexer.OpenParen)
+	n := parseExpr(p, assignment)
+	var irqN int
+	switch a := n.(type) {
+	case ast.NumberExpr:
+		irqN = int(a.Value)
+	default:
+		p.addError(fmt.Sprint("interruption number must be a number, got: ", litter.Sdump(n)))
+	}
+
+	b := parseBlockStmt(p)
+	return ast.InterruptionStmt{IrqNumber: irqN, Body: b}
+	// switch bd := b.(type) {
+	// case ast.BlockStmt:
+	// 	return ast.InterruptionStmt{IrqNumber: irqN, Body: bd}
+	// default:
+	// 	p.addError(fmt.Sprint("interruption must contain block statement, got: ", b))
+	// 	return nil
+	// }
 }
 
 func parseReturnStmt(p *parser) ast.Stmt {

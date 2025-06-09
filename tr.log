@@ -1,0 +1,114 @@
+-------------------AST----------------------
+ast.BlockStmt{
+  Body: []ast.Stmt{
+    ast.VarDeclarationStmt{
+      Identifier: "a",
+      AssignedValue: ast.NumberExpr{
+        Value: 0,
+      },
+    },
+    ast.ExpressionStmt{
+      Expression: ast.AssignmentExpr{
+        Assigne: ast.SymbolExpr{
+          Value: "a",
+        },
+        AssignedValue: ast.BinaryExpr{
+          Left: ast.BinaryExpr{
+            Left: ast.NumberExpr{
+              Value: 1,
+            },
+            Operator: lexer.Token{
+              Kind: 34,
+              Value: "+",
+            },
+            Right: ast.NumberExpr{
+              Value: 2,
+            },
+          },
+          Operator: lexer.Token{
+            Kind: 35,
+            Value: "-",
+          },
+          Right: ast.BinaryExpr{
+            Left: ast.NumberExpr{
+              Value: 3,
+            },
+            Operator: lexer.Token{
+              Kind: 37,
+              Value: "*",
+            },
+            Right: ast.NumberExpr{
+              Value: 5,
+            },
+          },
+        },
+      },
+    },
+    ast.PrintStmt{
+      Argument: ast.SymbolExpr{
+        Value: "a",
+      },
+    },
+  },
+}
+push word 0x0B802000
+push word 0x0B802000
+push word 0x0B802000
+-------------------debugAssembly----------------------
+[0x0000] - 04220000 - Opc: MOV, Mode: MvImmReg, D:RM1, S1:, S2:
+[0x0001] - 00000001 - Imm
+[0x0002] - 0B802000 - Opc: PUSH, Mode: SingleRegMode, D:, S1:RM1, S2:
+[0x0003] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x0004] - 00000002 - Imm
+[0x0005] - 0F820000 - Opc: POP, Mode: SingleRegMode, D:RM1, S1:, S2:
+[0x0006] - 42022400 - Opc: ADD, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+[0x0007] - 0B802000 - Opc: PUSH, Mode: SingleRegMode, D:, S1:RM1, S2:
+[0x0008] - 04220000 - Opc: MOV, Mode: MvImmReg, D:RM1, S1:, S2:
+[0x0009] - 00000003 - Imm
+[0x000A] - 0B802000 - Opc: PUSH, Mode: SingleRegMode, D:, S1:RM1, S2:
+[0x000B] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x000C] - 00000005 - Imm
+[0x000D] - 0F820000 - Opc: POP, Mode: SingleRegMode, D:RM1, S1:, S2:
+[0x000E] - 4A042400 - Opc: MUL, Mode: MathRRR, D:RM2, S1:RM1, S2:RM2
+[0x000F] - 0F820000 - Opc: POP, Mode: SingleRegMode, D:RM1, S1:, S2:
+[0x0010] - 46002400 - Opc: SUB, Mode: MathRRR, D:RA, S1:RM1, S2:RM2
+[0x0011] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
+[0x0012] - 00000000 - Imm
+PRINT STMT
+[0x0013] - 04CC0000 - Opc: MOV, Mode: MvMemReg, D:ROutData, S1:, S2:
+[0x0014] - 00000000 - Imm
+[0x0015] - 67F60000 - Opc: OUT, Mode: NoOperands, D:FP, S1:, S2:
+[0x0016] - 1BE00000 - Opc: HALT, Mode: NoOperands, D:, S1:, S2:
+-------------------instructionMemory----------------------
+[0x0000|0000]: 0x04220000 - 69337088
+[0x0001|0001]: 0x00000001 - 1
+[0x0002|0002]: 0x0B802000 - 192946176
+[0x0003|0003]: 0x04240000 - 69468160
+[0x0004|0004]: 0x00000002 - 2
+[0x0005|0005]: 0x0F820000 - 260177920
+[0x0006|0006]: 0x42022400 - 1107436544
+[0x0007|0007]: 0x0B802000 - 192946176
+[0x0008|0008]: 0x04220000 - 69337088
+[0x0009|0009]: 0x00000003 - 3
+[0x000A|0010]: 0x0B802000 - 192946176
+[0x000B|0011]: 0x04240000 - 69468160
+[0x000C|0012]: 0x00000005 - 5
+[0x000D|0013]: 0x0F820000 - 260177920
+[0x000E|0014]: 0x4A042400 - 1241785344
+[0x000F|0015]: 0x0F820000 - 260177920
+[0x0010|0016]: 0x46002400 - 1174414336
+[0x0011|0017]: 0x04E00000 - 81788928
+[0x0012|0018]: 0x00000000 - 0
+[0x0013|0019]: 0x04CC0000 - 80478208
+[0x0014|0020]: 0x00000000 - 0
+[0x0015|0021]: 0x67F60000 - 1744175104
+[0x0016|0022]: 0x1BE00000 - 467664896
+-------------------dataMemory----------------------
+_____
+[0x0|0]: 0x00
+[0x1|1]: 0x00
+[0x2|2]: 0x00
+[0x3|3]: 0x00
+-------------------SymTable--------------------------
+[var_name | addres]
+a |  0

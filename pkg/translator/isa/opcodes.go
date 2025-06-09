@@ -19,14 +19,16 @@ const (
 	OpCmp uint32 = 0x14
 
 	// 0x18-0x1F: I/O
-	OpIn  uint32 = 0x18
-	OpOut uint32 = 0x19
+	OpIn   uint32 = 0x18
+	OpOut  uint32 = 0x19
+	OpOutD uint32 = 0x1A
 
 	// 0x20-0x2F: control-flow (unconditional & calls)
 	OpJmp  uint32 = 0x20
 	OpCall uint32 = 0x21
 	OpRet  uint32 = 0x22
 	OpAnd  uint32 = 0x23
+	OpIRet uint32 = 0x24
 
 	// 0x30-0x3F: conditional jumps (depend on flags)
 	OpJe  uint32 = 0x30

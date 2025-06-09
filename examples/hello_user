@@ -1,0 +1,4 @@
+let a = "hello ";
+let u = "bob";
+
+let b = addStr(a, u); 

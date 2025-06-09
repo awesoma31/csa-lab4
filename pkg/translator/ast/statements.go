@@ -56,6 +56,13 @@ type WhileStmt struct {
 
 func (n WhileStmt) stmt() {}
 
+type InterruptionStmt struct {
+	IrqNumber int
+	Body      Stmt
+}
+
+func (n InterruptionStmt) stmt() {}
+
 type PrintStmt struct {
 	Argument Expr
 }

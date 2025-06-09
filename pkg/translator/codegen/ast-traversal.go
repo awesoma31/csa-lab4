@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
+	"github.com/sanity-io/litter"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
@@ -30,9 +31,25 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 		cg.generatePrintStmt(s)
 	case ast.WhileStmt:
 		cg.generateWhileStmt(s)
+	case ast.InterruptionStmt:
+		cg.generateInterStmt(s)
 	default:
 		cg.addError(fmt.Sprintf("Unsupported statement type: %T", s))
 	}
+}
+
+func (cg *CodeGenerator) generateInterStmt(s ast.InterruptionStmt) {
+	irqN := s.IrqNumber
+	cg.debugAssembly = append(cg.debugAssembly, fmt.Sprintf("INTERRUPTION %d STMT", irqN))
+
+	switch t := s.Body.(type) {
+	case ast.BlockStmt:
+		cg.generateBlockStmt(t)
+	default:
+		cg.addError(fmt.Sprint("interruption body must be block stmt, got: ", litter.Sdump(t)))
+	}
+
+	cg.emitInstruction(isa.OpIRet, isa.NoOperands, irqN, -1, -1)
 }
 
 func (cg *CodeGenerator) generateWhileStmt(s ast.WhileStmt) {
@@ -134,8 +151,9 @@ func (cg *CodeGenerator) generatePrintStmt(s ast.PrintStmt) {
 		}
 
 		if !symbol.IsStr {
+			//TODO: create new opcode outN that will collect number value, interpret it as signed and then send to output
 			cg.generateExpr(arg, isa.ROutData)
-			cg.emitInstruction(isa.OpOut, isa.NoOperands, isa.PORT2, -1, -1)
+			cg.emitInstruction(isa.OpOutD, isa.NoOperands, isa.PORT2, -1, -1)
 		} else {
 			cg.generateExpr(s.Argument, isa.ROutAddr)
 			cg.emitMov(isa.MvRegIndReg, isa.RC, isa.ROutAddr, -1) // mov rc <- mem[routaddr]

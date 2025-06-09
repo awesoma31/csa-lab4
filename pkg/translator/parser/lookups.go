@@ -148,6 +148,7 @@ func createTokenLookups() {
 	// stmt(lexer.IMPORT, parseImportStmt)
 	// stmt(lexer.FOREACH, parseForeachStmt)
 	// stmt(lexer.CLASS, parseClassDeclarationStmt)
-	stmt(lexer.PRINT, parsePrintStmt) // This would be for `print("hello");` as a statement
+	stmt(lexer.PRINT, parsePrintStmt)
+	stmt(lexer.INTER, parseInterStmt)
 	// stmt(lexer.READ, parseReadStmt) // if read is standalone
 }

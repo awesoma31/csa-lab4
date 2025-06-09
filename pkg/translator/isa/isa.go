@@ -52,7 +52,7 @@ func init() {
 		OpAdd: "ADD", OpSub: "SUB", OpMul: "MUL", OpDiv: "DIV", OpCmp: "CMP",
 		OpAnd: "AND",
 
-		OpIn: "IN", OpOut: "OUT",
+		OpIn: "IN", OpOut: "OUT", OpOutD: "OUTD",
 
 		OpJmp: "JMP", OpCall: "CALL", OpRet: "RET",
 		OpJe: "JE", OpJne: "JNE", OpJg: "JG", OpJl: "JL",

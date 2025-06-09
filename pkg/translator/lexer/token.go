@@ -80,6 +80,8 @@ const (
 	TYPEOF
 	IN
 
+	INTER
+
 	PRINT
 	READ
 	QOUTE
@@ -111,6 +113,7 @@ var reservedLu = map[string]TokenKind{
 	"in":      IN,
 	"print":   PRINT,
 	"read":    READ,
+	"inter":   INTER,
 }
 
 type Token struct {

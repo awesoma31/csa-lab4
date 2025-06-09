@@ -2,9 +2,11 @@ package parser
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
+	"github.com/sanity-io/litter"
 )
 
 type parser struct {
@@ -54,7 +56,7 @@ func Parse(source string) (ast.BlockStmt, []string) {
 	}
 
 	if len(p.errors) > 0 {
-		panic(p.errors)
+		log.Fatal(litter.Sdump(p.errors))
 	}
 	return ast.BlockStmt{
 		Body: body,
