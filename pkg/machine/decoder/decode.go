@@ -1,8 +1,6 @@
 package decoder
 
 import (
-	"fmt"
-
 	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
 )
 
@@ -14,16 +12,13 @@ type Decoded struct {
 	Rs1 int // 4 бит [16:13]
 	Rs2 int // 4 бит [12:9]
 
-	Low9 uint16 // младшие 9 бит [8:0] – сдвиги/непосредственные данные
 }
 
-// DecodeInstructionWord извлекает все части согласно
-// формату из шапки файла isa.go.
 func DecodeInstructionWord(w uint32) Decoded {
 	const (
-		opcodeMask = 0xFC000000 // 111111 00..0
-		modeMask   = 0x03E00000 // 000000 11111 ..0
-		rdMask     = 0x001E0000 //              1111 ..0
+		opcodeMask = 0xFC000000
+		modeMask   = 0x03E00000
+		rdMask     = 0x001E0000
 		rs1Mask    = 0x0001E000
 		rs2Mask    = 0x00001E00
 		low9Mask   = 0x000001FF
@@ -36,8 +31,6 @@ func DecodeInstructionWord(w uint32) Decoded {
 		Rd:  int((w & rdMask) >> 17),
 		Rs1: int((w & rs1Mask) >> 13),
 		Rs2: int((w & rs2Mask) >> 9),
-
-		Low9: uint16(w & low9Mask),
 	}
 }
 
@@ -49,22 +42,5 @@ func Dec(w uint32) (op, mode uint32, rd, rs1, rs2 int) {
 	rd = d.Rd
 	rs1 = d.Rs1
 	rs2 = d.Rs2
-	// op   = w >> 26
-	// mode = (w >> 21) & 0x1F
-	// rd   = int((w >> 17) & 0xF)
-	// rs1  = int((w >> 13) & 0xF)
-	// rs2  = int((w >> 9)  & 0xF)
 	return
-}
-
-// String даёт удобное представление (опционально).
-func (d Decoded) String() string {
-	return fmt.Sprintf(
-		"%s  %s   rd:%s  rs1:%s  rs2:%s}",
-		isa.GetOpMnemonic(d.Opcode),
-		isa.GetAMnemonic(d.Mode),
-		isa.GetRegMnem(d.Rd),
-		isa.GetRegMnem(d.Rs1),
-		isa.GetRegMnem(d.Rs2),
-	)
 }

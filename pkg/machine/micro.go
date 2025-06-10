@@ -58,6 +58,7 @@ func init() {
 	ucode[isa.OpAnd][isa.ImmReg] = uAndIR
 	ucode[isa.OpAnd][isa.RegReg] = uAndRR
 
+	// IO
 	ucode[isa.OpOut][isa.ByteM] = uOutB
 	ucode[isa.OpOut][isa.WordM] = uOutW
 	ucode[isa.OpIn][isa.ByteM] = uInB
@@ -73,7 +74,7 @@ func uIRet(_, _, _ int) microStep {
 		c.inISR = false
 		c.pending = false
 		c.Reg.PC = c.Reg.savedPC
-		//TODO: restore flags
+		c.RestoreNZVC()
 		fmt.Printf("TICK % 4d - restore register values | %v\n", c.Tick, c.ReprPC())
 		fmt.Println("------------Exiting interruption------------")
 		return true

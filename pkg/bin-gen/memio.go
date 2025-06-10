@@ -6,7 +6,6 @@ import (
 	"os"
 )
 
-// SaveInstructionMemory пишет []uint32 little-endian'ом.
 func SaveInstructionMemory(path string, instrMem []uint32) error {
 	f, err := os.Create(path)
 	if err != nil {
@@ -22,12 +21,10 @@ func SaveInstructionMemory(path string, instrMem []uint32) error {
 	return nil
 }
 
-// SaveDataMemory пишет data-segment «как есть».
 func SaveDataMemory(path string, dataMem []byte) error {
 	return os.WriteFile(path, dataMem, 0o644)
 }
 
-// LoadInstructionMemory читает бинарник в []uint32 (wordSize==4).
 func LoadInstructionMemory(path string) ([]uint32, error) {
 	raw, err := os.ReadFile(path)
 	if err != nil {
@@ -43,5 +40,4 @@ func LoadInstructionMemory(path string) ([]uint32, error) {
 	return words, nil
 }
 
-// LoadDataMemory читает data-segment в []byte.
 func LoadDataMemory(path string) ([]byte, error) { return os.ReadFile(path) }

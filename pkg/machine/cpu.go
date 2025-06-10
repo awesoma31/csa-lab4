@@ -33,8 +33,9 @@ type CPU struct {
 		savedGPR [14]uint32
 		savedPC  uint32
 	}
-	N, Z, V, C bool
-	IF         bool
+	N, Z, V, C     bool
+	savedNZVCFlags uint8
+	IF             bool
 
 	step      microStep // current micro-routine
 	inISR     bool
@@ -154,8 +155,8 @@ func (c *CPU) raiseIRQ(vec uint8) {
 func (c *CPU) enterISR() {
 	fmt.Printf("------------Entering Interruption %d------------\n", c.pendNum)
 	c.Reg.savedPC = c.Reg.PC
-	//TODO: save flags
-	c.Reg.PC = c.memI[c.pendNum] // (пока) вектор = номер
+	c.SaveNZVC()
+	c.Reg.PC = c.memI[c.pendNum]
 	c.SaveGPRValues()
 	c.inISR = true
 	c.pending = false
@@ -170,6 +171,29 @@ func (c *CPU) RestoreGPRValues() {
 	for i := range len(c.Reg.savedGPR) {
 		c.Reg.GPR[i] = c.Reg.savedGPR[i]
 	}
+}
+
+func (c *CPU) SaveNZVC() {
+	c.savedNZVCFlags = 0
+	if c.N {
+		c.savedNZVCFlags |= (1 << 0) // Set bit 0 for N
+	}
+	if c.Z {
+		c.savedNZVCFlags |= (1 << 1) // Set bit 1 for Z
+	}
+	if c.V {
+		c.savedNZVCFlags |= (1 << 2) // Set bit 2 for V
+	}
+	if c.C {
+		c.savedNZVCFlags |= (1 << 3) // Set bit 3 for C
+	}
+}
+
+func (c *CPU) RestoreNZVC() {
+	c.N = (c.savedNZVCFlags&(1<<0) != 0)
+	c.Z = (c.savedNZVCFlags&(1<<1) != 0)
+	c.V = (c.savedNZVCFlags&(1<<2) != 0)
+	c.C = (c.savedNZVCFlags&(1<<3) != 0)
 }
 
 func (c *CPU) ReprPC() string {

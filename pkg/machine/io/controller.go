@@ -3,9 +3,9 @@ package io
 import "fmt"
 
 type Controller struct {
-	Sched    map[int]Input    // расписание IRQ
-	portsVal map[uint8]byte   // “регистры”-входы (последний принятый байт)
-	outBuf   map[uint8][]byte // ***отдельный буфер на каждый порт***
+	Sched    map[int]Input
+	portsVal map[uint8]byte
+	outBuf   map[uint8][]byte
 }
 
 func (ioc *Controller) OutBufAll() map[uint8][]byte {
@@ -23,8 +23,6 @@ func NewIOController(entries []TickEntry) *Controller {
 		outBuf:   make(map[uint8][]byte),
 	}
 }
-
-/* ——— вход (IRQ) остаётся как был ——— */
 
 func (ioc *Controller) CheckTick(tick int) (bool, uint8) {
 	inp, ok := ioc.Sched[tick]
