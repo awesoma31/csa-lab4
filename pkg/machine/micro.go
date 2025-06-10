@@ -65,7 +65,25 @@ func init() {
 	ucode[isa.OpIn][isa.WordM] = uInW
 
 	ucode[isa.OpIRet][isa.NoOperands] = uIRet
+	ucode[isa.OpIntOn][isa.NoOperands] = uIntOn
+	ucode[isa.OpIntOff][isa.NoOperands] = uIntOff
 
+}
+
+func uIntOn(_, _, _ int) microStep {
+	return func(c *CPU) bool {
+		c.IsIntOn = true
+		fmt.Printf("TICK % 4d - interruptions on | %v\n", c.Tick, c.IsIntOn)
+		return true
+	}
+}
+
+func uIntOff(_, _, _ int) microStep {
+	return func(c *CPU) bool {
+		c.IsIntOn = false
+		fmt.Printf("TICK % 4d - interruptions on | %v\n", c.Tick, c.IsIntOn)
+		return true
+	}
 }
 
 func uIRet(_, _, _ int) microStep {

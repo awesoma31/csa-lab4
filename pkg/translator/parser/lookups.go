@@ -151,5 +151,7 @@ func createTokenLookups() {
 	// stmt(lexer.CLASS, parseClassDeclarationStmt)
 	stmt(lexer.PRINT, parsePrintStmt)
 	stmt(lexer.INTER, parseInterStmt)
+	stmt(lexer.IntOn, parseIntOnStmt)
+	stmt(lexer.IntOff, parseIntOffStmt)
 	// stmt(lexer.READ, parseReadStmt) // if read is standalone
 }

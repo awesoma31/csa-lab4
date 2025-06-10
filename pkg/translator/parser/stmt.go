@@ -163,7 +163,6 @@ func parseWhileStmt(p *parser) ast.Stmt {
 
 func parseInterStmt(p *parser) ast.Stmt {
 	p.expect(lexer.INTER)
-	// p.expect(lexer.OpenParen)
 	n := parseExpr(p, assignment)
 	var irqN int
 	switch a := n.(type) {
@@ -175,14 +174,26 @@ func parseInterStmt(p *parser) ast.Stmt {
 
 	b := parseBlockStmt(p)
 	return ast.InterruptionStmt{IrqNumber: irqN, Body: b}
-	// switch bd := b.(type) {
-	// case ast.BlockStmt:
-	// 	return ast.InterruptionStmt{IrqNumber: irqN, Body: bd}
-	// default:
-	// 	p.addError(fmt.Sprint("interruption must contain block statement, got: ", b))
-	// 	return nil
-	// }
 }
+func parseIntOnStmt(p *parser) ast.Stmt {
+	p.expect(lexer.IntOn)
+	p.expect(lexer.SemiColon)
+	return ast.IntOnStmt{}
+}
+
+func parseIntOffStmt(p *parser) ast.Stmt {
+	p.expect(lexer.IntOff)
+	p.expect(lexer.SemiColon)
+	return ast.IntOffStmt{}
+}
+
+// switch bd := b.(type) {
+// case ast.BlockStmt:
+// 	return ast.InterruptionStmt{IrqNumber: irqN, Body: bd}
+// default:
+// 	p.addError(fmt.Sprint("interruption must contain block statement, got: ", b))
+// 	return nil
+// }
 
 func parseReturnStmt(p *parser) ast.Stmt {
 	p.expect(lexer.RETURN)

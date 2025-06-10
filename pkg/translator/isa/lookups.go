@@ -29,7 +29,9 @@ func init() {
 
 		OpIn: "IN", OpOut: "OUT",
 
-		OpIRet: "IRet",
+		OpIRet:   "IRet",
+		OpIntOn:  "IntOn",
+		OpIntOff: "IntOff",
 
 		OpJmp: "JMP",
 		// OpCall: "CALL",
@@ -46,7 +48,7 @@ func init() {
 		MvRegReg:       "MvRegReg",
 		MvImmReg:       "MvImmReg",
 		MvRegIndReg:    "MvRegIndReg",
-		MvSpOffsToReg:  "SpOffsRef",
+		MvRegMemInd:    "SpOffsRef",
 		RegMemFp:       "RegMemFp",
 		MvMemReg:       "MvMemReg",
 		MvRegMem:       "MvRegMem",

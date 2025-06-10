@@ -95,7 +95,7 @@ func (cg *CodeGenerator) popScope() {
 
 func (cg *CodeGenerator) currentScope() *Scope {
 	if len(cg.scopeStack) == 0 {
-		return nil //TODO: Или паника, или ошибка
+		panic("scope stack is 0")
 	}
 	return &cg.scopeStack[len(cg.scopeStack)-1]
 }
@@ -112,6 +112,7 @@ func (cg *CodeGenerator) lookupSymbol(name string) (SymbolEntry, bool) {
 
 func (cg *CodeGenerator) addSymbolToScope(entry SymbolEntry) {
 	cg.currentScope().symbols[entry.Name] = entry
+	fmt.Println("added to scope", entry.Name, cg.currentScope().symbols[entry.Name])
 }
 
 // emitInstruction encodes an instruction to the instruction memory and stores dubeg info in debugAssembly.
@@ -152,7 +153,8 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 	case isa.MvMemReg: // mem to reg; s1=addr
 		cg.emitInstruction(isa.OpMov, mode, dest, -1, -1)
 		cg.emitImmediate(uint32(s1))
-	case isa.MvSpOffsToReg: // sp+offs to reg
+	case isa.MvRegMemInd: // sp+offs to reg
+		//TODO:
 		cg.emitInstruction(isa.OpMov, mode, dest, s1, -1)
 	case isa.MvRegMem: // reg to mem; dest=addr, s1=reg
 		cg.emitInstruction(isa.OpMov, mode, -1, s1, -1)

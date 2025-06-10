@@ -1,20 +1,20 @@
 instruction_bin: "bin/instr.bin"
 data_bin: "bin/data.bin"
 
-tick_limit: 400
-# schedule:
-#   - tick: 100
-#     input:
-#       interrupt: 1
-#       value: "A"
-#   - tick: 200
-#     input:
-#       interrupt: 1
-#       value: "C"
-#   - tick: 400
-#     input:
-#       interrupt: 0
-#       value: "B"
+tick_limit: 1000
+schedule:
+  - tick: 50
+    input:
+      interrupt: 1
+      value: "G"
+  - tick: 200
+    input:
+      interrupt: 1
+      value: "o"
+  - tick: 400
+    input:
+      interrupt: 1
+      value: "i"
 #   - tick: 550
 #     input:
 #       interrupt: 0

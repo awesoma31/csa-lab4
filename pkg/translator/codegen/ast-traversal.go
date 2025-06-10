@@ -14,22 +14,34 @@ import (
 func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 	switch s := stmt.(type) {
 	case ast.VarDeclarationStmt:
-		cg.generateVarDeclStmt(s)
+		cg.genVarDeclStmt(s)
 	case ast.ExpressionStmt:
 		cg.genEx(s.Expression, isa.RA)
 	case ast.BlockStmt:
 		cg.generateBlockStmt(s)
 	case ast.IfStmt:
-		cg.generateIfStmt(s)
+		cg.genIfStmt(s)
 	case ast.PrintStmt:
 		cg.genPrintStmt(s)
 	case ast.WhileStmt:
 		cg.generateWhileStmt(s)
 	case ast.InterruptionStmt:
 		cg.generateInterStmt(s)
+	case ast.IntOnStmt:
+		cg.genIntOnStmt()
+	case ast.IntOffStmt:
+		cg.genIntOffStmt()
 	default:
 		cg.addError(fmt.Sprintf("Unsupported statement type: %T", s))
 	}
+}
+
+func (cg *CodeGenerator) genIntOffStmt() {
+	cg.emitInstruction(isa.OpIntOff, isa.NoOperands, -1, -1, -1)
+}
+
+func (cg *CodeGenerator) genIntOnStmt() {
+	cg.emitInstruction(isa.OpIntOn, isa.NoOperands, -1, -1, -1)
 }
 
 func (cg *CodeGenerator) generateInterStmt(s ast.InterruptionStmt) {
@@ -131,7 +143,7 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 	case ast.SymbolExpr:
 		symbol, found := cg.lookupSymbol(arg.Value)
 		if !found {
-			cg.addError(fmt.Sprintf("Undeclared variable in print expr: %s", arg.Value))
+			cg.addError(fmt.Sprintf("Undeclared variable in print expr: %s; %v", arg.Value, litter.Sdump(cg.scopeStack)))
 			return
 		}
 
@@ -148,11 +160,6 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 			cg.emitImmediate(1)
 			// routaddr = addr of str 1 char
 			// rcounter addr len
-
-			_, found := cg.lookupSymbol(arg.Value)
-			if !found {
-				cg.addError(fmt.Sprintf("Undeclared variable in print expr: %s", arg.Value))
-			}
 
 			cmpAddr := cg.nextInstructionAddr
 			cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
@@ -315,9 +322,9 @@ func (cg *CodeGenerator) VisitProgram(p *ast.BlockStmt) {
 	}
 }
 
-func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
+func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 	if _, found := cg.currentScope().symbols[s.Identifier]; found {
-		cg.addError(fmt.Sprintf("Variable '%s' already declared in this scope.", s.Identifier))
+		cg.addError(fmt.Sprintf("Variable '%s' already declared ", s.Identifier))
 		return
 	}
 
@@ -333,27 +340,14 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			//TODO: big numbers go to 0
 			symbolEntry.NumberValue = assignedVal.Value
 
-			if len(cg.scopeStack) == 1 { // if global
-				symbolEntry.MemoryArea = "data"
-				symbolEntry.AbsAddress = cg.addNumberData(assignedVal.Value)
-			} else { // It's a local variable (on the stack)
-				//TODO:
-				symbolEntry.MemoryArea = "stack"
-				// Ensure the offset is aligned for stack variables
-				alignmentPadding := (WordSizeBytes - (cg.currentFrameOffset % WordSizeBytes)) % WordSizeBytes
-				cg.currentFrameOffset += alignmentPadding // Add padding to the offset
-
-				symbolEntry.FPOffset = cg.currentFrameOffset     // Assign current aligned offset
-				cg.currentFrameOffset += symbolEntry.SizeInBytes // Increment offset for the next local variable
-			}
-
+			symbolEntry.MemoryArea = "data"
+			symbolEntry.AbsAddress = cg.addNumberData(assignedVal.Value)
 			cg.addSymbolToScope(symbolEntry)
 			return
 
 		case ast.StringExpr:
 			strAddr := cg.addString(assignedVal.Value)
 			ptrAddr := cg.addNumberData(int32(strAddr))
-			// in word store ptr, in word stored len and in bytes stored chars
 			symbolEntry.Type = ast.IntType
 			symbolEntry.SizeInBytes = WordSizeBytes
 			symbolEntry.NumberValue = int32(strAddr)
@@ -362,7 +356,7 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			symbolEntry.MemoryArea = "data"
 			cg.addSymbolToScope(symbolEntry)
 		case ast.ReadChExpr:
-			println("readchar")
+			//TODO: stores invalid adress into var
 			strAddr := cg.addString("")
 			ptrAddr := cg.addNumberData(int32(strAddr))
 
@@ -372,7 +366,6 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			symbolEntry.AbsAddress = ptrAddr
 			symbolEntry.IsStr = true
 			symbolEntry.MemoryArea = "data"
-			println("before add to scope")
 			cg.addSymbolToScope(symbolEntry)
 			cg.dataMemory[strAddr] = 1 // read 1 char -> len = 1
 
@@ -440,10 +433,6 @@ func (cg *CodeGenerator) generateVarDeclStmt(s ast.VarDeclarationStmt) {
 			cg.genAssignEx(assign, isa.RA)
 			return
 
-			// cg.generateExpr(assignedVal, RA)
-		// case *ast.ReadChExpr:
-		// 	//TODO: straight to mem
-		// 	cg.genReadChEx(isa.RT)
 		default:
 			cg.addError(fmt.Sprintf("unknown case of generating var declaration - %T", assignedVal))
 		}
@@ -480,7 +469,8 @@ func (cg *CodeGenerator) generateBlockStmt(s ast.BlockStmt) {
 	}
 }
 
-func (cg *CodeGenerator) generateIfStmt(s ast.IfStmt) {
+func (cg *CodeGenerator) genIfStmt(s ast.IfStmt) {
+	// TODO: comparing var that points to string
 	cg.debugAssembly = append(cg.debugAssembly, "IF STATEMENT CONDITION:")
 	var operator lexer.Token
 	switch a := s.Condition.(type) {

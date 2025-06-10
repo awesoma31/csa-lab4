@@ -21,8 +21,10 @@ const (
 	// 0x18-0x1F: I/O
 	OpIn uint32 = 0x18
 	// OpOutB uint32 = 0x19
-	OpOut  uint32 = 0x1A
-	OpOutB uint32 = 0x1B
+	OpOut    uint32 = 0x1A
+	OpOutB   uint32 = 0x1B
+	OpIntOn  uint32 = 0x1C
+	OpIntOff uint32 = 0x1D
 
 	// 0x20-0x2F: control-flow (unconditional & calls)
 	OpJmp  uint32 = 0x20

@@ -61,6 +61,16 @@ type InterruptionStmt struct {
 	Body      Stmt
 }
 
+type IntOnStmt struct {
+}
+
+func (n IntOnStmt) stmt() {}
+
+type IntOffStmt struct {
+}
+
+func (n IntOffStmt) stmt() {}
+
 func (n InterruptionStmt) stmt() {}
 
 type PrintStmt struct {
@@ -70,7 +80,6 @@ type PrintStmt struct {
 func (n PrintStmt) stmt() {}
 
 type ReadStmt struct {
-	//TODO: return
 	Argument Expr
 }
 

@@ -35,7 +35,7 @@ type CPU struct {
 	}
 	N, Z, V, C     bool
 	savedNZVCFlags uint8
-	IF             bool
+	IsIntOn        bool
 
 	step      microStep // current micro-routine
 	inISR     bool
@@ -55,6 +55,7 @@ func New(memI []uint32, memD []byte, ioc *io.Controller, mi int, tickLimit int) 
 		TickLimit: tickLimit,
 		halted:    false,
 		maxInt:    mi,
+		IsIntOn:   true,
 	}
 
 	if StackStart < uint32(len(c.memD)) {
@@ -81,7 +82,7 @@ func (c *CPU) Run() {
 		finished := c.step(c)
 
 		if finished {
-			if c.pending && !c.inISR {
+			if c.pending && !c.inISR && c.IsIntOn {
 				c.enterISR()
 			}
 
@@ -153,7 +154,7 @@ func (c *CPU) raiseIRQ(vec uint8) {
 	c.pending, c.pendNum = true, int(vec)
 }
 func (c *CPU) enterISR() {
-	fmt.Printf("------------Entering Interruption %d------------\n", c.pendNum)
+	fmt.Printf("------------Entering Interruption %d, value=%v------------\n", c.pendNum, c.Ioc.ReadPort(byte(c.pendNum)))
 	c.Reg.savedPC = c.Reg.PC
 	c.SaveNZVC()
 	c.Reg.PC = c.memI[c.pendNum]

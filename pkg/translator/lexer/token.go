@@ -81,6 +81,8 @@ const (
 	IN
 
 	INTER
+	IntOn
+	IntOff
 
 	PRINT
 	READ
@@ -116,6 +118,8 @@ var reservedLu = map[string]TokenKind{
 	"read":    READ,
 	"readInt": READINT,
 	"inter":   INTER,
+	"intOn":   IntOn,
+	"intOff":  IntOff,
 }
 
 type Token struct {

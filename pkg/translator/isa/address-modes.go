@@ -2,17 +2,15 @@ package isa
 
 // ───────────────────── address-modes (5 bits) ────────────────
 const (
-	// plain register/register/immediate moves
-	MvRegReg uint32 = 0x00
-	MvImmReg uint32 = 0x01
-	// move low byte value of reg to mem
-	MvRegLowMem   uint32 = 0x02
-	MvRegIndReg   uint32 = 0x03
-	MvSpOffsToReg uint32 = 0x04 // rd ← [SP+offs]   /  [SP+offs] ← rs
-	RegMemFp      uint32 = 0x05 // frame-pointer relative
-	MvMemReg      uint32 = 0x06 // rd ← [addr]
-	MvRegMem      uint32 = 0x07 // [addr] ← rs
-	MvImmMem      uint32 = 0x09 // [addr] ← imm
+	MvRegReg    uint32 = 0x00
+	MvImmReg    uint32 = 0x01
+	MvRegLowMem uint32 = 0x02
+	MvRegIndReg uint32 = 0x03
+	MvRegMemInd uint32 = 0x04 // mem[mem[addr]] <- reg
+	RegMemFp    uint32 = 0x05
+	MvMemReg    uint32 = 0x06
+	MvRegMem    uint32 = 0x07
+	MvImmMem    uint32 = 0x09
 
 	IoMemReg uint32 = 0x0A
 	ImmReg   uint32 = 0x0B
@@ -22,21 +20,19 @@ const (
 	RegReg         uint32 = 0x0E
 	MvLowRegIndReg uint32 = 0x0F
 
-	// arithmetic “ternary” forms
-	MathRRR uint32 = 0x10 // rd ← rs1 op rs2
-	MathRMR uint32 = 0x11 // rd ← rs1 op [addr]
-	MathRIR uint32 = 0x12 // rd ← rs1 op imm
-	MathMMR uint32 = 0x13 // rd ← [a1] op [a2]
+	MathRRR uint32 = 0x10
+	MathRMR uint32 = 0x11
+	MathRIR uint32 = 0x12
+	MathMMR uint32 = 0x13
 
 	ByteM uint32 = 0x14
 	WordM uint32 = 0x15
 
-	// jumps / calls get their own modes if you wish
-	JAbsAddr      uint32 = 0x18 // the next word contains absolute address
-	SingleRegMode uint32 = 0x1C // PUSH reg, POP reg, NEG reg, NOT reg
+	JAbsAddr      uint32 = 0x18
+	SingleRegMode uint32 = 0x1C
 
-	InPortReg  uint32 = 0x1D // IN reg, #port
-	OutRegPort uint32 = 0x1E // OUT #port, reg
+	InPortReg  uint32 = 0x1D
+	OutRegPort uint32 = 0x1E
 
-	NoOperands uint32 = 0x1F // HALT, NOP, RET
+	NoOperands uint32 = 0x1F
 )

@@ -1,16 +1,17 @@
 let f = 1;
-
-let b = "n";
+let c = 0;
+let chars = 3;
 
 while f == 1 {
-    print(f);
-    print(b);
 }
 
-print(b);
-
 inter 1 {
-    b = read();
-    f = 0;
+    let b = read();
+    c = c + 1;
+    print(b);
+    if c >= chars {
+        f = 0;
+        print("done");
+    }
 }
 

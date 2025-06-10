@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug translator",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto", 
+            "program": "${workspaceFolder}/cmd/translator/main.go", // Path to your compiled binary
+            "args": [
+                "--in=examples/cat.lang" // Your command-line arguments
+            ],
+            "preLaunchTask": "build-translator", // This task will run before debugging
+            "cwd": "${workspaceFolder}" // Set the working directory to your project root
+        },
+    ],
+}
