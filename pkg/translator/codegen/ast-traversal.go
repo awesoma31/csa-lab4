@@ -429,19 +429,19 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 			cg.genAssignEx(assign, isa.Ra)
 			return
 		case ast.ListEx:
-			// list var stores pointer to list start
-			listAddr := cg.addNumberData(0)
+			listPtr := cg.nextDataAddr
+			cg.dataMemory = append(cg.dataMemory, make([]byte, assignedVal.Size)...)
+			cg.nextDataAddr += uint32(assignedVal.Size)
+			allignDataMem(cg)
+
+			ptrAddr := cg.addNumberData(int32(listPtr))
+
 			symbolEntry.Type = ast.IntType
-			symbolEntry.SizeInBytes = WordSizeBytes
-			symbolEntry.NumberValue = int32(assignedVal.Size)
+			symbolEntry.SizeInBytes = WordSizeBytes // переменная – слово-указатель
+			symbolEntry.AbsAddress = ptrAddr
 			symbolEntry.MemoryArea = "data"
-			symbolEntry.AbsAddress = listAddr
-
+			symbolEntry.IsStr = false
 			cg.addSymbolToScope(symbolEntry)
-
-			for range assignedVal.Size - 1 {
-				cg.addNumberData(0)
-			}
 		case ast.ArrayIndexEx:
 			symbolEntry.Type = ast.IntType
 			symbolEntry.SizeInBytes = WordSizeBytes
@@ -496,10 +496,9 @@ func (cg *CodeGenerator) genAssignArray(e ast.AssignmentExpr, target ast.ArrayIn
 
 // calculates addr of array element and stores it in rd
 func (cg *CodeGenerator) genArrayAddress(ix ast.ArrayIndexEx, rd int) {
-	cg.genEx(ix.Target, isa.RM1) // RM1 = arr ptr
-	cg.genEx(ix.Index, isa.RM2)  // RM2 = i
+	cg.genEx(ix.Target, isa.RM1)
+	cg.genEx(ix.Index, isa.RM2)
 
-	// addr = ptr + idx
 	cg.emitInstruction(isa.OpAdd, isa.MathRRR, rd, isa.RM1, isa.RM2)
 }
 
