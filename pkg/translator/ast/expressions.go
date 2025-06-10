@@ -34,6 +34,19 @@ type ReadIntExpr struct{}
 
 func (n ReadIntExpr) expr() {}
 
+type ListEx struct {
+	Size int
+}
+
+func (n ListEx) expr() {}
+
+type ArrayIndexEx struct {
+	Target Expr
+	Index  Expr
+}
+
+func (n ArrayIndexEx) expr() {}
+
 // TODO: should be only standalone stmt so remove
 type PrintExpr struct {
 	Argument Expr

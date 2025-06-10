@@ -16,7 +16,7 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 	case ast.VarDeclarationStmt:
 		cg.genVarDeclStmt(s)
 	case ast.ExpressionStmt:
-		cg.genEx(s.Expression, isa.RA)
+		cg.genEx(s.Expression, isa.Ra)
 	case ast.BlockStmt:
 		cg.generateBlockStmt(s)
 	case ast.IfStmt:
@@ -129,7 +129,7 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 		cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
 		cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
 		jToEndAddr := cg.ReserveWord()
-		cg.emitMov(isa.MvLowRegIndReg, isa.ROutData, isa.ROutAddr, -1)
+		cg.emitMov(isa.MvByteRegIndReg, isa.ROutData, isa.ROutAddr, -1)
 		cg.emitInstruction(isa.OpOut, isa.ByteM, isa.PortCh, -1, -1)
 		cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RC, isa.RC, -1)
 		cg.emitImmediate(1)
@@ -165,7 +165,7 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 			cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
 			cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
 			jToEndAddr := cg.ReserveWord()
-			cg.emitMov(isa.MvLowRegIndReg, isa.ROutData, isa.ROutAddr, -1)
+			cg.emitMov(isa.MvByteRegIndReg, isa.ROutData, isa.ROutAddr, -1)
 
 			cg.emitInstruction(isa.OpOut, isa.ByteM, isa.PortCh, -1, -1)
 			cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RC, isa.RC, -1)
@@ -193,6 +193,10 @@ func (cg *CodeGenerator) genEx(expr ast.Expr, rd int) {
 	switch e := expr.(type) {
 	case ast.NumberExpr:
 		cg.emitMov(isa.MvImmReg, rd, int(e.Value), -1)
+
+	case ast.ArrayIndexEx:
+		cg.genArrayAddress(e, isa.RAddr)                   // arr addr -> raddr
+		cg.emitMov(isa.MvByteRegIndReg, rd, isa.RAddr, -1) // byte mem[raddr]->rd
 
 	case ast.BinaryExpr:
 		cg.genEx(e.Left, isa.RM1)
@@ -337,13 +341,11 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 		case ast.NumberExpr:
 			symbolEntry.Type = ast.IntType
 			symbolEntry.SizeInBytes = WordSizeBytes
-			//TODO: big numbers go to 0
 			symbolEntry.NumberValue = assignedVal.Value
 
 			symbolEntry.MemoryArea = "data"
 			symbolEntry.AbsAddress = cg.addNumberData(assignedVal.Value)
 			cg.addSymbolToScope(symbolEntry)
-			return
 
 		case ast.StringExpr:
 			strAddr := cg.addString(assignedVal.Value)
@@ -370,7 +372,7 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 			cg.dataMemory[strAddr] = 1 // read 1 char -> len = 1
 
 			cg.genReadChEx(isa.RInData)
-			cg.emitInstruction(isa.OpMov, isa.MvRegLowMem, -1, isa.RInData, -1)
+			cg.emitInstruction(isa.OpMov, isa.MvRegLowToMem, -1, isa.RInData, -1)
 			cg.emitImmediate(strAddr + 1) // store after len byte
 			return
 
@@ -409,29 +411,48 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 				Assigne:       ast.SymbolExpr{Value: s.Identifier},
 				AssignedValue: s.AssignedValue,
 			}
-			cg.genAssignEx(assign, isa.RA)
+			cg.genAssignEx(assign, isa.Ra)
 			return
 		case ast.PrefixExpr:
 			//TODO: for now movs expr to placeholder
 			symbolEntry.Type = ast.IntType
 			symbolEntry.SizeInBytes = WordSizeBytes
 
-			if len(cg.scopeStack) == 1 { // global
-				symbolEntry.MemoryArea = "data"
-				symbolEntry.AbsAddress = cg.addNumberData(0) // placeholder = 0
-			} else { // local
-				// TODO:stack
-				/* аналогичный код для stack-переменных */
-			}
-
+			symbolEntry.MemoryArea = "data"
+			symbolEntry.AbsAddress = cg.addNumberData(0)
 			cg.addSymbolToScope(symbolEntry)
 
 			assign := ast.AssignmentExpr{
 				Assigne:       ast.SymbolExpr{Value: s.Identifier},
 				AssignedValue: s.AssignedValue,
 			}
-			cg.genAssignEx(assign, isa.RA)
+			cg.genAssignEx(assign, isa.Ra)
 			return
+		case ast.ListEx:
+			// list var stores pointer to list start
+			listAddr := cg.addNumberData(0)
+			symbolEntry.Type = ast.IntType
+			symbolEntry.SizeInBytes = WordSizeBytes
+			symbolEntry.NumberValue = int32(assignedVal.Size)
+			symbolEntry.MemoryArea = "data"
+			symbolEntry.AbsAddress = listAddr
+
+			cg.addSymbolToScope(symbolEntry)
+
+			for range assignedVal.Size - 1 {
+				cg.addNumberData(0)
+			}
+		case ast.ArrayIndexEx:
+			symbolEntry.Type = ast.IntType
+			symbolEntry.SizeInBytes = WordSizeBytes
+			symbolEntry.MemoryArea = "data"
+			symbolEntry.AbsAddress = cg.addNumberData(0)
+			cg.addSymbolToScope(symbolEntry)
+
+			cg.genEx(assignedVal, isa.RT2)
+
+			cg.emitInstruction(isa.OpMov, isa.MvRegLowToMem, -1, isa.RT2, -1)
+			cg.emitImmediate(symbolEntry.AbsAddress)
 
 		default:
 			cg.addError(fmt.Sprintf("unknown case of generating var declaration - %T", assignedVal))
@@ -457,9 +478,29 @@ func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd int) {
 
 		cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, rd, -1)
 		cg.emitImmediate(symbol.AbsAddress)
+	case ast.ArrayIndexEx:
+		cg.genAssignArray(e, target)
+
 	default:
 		cg.addError(fmt.Sprintf("Unsupported assignment target type: %T", target))
 	}
+}
+
+func (cg *CodeGenerator) genAssignArray(e ast.AssignmentExpr, target ast.ArrayIndexEx) {
+	regWithAddr := isa.RAddr
+	regWithVal := isa.Ra
+	cg.genEx(e.AssignedValue, regWithVal)
+	cg.genArrayAddress(target, regWithAddr)
+	cg.emitInstruction(isa.OpMov, isa.MvLowRegToRegInd, regWithAddr, regWithVal, -1)
+}
+
+// calculates addr of array element and stores it in rd
+func (cg *CodeGenerator) genArrayAddress(ix ast.ArrayIndexEx, rd int) {
+	cg.genEx(ix.Target, isa.RM1) // RM1 = arr ptr
+	cg.genEx(ix.Index, isa.RM2)  // RM2 = i
+
+	// addr = ptr + idx
+	cg.emitInstruction(isa.OpAdd, isa.MathRRR, rd, isa.RM1, isa.RM2)
 }
 
 // generateBlockStmt handles code blocks
@@ -547,7 +588,7 @@ func (cg *CodeGenerator) genStringEx(e ast.StringExpr, rd int) {
 
 // generateUnaryExpr generates code for unary operations.
 func (cg *CodeGenerator) generateUnaryExpr(e ast.PrefixExpr, rd int) {
-	cg.genEx(e.Right, isa.RA) // Evaluate operand, result in R0
+	cg.genEx(e.Right, isa.Ra) // Evaluate operand, result in R0
 
 	switch e.Operator.Kind { // Access Kind from lexer.Token
 	case lexer.MINUS: // Unary negation (minus sign)

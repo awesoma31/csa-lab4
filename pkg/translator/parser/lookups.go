@@ -133,10 +133,9 @@ func createTokenLookups() {
 
 	// Built-in fnuctions
 	nud(lexer.PRINT, parsePrintExpr)
-	nud(lexer.READ, parseReadChEx)
+	nud(lexer.READCH, parseReadChEx)
 	nud(lexer.READINT, parseReadIntEx)
-	// stmt(lexer.PRINT, parsePrintStmt)
-	// stmt(lexer.READ, parseReadStmt)
+	nud(lexer.LIST, parseListEx)
 
 	// Statement handlers
 	stmt(lexer.RETURN, parseReturnStmt)

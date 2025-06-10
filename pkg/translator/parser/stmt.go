@@ -59,20 +59,18 @@ func parseVarDeclStmt(p *parser) ast.Stmt {
 		p.expect(lexer.ASSIGNMENT)
 		assignmentValue = parseExpr(p, assignment)
 	} else if explicitType == nil {
-		// panic("Missing explicit type for variable declaration.")
 		p.addError("Missing explicit type for variable declaration without initial assignment.")
 	}
 
 	p.expect(lexer.SemiColon)
 
 	return ast.VarDeclarationStmt{
-		// Constant:      isConstant,
 		Identifier:    symbolName.Value,
 		AssignedValue: assignmentValue,
-		// ExplicitType:  explicitType,
 	}
 }
 
+// TODO: delete
 func parseFnParamsAndBody(p *parser) ([]ast.Parameter, ast.Type, []ast.Stmt) {
 	functionParams := make([]ast.Parameter, 0)
 
@@ -154,8 +152,7 @@ func parseIfStmt(p *parser) ast.Stmt {
 }
 
 func parseWhileStmt(p *parser) ast.Stmt {
-	//TODO: expect while token
-	p.advance()
+	p.expect(lexer.WHILE)
 	cond := parseExpr(p, assignment)
 	body := parseBlockStmt(p)
 	return ast.WhileStmt{Condition: cond, Body: body}
@@ -187,14 +184,7 @@ func parseIntOffStmt(p *parser) ast.Stmt {
 	return ast.IntOffStmt{}
 }
 
-// switch bd := b.(type) {
-// case ast.BlockStmt:
-// 	return ast.InterruptionStmt{IrqNumber: irqN, Body: bd}
-// default:
-// 	p.addError(fmt.Sprint("interruption must contain block statement, got: ", b))
-// 	return nil
-// }
-
+// TODO: delete
 func parseReturnStmt(p *parser) ast.Stmt {
 	p.expect(lexer.RETURN)
 

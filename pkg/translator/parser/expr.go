@@ -7,6 +7,7 @@ import (
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
+	"github.com/sanity-io/litter"
 )
 
 // bp is the right binding power limit.
@@ -85,7 +86,7 @@ func parsePrintExpr(p *parser) ast.Expr {
 }
 
 func parseReadChEx(p *parser) ast.Expr {
-	p.expect(lexer.READ)
+	p.expect(lexer.READCH)
 	p.expect(lexer.OpenParen)
 	p.expect(lexer.CloseParen)
 	return ast.ReadChExpr{}
@@ -95,6 +96,27 @@ func parseReadIntEx(p *parser) ast.Expr {
 	p.expect(lexer.OpenParen)
 	p.expect(lexer.CloseParen)
 	return ast.ReadIntExpr{}
+}
+
+func parseListEx(p *parser) ast.Expr {
+	p.expect(lexer.LIST)
+	p.expect(lexer.OpenParen)
+	arg := parseExpr(p, primary)
+	println(litter.Sdump(arg))
+	var n int
+	switch a := arg.(type) {
+	case ast.NumberExpr:
+		n = int(a.Value)
+	default:
+		p.addError(fmt.Sprintf("list argument should be a number, got %v", a))
+		return nil
+	}
+	p.expect(lexer.CloseParen)
+	return ast.ListEx{Size: n}
+}
+
+func parseArrayIndexEx(p *parser) ast.Expr {
+	panic("impl")
 }
 
 // parseRangeExpr handles range operators (e.g., 1..10)
@@ -139,9 +161,40 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 			Value: s,
 		}
 	case lexer.IDENTIFIER:
-		return ast.SymbolExpr{
-			Value: p.advance().Value,
+		identTok := p.advance()
+		sym := ast.SymbolExpr{Value: identTok.Value}
+
+		/* ---------- arr[i] ---------- */
+		if p.currentTokenKind() == lexer.OpenBracket {
+			p.advance()                    // '['
+			idx := parseExpr(p, defaultBp) // expr
+			p.expect(lexer.CloseBracket)
+			return ast.ArrayIndexEx{
+				Target: sym,
+				Index:  idx,
+			}
 		}
+
+		// /* ---------- ident(...)  ---------- */
+		// if p.currentTokenKind() == lexer.OpenParen {
+		// 	p.advance() // '('
+		// 	var args []ast.Expr
+		// 	if p.currentTokenKind() != lexer.OpenParen {
+		// 		args = append(args, p.parseExpr())
+		// 		for p.currentTokenKind() == lexer.COMMA {
+		// 			p.advance()
+		// 			args = append(args, p.parseExpr())
+		// 		}
+		// 	}
+		// 	p.expect(lexer.CloseParen)
+		// 	return ast.FunctionExpr{
+		// 		Name: identTok.Value,
+		// 		Args: args,
+		// 	}
+		// }
+
+		/* просто переменная */
+		return sym
 	default:
 		p.addError(fmt.Sprintf("Cannot create primary_expr from %s\n", lexer.TokenKindString(p.currentTokenKind())))
 		// Important: In a real parser, you need robust error recovery here,

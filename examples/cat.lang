@@ -1,17 +1,8 @@
 let f = 1;
-let c = 0;
-let chars = 3;
-
-while f == 1 {
-}
+while f == 1 {}
 
 inter 1 {
-    let b = read();
-    c = c + 1;
-    print(b);
-    if c >= chars {
-        f = 0;
-        print("done");
-    }
+    let a = read();
+    print(a); 
 }
 

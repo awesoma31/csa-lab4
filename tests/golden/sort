@@ -1,5 +1,4 @@
-let n = 0; // len
-let array = list(n);
+let array = list(5);
 
 while i<n {
     print(list[i]);

@@ -23,7 +23,6 @@ type SymbolEntry struct {
 	Type        ast.Type // TODO: if its a ptr then do ptr type
 	MemoryArea  string
 	AbsAddress  uint32 // addr of it in dataMemory
-	FPOffset    int
 	SizeInBytes int
 	NumberValue int32
 	StringValue string
@@ -153,18 +152,20 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 	case isa.MvMemReg: // mem to reg; s1=addr
 		cg.emitInstruction(isa.OpMov, mode, dest, -1, -1)
 		cg.emitImmediate(uint32(s1))
-	case isa.MvRegMemInd: // sp+offs to reg
+	case isa.MvRegMemInd:
 		//TODO:
 		cg.emitInstruction(isa.OpMov, mode, dest, s1, -1)
+	case isa.MvLowRegToRegInd: // mem[rd]<-rs1(low)
+		cg.emitInstruction(isa.OpMov, isa.MvLowRegToRegInd, dest, s1, -1)
 	case isa.MvRegMem: // reg to mem; dest=addr, s1=reg
 		cg.emitInstruction(isa.OpMov, mode, -1, s1, -1)
 		cg.emitImmediate(uint32(dest))
 	case isa.MvRegIndReg:
 		cg.emitInstruction(isa.OpMov, isa.MvRegIndReg, dest, s1, -1)
-	case isa.MvLowRegIndReg:
-		cg.emitInstruction(isa.OpMov, isa.MvLowRegIndReg, dest, s1, -1)
-	case isa.MvRegLowMem:
-		cg.emitInstruction(isa.OpMov, isa.MvRegLowMem, -1, s1, -1)
+	case isa.MvByteRegIndReg:
+		cg.emitInstruction(isa.OpMov, isa.MvByteRegIndReg, dest, s1, -1)
+	case isa.MvRegLowToMem:
+		cg.emitInstruction(isa.OpMov, isa.MvRegLowToMem, -1, s1, -1)
 		cg.emitImmediate(uint32(dest))
 	default:
 		panic("unknown mov mode")

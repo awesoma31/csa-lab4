@@ -45,21 +45,21 @@ func init() {
 
 	// address-modes → strings (only the ones that appear in code-gen)
 	for k, v := range map[uint32]string{
-		MvRegReg:       "MvRegReg",
-		MvImmReg:       "MvImmReg",
-		MvRegIndReg:    "MvRegIndReg",
-		MvRegMemInd:    "SpOffsRef",
-		RegMemFp:       "RegMemFp",
-		MvMemReg:       "MvMemReg",
-		MvRegMem:       "MvRegMem",
-		MvRegLowMem:    "MvRegLowMem",
-		MvImmMem:       "MvImmMem",
-		CMPRegMode:     "CMPRegMode",
-		ImmReg:         "ImmReg",
-		RegReg:         "RegReg",
-		MvLowRegIndReg: "MvLowRegIndReg",
-		ByteM:          "Byte",
-		WordM:          "Word",
+		MvRegReg:         "MvRegReg",
+		MvImmReg:         "MvImmReg",
+		MvRegIndReg:      "MvRegIndReg",
+		MvRegMemInd:      "MvRegMemInd",
+		MvLowRegToRegInd: "MvLowRegToRegInd",
+		MvMemReg:         "MvMemReg",
+		MvRegMem:         "MvRegMem",
+		MvRegLowToMem:    "MvRegLowMem",
+		MvImmMem:         "MvImmMem",
+		CMPRegMode:       "CMPRegMode",
+		ImmReg:           "ImmReg",
+		RegReg:           "RegReg",
+		MvByteRegIndReg:  "MvLowRegIndReg",
+		ByteM:            "Byte",
+		WordM:            "Word",
 
 		MathRRR: "MathRRR",
 		MathRMR: "MathRMR",
@@ -78,7 +78,7 @@ func init() {
 
 	// registers → strings (0-15)
 	for k, v := range map[int]string{
-		RA:       "RA",
+		Ra:       "RA",
 		RM1:      "RM1",
 		RM2:      "RM2",
 		RAddr:    "RAddr",
@@ -90,7 +90,7 @@ func init() {
 		RInData:  "RInData",
 		R6:       "R6",
 		SpReg:    "SP",
-		R5:       "R5",
+		RT2:      "RT2",
 		RT:       "RT",
 	} {
 		registerMnemonics[k] = v

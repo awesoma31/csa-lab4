@@ -1,0 +1,5 @@
+let arr = list(5);
+arr[0] = 1;
+let a = arr[0];
+print(a);
+inter 1{}

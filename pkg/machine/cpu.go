@@ -123,8 +123,8 @@ func (c *CPU) PrintAllPortOutputs() {
 		byteOutput := strings.Join(byteVals, ", ")
 
 		fmt.Printf("port % 2d| %s\n", port, strOutput)
-		fmt.Printf("       |%s\n", hexOutput)
-		fmt.Printf("       |%s\n", byteOutput)
+		fmt.Printf("    hex|%s\n", hexOutput)
+		fmt.Printf("    dec|%s\n", byteOutput)
 	}
 }
 

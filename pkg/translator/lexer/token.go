@@ -1,8 +1,9 @@
 package lexer
 
-import "slices"
-
-import "fmt"
+import (
+	"fmt"
+	"slices"
+)
 
 type TokenKind int
 
@@ -85,9 +86,11 @@ const (
 	IntOff
 
 	PRINT
-	READ
+	READCH
 	READINT
 	QOUTE
+
+	LIST
 
 	RETURN
 
@@ -115,11 +118,12 @@ var reservedLu = map[string]TokenKind{
 	"typeof":  TYPEOF,
 	"in":      IN,
 	"print":   PRINT,
-	"read":    READ,
+	"read":    READCH,
 	"readInt": READINT,
 	"inter":   INTER,
 	"intOn":   IntOn,
 	"intOff":  IntOff,
+	"list":    LIST,
 }
 
 type Token struct {
@@ -249,7 +253,7 @@ func TokenKindString(kind TokenKind) string {
 	// 	return "in"
 	case PRINT:
 		return "print"
-	case READ:
+	case READCH:
 		return "read"
 	case QOUTE:
 		return `"`

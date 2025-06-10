@@ -28,8 +28,9 @@ func init() {
 	ucode[isa.OpMov][isa.MvImmMem] = uMovImmMem
 	ucode[isa.OpMov][isa.MvRegMem] = uMovRegMem
 	ucode[isa.OpMov][isa.MvRegIndReg] = uMovRegIndReg
-	ucode[isa.OpMov][isa.MvLowRegIndReg] = uMovLowRegIndReg
-	ucode[isa.OpMov][isa.MvRegLowMem] = uMovRegLowMem
+	ucode[isa.OpMov][isa.MvByteRegIndReg] = uMovByteRegIndReg
+	ucode[isa.OpMov][isa.MvRegLowToMem] = uMovRegLowToMem
+	ucode[isa.OpMov][isa.MvLowRegToRegInd] = uMovLowRegToRegInd
 
 	// JUMP BRENCH
 	ucode[isa.OpCmp][isa.RegReg] = uCmpRR
@@ -561,7 +562,9 @@ func uMovRegIndReg(rd, rs1, _ int) microStep {
 		return false
 	}
 }
-func uMovLowRegIndReg(rd, rs1, _ int) microStep {
+
+// uMovByteRegIndReg memD[rs1] -> rd (byte)
+func uMovByteRegIndReg(rd, rs1, _ int) microStep {
 	return func(c *CPU) bool {
 		addr := c.Reg.GPR[rs1]
 		c.ensureDataSize(addr)
@@ -571,7 +574,7 @@ func uMovLowRegIndReg(rd, rs1, _ int) microStep {
 		return true
 	}
 }
-func uMovRegLowMem(_, rs1, _ int) microStep {
+func uMovRegLowToMem(_, rs1, _ int) microStep {
 	stage := 0
 	return func(c *CPU) bool {
 		switch stage {
@@ -586,11 +589,24 @@ func uMovRegLowMem(_, rs1, _ int) microStep {
 			val := byte(c.Reg.GPR[rs1] & 0xFF)
 			c.ensureDataSize(addr)
 			c.memD[addr] = val
-			fmt.Printf("TICK % 4d - memD[0x%X] <- %s[0:8] = 0x%02X\n",
+			fmt.Printf("TICK % 4d - memD[0x%X] <- %s(byte) = 0x%02X\n",
 				c.Tick, addr, isa.GetRegMnem(rs1), val)
 			return true
 		}
 		return false
+	}
+}
+func uMovLowRegToRegInd(rd, rs1, _ int) microStep {
+	// mem[rd]<-rs1(low)
+	return func(c *CPU) bool {
+		val := byte(c.Reg.GPR[rs1] & 0xFF)
+		addr := c.Reg.GPR[rd]
+		c.ensureDataSize(addr)
+		c.memD[addr] = val
+		fmt.Printf("TICK % 4d - memD[0x%X] <- %s(byte); mem[%s]<-%s(byte) = 0x%02X\n",
+			c.Tick, addr, isa.GetRegMnem(rs1), isa.GetRegMnem(rd), isa.GetRegMnem(rs1), val)
+
+		return true
 	}
 }
 func uMovRegMem(_, rs1, _ int) microStep {
