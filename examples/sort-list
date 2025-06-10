@@ -1,0 +1,41 @@
+let arr = list(5);
+let n = 5;
+let i = 0;
+let j = 0;
+
+arr[1] = 4;
+arr[2] = 2;
+arr[3] = 120;
+arr[4] = 1;
+
+let sw = 1;
+while sw == 1 {
+    sw = 0;
+    i = 0;
+    while (i < n - 1) {
+        j = i + 1;
+        
+        if (arr[i] > arr[j]) {
+            let temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+            sw = 1;
+        }
+        i=i+1;
+    }
+    n=n-1;
+}
+
+let l1 = arr[0];
+let l2 = arr[1];
+let l3 = arr[2];
+let l4 = arr[3];
+let l5 = arr[4];
+print(l1);
+print(l2);
+print(l3);
+print(l4);
+print(l5);
+
+
+inter 1{}

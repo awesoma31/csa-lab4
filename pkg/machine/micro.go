@@ -62,8 +62,8 @@ func init() {
 	// IO
 	ucode[isa.OpOut][isa.ByteM] = uOutB
 	ucode[isa.OpOut][isa.WordM] = uOutW
-	ucode[isa.OpIn][isa.ByteM] = uInB
-	ucode[isa.OpIn][isa.WordM] = uInW
+	ucode[isa.OpIn][isa.ByteM] = uInCh
+	ucode[isa.OpIn][isa.WordM] = uInD // word mode but really read 1 byte digit
 
 	ucode[isa.OpIRet][isa.NoOperands] = uIRet
 	ucode[isa.OpIntOn][isa.NoOperands] = uIntOn
@@ -100,7 +100,7 @@ func uIRet(_, _, _ int) microStep {
 	}
 }
 
-func uInB(_, _, _ int) microStep {
+func uInCh(_, _, _ int) microStep {
 	return func(c *CPU) bool {
 		val := c.Ioc.ReadPort(isa.PortCh)
 		c.Reg.GPR[isa.RInData] = uint32(val)
@@ -111,11 +111,11 @@ func uInB(_, _, _ int) microStep {
 }
 
 // TODO: check, now reads 1 byte from digit port
-func uInW(rd, _, _ int) microStep {
+func uInD(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
-		val := c.Ioc.ReadPort(isa.PortCh)
+		val := c.Ioc.ReadPort(isa.PortD)
 		c.Reg.GPR[isa.RInData] = uint32(val)
-		fmt.Printf("TICK % 4d - %s <- %d word (%d/0x%X) | %v\n",
+		fmt.Printf("TICK % 4d - %s <- %d digit (%d/0x%X) | %v\n",
 			c.Tick, isa.GetRegMnem(isa.RInData), isa.PortD, val, val, c.ReprRegVal(isa.RInData))
 		return true
 	}
@@ -135,18 +135,12 @@ func uOutB(rd, _, _ int) microStep {
 
 func uOutW(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
-		port := uint8(0)
+		// port := uint8(0)
 		data := c.Reg.GPR[isa.ROutData]
-
-		numStr := fmt.Sprintf("%d", int32(data))
-
-		for _, char := range numStr {
-			c.Ioc.WritePort(port, byte(char))
+		numStr := fmt.Sprintf("%d", int32(data)) // «99»
+		for _, ch := range numStr {
+			c.Ioc.WritePort(isa.PortD, byte(ch)) // порт 0
 		}
-
-		//TODO: check strange output in %v ioc output
-		fmt.Printf("TICK % 4d - port %d <- %s  | %v\n",
-			c.Tick, port, isa.GetRegMnem(isa.ROutData), c.Ioc.Output(port))
 		return true
 	}
 }
@@ -650,7 +644,7 @@ func uMovMemReg(rd, _, _ int) microStep {
 func uMovImmReg(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
 		c.Reg.GPR[rd] = c.memI[c.Reg.PC]
-		fmt.Printf("TICK % 4d - %v<-#% 4d; PC++ | %v\n", c.Tick, isa.GetRegMnem(rd), c.memI[c.Reg.PC], c.ReprRegVal(isa.SpReg))
+		fmt.Printf("TICK % 4d - %v<-#%d; PC++ | %v\n", c.Tick, isa.GetRegMnem(rd), c.memI[c.Reg.PC], c.ReprRegVal(isa.SpReg))
 		c.Reg.PC++
 		return true
 	}

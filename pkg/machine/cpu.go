@@ -110,21 +110,21 @@ func (c *CPU) PrintAllPortOutputs() {
 		}
 		strOutput := strBuilder.String()
 
-		var hexVals []string
-		for _, b := range buf {
-			hexVals = append(hexVals, fmt.Sprintf("%X", b))
-		}
-		hexOutput := strings.Join(hexVals, ", ")
-
-		var byteVals []string
-		for _, b := range buf {
-			byteVals = append(byteVals, fmt.Sprintf("%d", b))
-		}
-		byteOutput := strings.Join(byteVals, ", ")
+		// var hexVals []string
+		// for _, b := range buf {
+		// 	hexVals = append(hexVals, fmt.Sprintf("%X", b))
+		// }
+		// hexOutput := strings.Join(hexVals, ", ")
+		//
+		// var byteVals []string
+		// for _, b := range buf {
+		// 	byteVals = append(byteVals, fmt.Sprintf("%d", b))
+		// }
+		// byteOutput := strings.Join(byteVals, ", ")
 
 		fmt.Printf("port % 2d| %s\n", port, strOutput)
-		fmt.Printf("    hex|%s\n", hexOutput)
-		fmt.Printf("    dec|%s\n", byteOutput)
+		// fmt.Printf("    hex|%s\n", hexOutput)
+		// fmt.Printf("    dec|%s\n", byteOutput)
 	}
 }
 

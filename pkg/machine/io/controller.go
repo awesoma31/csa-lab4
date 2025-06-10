@@ -1,6 +1,8 @@
 package io
 
-import "fmt"
+import (
+	"reflect"
+)
 
 type Controller struct {
 	Sched    map[int]Input
@@ -37,6 +39,7 @@ func (ioc *Controller) CheckTick(tick int) (bool, uint8) {
 }
 
 func (ioc *Controller) ReadPort(p uint8) byte {
+	//TODO: отрицательные числа
 	return ioc.portsVal[p]
 }
 
@@ -59,9 +62,9 @@ func (ioc *Controller) OutputAll() []byte {
 func toByte(v any) byte {
 	switch t := v.(type) {
 	case int, int8, int16, int32, int64:
-		return byte(fmt.Sprint(t)[0])
+		return byte(reflect.ValueOf(t).Int() & 0xFF)
 	case uint, uint16, uint32, uint64:
-		return byte(fmt.Sprint(t)[0])
+		return byte(reflect.ValueOf(t).Uint() & 0xFF)
 	case string:
 		if len(t) > 0 {
 			return t[0]
