@@ -3,6 +3,7 @@ package bingen
 import (
 	"encoding/binary"
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -11,8 +12,7 @@ func SaveInstructionMemory(path string, instrMem []uint32) error {
 	if err != nil {
 		return fmt.Errorf("create instr bin: %w", err)
 	}
-	defer f.Close()
-
+	defer closeFile(f)
 	for _, word := range instrMem {
 		if err := binary.Write(f, binary.LittleEndian, word); err != nil {
 			return fmt.Errorf("write instr word: %w", err)
@@ -41,3 +41,9 @@ func LoadInstructionMemory(path string) ([]uint32, error) {
 }
 
 func LoadDataMemory(path string) ([]byte, error) { return os.ReadFile(path) }
+
+func closeFile(f *os.File) {
+	if err := f.Close(); err != nil {
+		log.Printf("Error closing file %s: %v", f.Name(), err)
+	}
+}
