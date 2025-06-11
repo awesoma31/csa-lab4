@@ -23,24 +23,35 @@ type cpuConfig struct {
 	MaxInterruptions int            `yaml:"max_interruptions"`
 }
 
-func RunGolden(t *testing.T, goldenDir string, tickLimit int) {
+func RunGolden(t *testing.T, dir string, tickLimit int) {
 	t.Helper()
+	src := filepath.Join(dir, "src.lang")
+	out := filepath.Join(dir, "logs") // сохраняем внутрь каталога теста
 
-	root, err := getProjectRoot()
+	_, _, err := translator.Run(translator.Options{
+		SrcPath: src, OutDir: out,
+		Debug:     false, // не шумим в stdout
+		DumpFiles: true,
+	})
 	if err != nil {
-		t.Fatal(err.Error())
+		t.Fatalf("translate: %v", err)
 	}
-	dir := filepath.Join(root, goldenDir)
 
-	sourceLangPath := filepath.Join(dir, "src.lang")
-	memIPath := filepath.Join(dir, "instr.bin")
-	memDPath := filepath.Join(dir, "data.bin")
+	// root, err := getProjectRoot()
+	// if err != nil {
+	// 	t.Fatal(err.Error())
+	// }
+	// dir := filepath.Join(root, goldenDir)
+	//
+	// sourceLangPath := filepath.Join(dir, "src.lang")
+	// memIPath := filepath.Join(dir, "instr.bin")
+	// memDPath := filepath.Join(dir, "data.bin")
 	cfgPath := filepath.Join(dir, "config.yaml")
-	// fmt.Println(os.L)
-	// println(sourceLangPath, memIPath, memDPath, cfgPath)
-
-	translator.Translate(sourceLangPath, memIPath, memDPath)
-
+	// // fmt.Println(os.L)
+	// // println(sourceLangPath, memIPath, memDPath, cfgPath)
+	//
+	// translator.Translate(sourceLangPath, memIPath, memDPath)
+	//
 	raw, err := os.ReadFile(cfgPath)
 	if err != nil {
 		t.Fatal(err.Error())

@@ -56,7 +56,7 @@ func PrintDebugAsm(debugAssembly []string) {
 	}
 }
 
-func WriteAstToFile(program ast.BlockStmt, filePath string) {
+func DumpAst(program ast.BlockStmt, filePath string, debug bool) {
 	file, err := os.Create(filePath)
 	if err != nil {
 		log.Printf("Error creating file %s: %v", filePath, err)
@@ -68,9 +68,13 @@ func WriteAstToFile(program ast.BlockStmt, filePath string) {
 	if err != nil {
 		log.Printf("Error writing AST to file %s: %v", filePath, err)
 	}
+
+	if debug {
+		PrintAst(program)
+	}
 }
 
-func WriteSymTableLogToFile(cg *codegen.CodeGenerator, filePath string) {
+func DumpSymTable(cg *codegen.CodeGenerator, filePath string, debug bool) {
 	file, err := os.Create(filePath)
 	if err != nil {
 		log.Printf("Error creating file %s: %v", filePath, err)
@@ -84,10 +88,14 @@ func WriteSymTableLogToFile(cg *codegen.CodeGenerator, filePath string) {
 	for k, v := range scopeStack[0].Symbols() {
 		_, _ = fmt.Fprintf(file, "%s |  %X\n", k, v.AbsAddress)
 	}
+
+	if debug {
+		PrintSymTable(cg)
+	}
 }
 
-// WriteDataMemLogToFile writes the data memory to a specified file.
-func WriteDataMemLogToFile(dataMemory []byte, filePath string) {
+// DumpMemDLog writes the data memory to a specified file.
+func DumpMemDLog(dataMemory []byte, filePath string, debug bool) {
 	file, err := os.Create(filePath)
 	if err != nil {
 		log.Printf("Error creating file %s: %v", filePath, err)
@@ -100,10 +108,13 @@ func WriteDataMemLogToFile(dataMemory []byte, filePath string) {
 		}
 		_, _ = fmt.Fprintf(file, "[0x%X|%d]: 0x%02X\n", i, i, val)
 	}
+	if debug {
+		PrintDataMem(dataMemory)
+	}
 }
 
-// WriteInstrMemLogToFile writes the instruction memory to a specified file.
-func WriteInstrMemLogToFile(instructionMemory []uint32, instrAmount int, filePath string) {
+// DumpMemILog writes the instruction memory to a specified file.
+func DumpMemILog(instructionMemory []uint32, filePath string, debug bool) {
 	file, err := os.Create(filePath)
 	if err != nil {
 		log.Printf("Error creating file %s: %v", filePath, err)
@@ -112,14 +123,17 @@ func WriteInstrMemLogToFile(instructionMemory []uint32, instrAmount int, filePat
 	defer closeFile(file)
 
 	for i, instr := range instructionMemory {
-		if i <= instrAmount {
+		if i <= len(instructionMemory) {
 			_, _ = fmt.Fprintf(file, "[0x%04X|%04d]: 0x%08X - %d\n", i, i, instr, instr)
 		}
 	}
+	if debug {
+		PrintInstrMem(instructionMemory)
+	}
 }
 
-// WriteDebugInstrLogToFile writes the debug assembly to a specified file.
-func WriteDebugInstrLogToFile(debugAssembly []string, filePath string) {
+// DumpDebugInstrLog writes the debug assembly to a specified file.
+func DumpDebugInstrLog(debugAssembly []string, filePath string, debug bool) {
 	file, err := os.Create(filePath)
 	if err != nil {
 		log.Printf("Error creating file %s: %v", filePath, err)
@@ -128,6 +142,9 @@ func WriteDebugInstrLogToFile(debugAssembly []string, filePath string) {
 	defer closeFile(file)
 	for _, val := range debugAssembly {
 		_, _ = fmt.Fprintf(file, "%s\n", val)
+	}
+	if debug {
+		PrintDebugAsm(debugAssembly)
 	}
 }
 
