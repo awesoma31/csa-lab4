@@ -1,8 +1,0 @@
-let f = 1;
-while f == 1 {}
-
-inter 1 {
-    let a = read();
-    print(a); 
-}
-

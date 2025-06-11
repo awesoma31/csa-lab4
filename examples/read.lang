@@ -1,5 +1,0 @@
-let rea = read();
-let a = 1;
-
-a = read();
-print(a);

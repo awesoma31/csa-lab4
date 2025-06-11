@@ -1,7 +1,0 @@
-let a = 2;
-let b = 3;
-if a > 3 {
-    b = 9;
-} else {
-    b = 1;
-}
