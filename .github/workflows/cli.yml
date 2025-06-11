@@ -22,9 +22,9 @@ jobs:
           fi
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v4
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: v1.57.2
+          version: v2.1
           # config-path: .golangci.yml
           # args: --timeout=5m
 

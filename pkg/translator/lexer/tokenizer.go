@@ -46,13 +46,13 @@ func (lex *lexer) advanceN(n int) {
 	lex.pos += n
 }
 
-func (lex *lexer) at() byte {
-	return lex.source[lex.pos]
-}
-
-func (lex *lexer) advance() {
-	lex.pos += 1
-}
+// func (lex *lexer) at() byte {
+// 	return lex.source[lex.pos]
+// }
+//
+// func (lex *lexer) advance() {
+// 	lex.pos += 1
+// }
 
 func (lex *lexer) remainder() string {
 	return lex.source[lex.pos:]

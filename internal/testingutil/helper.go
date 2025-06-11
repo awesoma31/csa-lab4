@@ -1,10 +1,8 @@
 package testingutil
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"testing"
 
 	bingen "github.com/awesoma31/csa-lab4/pkg/bin-gen"
@@ -79,26 +77,4 @@ func RunGolden(t *testing.T, dir string, tickLimit int) {
 	// if diff := cmpLines(gotTrace, wantTrace); diff != "" {
 	// 	t.Fatal(diff)
 	// }
-}
-
-func getProjectRoot() (string, error) {
-	_, filename, _, ok := runtime.Caller(0)
-	if !ok {
-		return "", fmt.Errorf("failed to get current file path")
-	}
-
-	currentDir := filepath.Dir(filename)
-
-	for {
-		goModPath := filepath.Join(currentDir, "go.mod")
-		if _, err := os.Stat(goModPath); err == nil {
-			return currentDir, nil
-		}
-
-		parentDir := filepath.Dir(currentDir)
-		if parentDir == currentDir {
-			return "", fmt.Errorf("go.mod not found in any parent directory of %s", filepath.Dir(filename))
-		}
-		currentDir = parentDir
-	}
 }

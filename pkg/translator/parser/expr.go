@@ -115,10 +115,6 @@ func parseListEx(p *parser) ast.Expr {
 	return ast.ListEx{Size: n}
 }
 
-func parseArrayIndexEx(p *parser) ast.Expr {
-	panic("impl")
-}
-
 // parseRangeExpr handles range operators (e.g., 1..10)
 // TODO: delete
 func parseRangeExpr(p *parser, left ast.Expr) ast.Expr {
@@ -285,16 +281,5 @@ func parseCallExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 	return ast.CallExpr{
 		Method:    left,
 		Arguments: arguments,
-	}
-}
-
-func parseFnExpr(p *parser) ast.Expr {
-	p.expect(lexer.FN)
-	functionParams, returnType, functionBody := parseFnParamsAndBody(p)
-
-	return ast.FunctionExpr{
-		Parameters: functionParams,
-		ReturnType: returnType,
-		Body:       functionBody,
 	}
 }

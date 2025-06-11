@@ -110,7 +110,7 @@ func createTokenLookups() {
 	nud(lexer.OpenParen, parseGroupingExpr)
 
 	// Function Expression (NUD - `fn () {}`)
-	nud(lexer.FN, parseFnExpr)
+	// nud(lexer.FN, parseFnExpr)
 
 	// New Expression (NUD - `new Class()`)
 	nud(lexer.NEW, func(p *parser) ast.Expr {
@@ -142,7 +142,7 @@ func createTokenLookups() {
 	stmt(lexer.OpenCurly, parseBlockStmt)
 	stmt(lexer.LET, parseVarDeclStmt)
 	// stmt(lexer.CONST, parseVarDeclStmt)
-	stmt(lexer.FN, parseFnDeclaration) // Function Declaration (Statement)
+	// stmt(lexer.FN, parseFnDeclaration) // Function Declaration (Statement)
 	stmt(lexer.IF, parseIfStmt)
 	stmt(lexer.WHILE, parseWhileStmt)
 	// stmt(lexer.IMPORT, parseImportStmt)

@@ -20,10 +20,10 @@ schedule:
   - tick: 700
     input:
       interrupt: 0
-      value: 30
+      value: 3
   - tick: 1000
     input:
       interrupt: 0
-      value: 16
+      value: 0
 
 max_interruptions: 2

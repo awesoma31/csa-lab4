@@ -49,7 +49,6 @@ type CodeGenerator struct {
 	nextInstructionAddr uint32 // Next free address in instruction memory (word-addresses)
 	nextDataAddr        uint32 // Next free address in data memory (byte-addresses)
 	errors              []string
-	currentFrameOffset  int
 }
 
 func (cg *CodeGenerator) NextInstructionAddres() uint32 {
@@ -80,16 +79,6 @@ func (cg *CodeGenerator) Generate(program ast.BlockStmt) ([]uint32, []byte, []st
 	cg.VisitProgram(&program)
 
 	return cg.instructionMemory, cg.dataMemory, cg.debugAssembly, cg.errors
-}
-
-func (cg *CodeGenerator) popScope() {
-	if len(cg.scopeStack) > 1 {
-		// TODO: Если это выход из функции, здесь ли нужно добавить код для деаллокации стека
-		// и восстановления SP/FP.
-		cg.scopeStack = cg.scopeStack[:len(cg.scopeStack)-1]
-	} else {
-		cg.addError("Attempted to pop global scope.")
-	}
 }
 
 func (cg *CodeGenerator) currentScope() *Scope {
@@ -171,22 +160,6 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 		panic("unknown mov mode")
 	}
 	// cg.nextInstructionAddr++
-}
-
-func fits17(v uint32) bool { return v>>17 == 0 }
-
-// port ∈ [0..3] → 2 бита. 19 младших бит — “что угодно” (имм-данные для OUT IMM).
-const IoNoImmVal = 0
-
-func encodeIOWord(opcode, mode uint32, port uint8, imm int32) uint32 {
-	if port > 3 {
-		panic("port number must be 0-3")
-	}
-	word := uint32(opcode)<<26 | mode<<21 | uint32(port)<<19
-	if mode == isa.ImmReg {
-		word |= uint32(imm) & 0x7FFFF // 19 бит
-	}
-	return word
 }
 
 // emitImmediate adds an immediate value as an operand to the instruction memory.

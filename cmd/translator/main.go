@@ -13,8 +13,6 @@ import (
 	"github.com/awesoma31/csa-lab4/pkg/translator/parser"
 )
 
-var instrAmount int = 0
-
 func main() {
 
 	flags := &flags{}

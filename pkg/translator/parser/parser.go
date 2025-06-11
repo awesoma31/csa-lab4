@@ -72,12 +72,12 @@ func (p *parser) currentTokenKind() lexer.TokenKind {
 }
 
 // currentToken returns the current token, or an EOF token if past end.
-func (p *parser) currentToken() lexer.Token {
-	if p.pos >= len(p.tokens) {
-		return lexer.Token{Kind: lexer.EOF, Value: "EOF"}
-	}
-	return p.tokens[p.pos]
-}
+// func (p *parser) currentToken() lexer.Token {
+// 	if p.pos >= len(p.tokens) {
+// 		return lexer.Token{Kind: lexer.EOF, Value: "EOF"}
+// 	}
+// 	return p.tokens[p.pos]
+// }
 
 // advance moves the parser to the next token and returns the consumed token.
 func (p *parser) advance() lexer.Token {

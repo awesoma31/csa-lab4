@@ -393,17 +393,11 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 		case ast.BinaryExpr:
 			//TODO: string check for operations
 
-			// cg.generateExpr(s.AssignedValue, R0)
 			symbolEntry.Type = ast.IntType
 			symbolEntry.SizeInBytes = WordSizeBytes
 
-			if len(cg.scopeStack) == 1 { // global
-				symbolEntry.MemoryArea = "data"
-				symbolEntry.AbsAddress = cg.addNumberData(0) // placeholder = 0
-			} else { // local
-				// TODO:stack
-				/* аналогичный код для stack-переменных */
-			}
+			symbolEntry.MemoryArea = "data"
+			symbolEntry.AbsAddress = cg.addNumberData(0) // placeholder = 0
 
 			cg.addSymbolToScope(symbolEntry)
 
@@ -581,20 +575,4 @@ func (cg *CodeGenerator) genStringEx(e ast.StringExpr, rd int) {
 
 	cg.emitInstruction(isa.OpMov, isa.MvImmReg, rd, -1, -1)
 	cg.emitImmediate(stringAddr + 1)
-}
-
-// TODO: check
-
-// generateUnaryExpr generates code for unary operations.
-func (cg *CodeGenerator) generateUnaryExpr(e ast.PrefixExpr, rd int) {
-	cg.genEx(e.Right, isa.Ra) // Evaluate operand, result in R0
-
-	switch e.Operator.Kind { // Access Kind from lexer.Token
-	case lexer.MINUS: // Unary negation (minus sign)
-		cg.emitInstruction(isa.OpNeg, isa.SingleRegMode, rd, -1, -1)
-	case lexer.NOT: // Logical NOT
-		cg.emitInstruction(isa.OpNot, isa.SingleRegMode, rd, -1, -1)
-	default:
-		cg.addError(fmt.Sprintf("Unsupported unary operator: %s", e.Operator.Value)) // Use Operator.Value
-	}
 }

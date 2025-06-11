@@ -17,10 +17,10 @@ var typeBpLu = typeBpLookup{}
 var typeNudLu = typeNudLookup{}
 var typeLedLu = typeLedLookup{}
 
-func typeLed(kind lexer.TokenKind, bp bindingPower, ledFn typeLedHandler) {
-	typeBpLu[kind] = bp
-	typeLedLu[kind] = ledFn
-}
+// func typeLed(kind lexer.TokenKind, bp bindingPower, ledFn typeLedHandler) {
+// 	typeBpLu[kind] = bp
+// 	typeLedLu[kind] = ledFn
+// }
 
 func typeNud(kind lexer.TokenKind, nudFn typeNudHandler) {
 	typeNudLu[kind] = nudFn

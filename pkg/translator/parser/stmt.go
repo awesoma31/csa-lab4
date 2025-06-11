@@ -70,52 +70,6 @@ func parseVarDeclStmt(p *parser) ast.Stmt {
 	}
 }
 
-// TODO: delete
-func parseFnParamsAndBody(p *parser) ([]ast.Parameter, ast.Type, []ast.Stmt) {
-	functionParams := make([]ast.Parameter, 0)
-
-	p.expect(lexer.OpenParen)
-	for p.hasTokens() && p.currentTokenKind() != lexer.CloseParen {
-		paramName := p.expect(lexer.IDENTIFIER).Value
-		p.expect(lexer.COLON)
-		paramType := parseType(p, defaultBp)
-
-		functionParams = append(functionParams, ast.Parameter{
-			Name: paramName,
-			Type: paramType,
-		})
-
-		if !p.currentToken().IsOneOfMany(lexer.CloseParen, lexer.EOF) {
-			p.expect(lexer.COMMA)
-		}
-	}
-
-	p.expect(lexer.CloseParen)
-	var returnType ast.Type
-
-	if p.currentTokenKind() == lexer.COLON {
-		p.advance()
-		returnType = parseType(p, defaultBp)
-	}
-
-	functionBody := ast.ExpectStmt[ast.BlockStmt](parseBlockStmt(p)).Body
-
-	return functionParams, returnType, functionBody
-}
-
-func parseFnDeclaration(p *parser) ast.Stmt {
-	p.advance()
-	functionName := p.expect(lexer.IDENTIFIER).Value
-	functionParams, returnType, functionBody := parseFnParamsAndBody(p)
-
-	return ast.FunctionDeclarationStmt{
-		Parameters: functionParams,
-		ReturnType: returnType,
-		Body:       functionBody,
-		Name:       functionName,
-	}
-}
-
 func parsePrintStmt(p *parser) ast.Stmt {
 	p.expect(lexer.PRINT)
 	p.expect(lexer.OpenParen)
