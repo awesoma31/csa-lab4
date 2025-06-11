@@ -7,7 +7,6 @@ import (
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 	"github.com/awesoma31/csa-lab4/pkg/translator/lexer"
-	"github.com/sanity-io/litter"
 )
 
 // bp is the right binding power limit.
@@ -102,7 +101,6 @@ func parseListEx(p *parser) ast.Expr {
 	p.expect(lexer.LIST)
 	p.expect(lexer.OpenParen)
 	arg := parseExpr(p, primary)
-	println(litter.Sdump(arg))
 	var n int
 	switch a := arg.(type) {
 	case ast.NumberExpr:
@@ -113,18 +111,6 @@ func parseListEx(p *parser) ast.Expr {
 	}
 	p.expect(lexer.CloseParen)
 	return ast.ListEx{Size: n}
-}
-
-// parseRangeExpr handles range operators (e.g., 1..10)
-// TODO: delete
-func parseRangeExpr(p *parser, left ast.Expr) ast.Expr {
-	operatorToken := p.advance()
-	right := parseExpr(p, bpLu[operatorToken.Kind])
-
-	return ast.RangeExpr{
-		Lower: left,
-		Upper: right,
-	}
 }
 
 // parseBinaryExpr handles standard binary operators (+, -, *, /, ==, <, etc.)
@@ -189,97 +175,67 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 		// 	}
 		// }
 
-		/* просто переменная */
 		return sym
 	default:
 		p.addError(fmt.Sprintf("Cannot create primary_expr from %s\n", lexer.TokenKindString(p.currentTokenKind())))
-		// Important: In a real parser, you need robust error recovery here,
-		// otherwise, this panic will stop everything.
-		panic(p.errors[len(p.errors)-1])
+		return ast.StringExpr{}
 	}
 }
 
-// TODO: delete
-func parseMemberExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
-	dotOrBracketToken := p.advance() // Consume DOT or OPEN_BRACKET
-
-	isComputed := dotOrBracketToken.Kind == lexer.OpenBracket
-
-	if isComputed {
-		// For computed members (e.g., obj[prop]), the property itself is an expression.
-		// It should be parsed with the lowest possible precedence (0 or default_bp)
-		// to consume the entire expression inside the brackets.
-		rhs := parseExpr(p, defaultBp)
-		p.expect(lexer.CloseBracket)
-		return ast.ComputedExpr{
-			Member:   left,
-			Property: rhs,
-		}
-	}
-
-	// For direct members (e.g., obj.property)
-	return ast.MemberExpr{
-		Member:   left,
-		Property: p.expect(lexer.IDENTIFIER).Value,
-	}
-}
-
-// TODO: delete
-func parseArrayLiteralExpr(p *parser) ast.Expr {
-	p.expect(lexer.OpenBracket)
-	arrayContents := make([]ast.Expr, 0)
-
-	// Array elements are typically parsed with a precedence higher than comma,
-	// but allowing for full expressions.
-	// `logical` (or a similar low precedence) is often a good choice here.
-	for p.hasTokens() && p.currentTokenKind() != lexer.CloseBracket {
-		arrayContents = append(arrayContents, parseExpr(p, assignment)) // Use assignment for array elements, common practice
-
-		if p.currentTokenKind() == lexer.COMMA {
-			p.advance() // Consume the comma
-		} else if p.currentTokenKind() != lexer.CloseBracket {
-			// If not a comma and not closing bracket, something is wrong
-			p.addError(fmt.Sprintf("Expected comma or closing bracket in array literal, but got %s\n", lexer.TokenKindString(p.currentTokenKind())))
-			break // Try to recover by breaking the loop
-		}
-	}
-
-	p.expect(lexer.CloseBracket)
-
-	return ast.ArrayLiteral{
-		Contents: arrayContents,
-	}
-}
+// // TODO: delete
+// func parseArrayLiteralExpr(p *parser) ast.Expr {
+// 	p.expect(lexer.OpenBracket)
+// 	arrayContents := make([]ast.Expr, 0)
+//
+// 	// Array elements are typically parsed with a precedence higher than comma,
+// 	// but allowing for full expressions.
+// 	// `logical` (or a similar low precedence) is often a good choice here.
+// 	for p.hasTokens() && p.currentTokenKind() != lexer.CloseBracket {
+// 		arrayContents = append(arrayContents, parseExpr(p, assignment)) // Use assignment for array elements, common practice
+//
+// 		if p.currentTokenKind() == lexer.COMMA {
+// 			p.advance() // Consume the comma
+// 		} else if p.currentTokenKind() != lexer.CloseBracket {
+// 			// If not a comma and not closing bracket, something is wrong
+// 			p.addError(fmt.Sprintf("Expected comma or closing bracket in array literal, but got %s\n", lexer.TokenKindString(p.currentTokenKind())))
+// 			break // Try to recover by breaking the loop
+// 		}
+// 	}
+//
+// 	p.expect(lexer.CloseBracket)
+//
+// 	return ast.ArrayLiteral{
+// 		Contents: arrayContents,
+// 	}
+// }
 
 func parseGroupingExpr(p *parser) ast.Expr {
 	p.expect(lexer.OpenParen)
-	// Parse the expression inside the parentheses with the lowest possible precedence (0 or default_bp)
-	// so it consumes the entire inner expression.
 	expr := parseExpr(p, defaultBp)
 	p.expect(lexer.CloseParen)
 	return expr
 }
 
-func parseCallExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
-	p.advance() // Consume the OPEN_PAREN token
-	arguments := make([]ast.Expr, 0)
-
-	for p.hasTokens() && p.currentTokenKind() != lexer.CloseParen {
-		// Arguments are typically parsed with the lowest possible precedence (e.g., assignment or logical)
-		// to allow full expressions within the arguments.
-		arguments = append(arguments, parseExpr(p, assignment))
-
-		if p.currentTokenKind() == lexer.COMMA {
-			p.advance() // Consume the comma
-		} else if p.currentTokenKind() != lexer.CloseParen {
-			p.addError(fmt.Sprintf("Expected comma or closing parenthesis in call arguments, but got %s\n", lexer.TokenKindString(p.currentTokenKind())))
-			break // Try to recover
-		}
-	}
-
-	p.expect(lexer.CloseParen)
-	return ast.CallExpr{
-		Method:    left,
-		Arguments: arguments,
-	}
-}
+// func parseCallExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
+// 	p.advance() // Consume the OPEN_PAREN token
+// 	arguments := make([]ast.Expr, 0)
+//
+// 	for p.hasTokens() && p.currentTokenKind() != lexer.CloseParen {
+// 		// Arguments are typically parsed with the lowest possible precedence (e.g., assignment or logical)
+// 		// to allow full expressions within the arguments.
+// 		arguments = append(arguments, parseExpr(p, assignment))
+//
+// 		if p.currentTokenKind() == lexer.COMMA {
+// 			p.advance() // Consume the comma
+// 		} else if p.currentTokenKind() != lexer.CloseParen {
+// 			p.addError(fmt.Sprintf("Expected comma or closing parenthesis in call arguments, but got %s\n", lexer.TokenKindString(p.currentTokenKind())))
+// 			break // Try to recover
+// 		}
+// 	}
+//
+// 	p.expect(lexer.CloseParen)
+// 	return ast.CallExpr{
+// 		Method:    left,
+// 		Arguments: arguments,
+// 	}
+// }

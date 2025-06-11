@@ -16,8 +16,6 @@ const (
 	additive                           // +, -
 	multiplicative                     // *, /, %
 	unary                              // !, -, typeof (prefix)
-	call                               // function()
-	member                             // . (dot), [] (computed member)
 	primary                            // Literals, Identifiers, Grouping ()
 )
 
@@ -43,8 +41,7 @@ func led(kind lexer.TokenKind, bp bindingPower, ledFn ledHandler) {
 }
 
 // nud registers a NUD handler.
-// NUDs don't have a left binding power, so we remove the bpLu assignment here.
-func nud(kind lexer.TokenKind, nudFn nudHandler) { // Removed bp parameter
+func nud(kind lexer.TokenKind, nudFn nudHandler) {
 	nudLu[kind] = nudFn
 }
 
@@ -56,8 +53,6 @@ func stmt(kind lexer.TokenKind, stmtFn stmtHandler) {
 
 // createTokenLookups initializes the NUD, LED, and BP lookup tables.
 func createTokenLookups() {
-	// Assignment Operators (Right-Associative: A = B = C  => A = (B = C))
-	// They have the same binding power, but their parse_assignment_expr ensures right-associativity.
 	led(lexer.ASSIGNMENT, assignment, parseAssignmentExpr)
 	led(lexer.PlusEquals, assignment, parseAssignmentExpr)
 	led(lexer.MinusEquals, assignment, parseAssignmentExpr)
@@ -65,8 +60,6 @@ func createTokenLookups() {
 	// Logical Operators (Left-Associative)
 	led(lexer.AND, logical, parseBinaryExpr)
 	led(lexer.OR, logical, parseBinaryExpr)
-	// Range operator (often low precedence, can be left or non-associative depending on language)
-	led(lexer.DotDot, logical, parseRangeExpr) // Placing it at 'logical' level for now. Adjust if needed.
 
 	// Relational Operators (Left-Associative)
 	led(lexer.LESS, relational, parseBinaryExpr)
@@ -90,46 +83,17 @@ func createTokenLookups() {
 	nud(lexer.STRING, parsePrimaryExpr)
 	nud(lexer.IDENTIFIER, parsePrimaryExpr)
 	// Array literals also start expressions, like `[1, 2, 3]`
-	nud(lexer.OpenBracket, parseArrayLiteralExpr)
+	// nud(lexer.OpenBracket, parseArrayLiteralExpr)
 
 	// Unary/Prefix Operators (NUDs)
 	// The `unary` binding power is typically higher than binary operators,
 	// ensuring `!x + y` parses as `(!x) + y`.
-	nud(lexer.TYPEOF, parsePrefixExpr)
-	nud(lexer.MINUS, parsePrefixExpr) // For unary minus (e.g., -5)
+	nud(lexer.MINUS, parsePrefixExpr)
 	nud(lexer.NOT, parsePrefixExpr)
-
-	// Member / Computed Access / Call Operators (LEDs - they bind to a left expression)
-	// Call and Member access have very high precedence.
-	led(lexer.DOT, member, parseMemberExpr)
-	led(lexer.OpenBracket, member, parseMemberExpr) // For computed properties like `obj[prop]`
-	led(lexer.OpenParen, call, parseCallExpr)       // For function calls like `func()`
 
 	// Grouping Expression (NUD - starts a grouped expression)
 	// Parentheses themselves define a grouping, their NUD handles parsing the inner expression.
 	nud(lexer.OpenParen, parseGroupingExpr)
-
-	// Function Expression (NUD - `fn () {}`)
-	// nud(lexer.FN, parseFnExpr)
-
-	// New Expression (NUD - `new Class()`)
-	nud(lexer.NEW, func(p *parser) ast.Expr {
-		p.advance() // Consume 'new'
-		// `new Class()` is typically followed by a CallExpr
-		classInstantiation := parseExpr(p, call) // Parse with `call` precedence to ensure it's a call
-
-		// Type assertion for robustness
-		callExpr, ok := classInstantiation.(ast.CallExpr)
-		if !ok {
-			p.addError("Expected a call expression after 'new' keyword")
-			// Return a dummy node or panic based on error strategy
-			return ast.NewExpr{Instantiation: ast.CallExpr{}}
-		}
-
-		return ast.NewExpr{
-			Instantiation: callExpr,
-		}
-	})
 
 	// Built-in fnuctions
 	nud(lexer.PRINT, parsePrintExpr)
@@ -141,16 +105,10 @@ func createTokenLookups() {
 	stmt(lexer.RETURN, parseReturnStmt)
 	stmt(lexer.OpenCurly, parseBlockStmt)
 	stmt(lexer.LET, parseVarDeclStmt)
-	// stmt(lexer.CONST, parseVarDeclStmt)
-	// stmt(lexer.FN, parseFnDeclaration) // Function Declaration (Statement)
 	stmt(lexer.IF, parseIfStmt)
 	stmt(lexer.WHILE, parseWhileStmt)
-	// stmt(lexer.IMPORT, parseImportStmt)
-	// stmt(lexer.FOREACH, parseForeachStmt)
-	// stmt(lexer.CLASS, parseClassDeclarationStmt)
 	stmt(lexer.PRINT, parsePrintStmt)
 	stmt(lexer.INTER, parseInterStmt)
 	stmt(lexer.IntOn, parseIntOnStmt)
 	stmt(lexer.IntOff, parseIntOffStmt)
-	// stmt(lexer.READ, parseReadStmt) // if read is standalone
 }

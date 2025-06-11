@@ -24,6 +24,8 @@ go.work.sum
 # env file
 .env
 bin
+logs
+examples
 .idea
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
@@ -49,3 +51,6 @@ tr.txt
 tr.log
 tr.log
 cpu.log
+config/config.yaml
+golden/hello_user/logs/symtable.log
+golden/sort/logs/symtable.log

@@ -379,7 +379,7 @@ func uSubRIR(rd, rs1, _ int) microStep {
 			c.Reg.PC++
 			stage++
 		case 1:
-			//TODO: log
+			c.log.Debugf("TICK % 4d - %v<-%v-%v | %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(isa.RT), c.ReprRegVal(rd))
 			MathRRR(c, rd, rs1, isa.RT, isa.OpSub)
 			return true
 		}
@@ -387,9 +387,9 @@ func uSubRIR(rd, rs1, _ int) microStep {
 	}
 }
 func uMulRRR(rd, rs1, rs2 int) microStep {
-	//TODO: log
 	return func(c *CPU) bool {
 		MathRRR(c, rd, rs1, rs2, isa.OpMul)
+		c.log.Debugf("TICK % 4d - %v<-%v*%v | %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
 		return true
 	}
 }
