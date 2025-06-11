@@ -47,13 +47,6 @@ type ArrayIndexEx struct {
 
 func (n ArrayIndexEx) expr() {}
 
-// TODO: should be only standalone stmt so remove
-type PrintExpr struct {
-	Argument Expr
-}
-
-func (n PrintExpr) expr() {}
-
 // --------------------
 // Complex Expressions
 // --------------------
@@ -88,8 +81,8 @@ type MemberExpr struct {
 func (n MemberExpr) expr() {}
 
 type CallExpr struct {
-	Method    Expr
-	Arguments []Expr
+	Name string
+	Args []Expr
 }
 
 func (n CallExpr) expr() {}

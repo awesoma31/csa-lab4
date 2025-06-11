@@ -38,8 +38,7 @@ func (ioc *Controller) CheckTick(tick int) (bool, uint8) {
 	return true, port
 }
 
-func (ioc *Controller) ReadPort(p uint8) byte {
-	//TODO: отрицательные числа
+func (ioc *Controller) ReadPort(p uint8) uint8 {
 	return ioc.portsVal[p]
 }
 

@@ -3,6 +3,7 @@ NAME_MACHINE := machine
 BIN_DIR := bin
 VERSION := 0.1.0
 GOFLAGS := -ldflags="-s -w -X main.version=$(VERSION)"
+# GOFLAGS := 
 
 PLATFORMS := linux windows darwin
 ARCHS := amd64 arm64

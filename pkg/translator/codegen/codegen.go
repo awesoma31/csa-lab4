@@ -20,9 +20,9 @@ const (
 
 type SymbolEntry struct {
 	Name        string
-	Type        ast.Type // TODO: if its a ptr then do ptr type
+	Type        ast.Type // currently doesnt mean much but should be set
 	MemoryArea  string
-	AbsAddress  uint32 // addr of it in dataMemory
+	AbsAddress  uint32
 	SizeInBytes int
 	NumberValue int32
 	StringValue string
@@ -142,8 +142,8 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 		cg.emitInstruction(isa.OpMov, mode, dest, -1, -1)
 		cg.emitImmediate(uint32(s1))
 	case isa.MvRegMemInd:
-		//TODO:
-		cg.emitInstruction(isa.OpMov, mode, dest, s1, -1)
+		cg.emitInstruction(isa.OpMov, mode, -1, s1, -1)
+		cg.emitImmediate(uint32(dest))
 	case isa.MvLowRegToRegInd: // mem[rd]<-rs1(low)
 		cg.emitInstruction(isa.OpMov, isa.MvLowRegToRegInd, dest, s1, -1)
 	case isa.MvRegMem: // reg to mem; dest=addr, s1=reg
@@ -173,7 +173,6 @@ func (cg *CodeGenerator) emitImmediate(value uint32) {
 func (cg *CodeGenerator) ReserveWord() uint32 {
 	addr := cg.nextInstructionAddr
 	cg.emitInstruction(isa.OpNop, isa.NoOperands, -1, -1, -1) // Emit a NOP
-	//   TODO: should it nextInstructionAddr++?
 	return addr
 }
 

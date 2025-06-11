@@ -74,8 +74,6 @@ func createLexer(source string) *lexer {
 		Tokens: make([]Token, 0),
 		patterns: []regexPattern{
 			{regexp.MustCompile(`\s+`), skipHandler},
-			//{regexp.MustCompile(`\/\/.*`), commentHandler}
-			//TODO: check
 			{regexp.MustCompile(`//.*`), commentHandler},
 			{regexp.MustCompile(`"[^"]*"`), stringHandler},
 			{regexp.MustCompile(`[0-9]+(\.[0-9]+)?`), numberHandler},

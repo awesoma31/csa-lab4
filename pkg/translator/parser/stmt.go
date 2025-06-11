@@ -42,24 +42,15 @@ func parseBlockStmt(p *parser) ast.Stmt {
 }
 
 func parseVarDeclStmt(p *parser) ast.Stmt {
-	var explicitType ast.Type
 	startToken := p.advance().Kind
-	// isConstant := startToken == lexer.CONST
 	symbolName := p.expectError(lexer.IDENTIFIER,
 		fmt.Sprintf("Following %s expected variable name however instead recieved %s instead\n",
 			lexer.TokenKindString(startToken), lexer.TokenKindString(p.currentTokenKind())))
-
-	if p.currentTokenKind() == lexer.COLON {
-		p.expect(lexer.COLON)
-		explicitType = parseType(p, defaultBp)
-	}
 
 	var assignmentValue ast.Expr
 	if p.currentTokenKind() != lexer.SemiColon {
 		p.expect(lexer.ASSIGNMENT)
 		assignmentValue = parseExpr(p, assignment)
-	} else if explicitType == nil {
-		p.addError("Missing explicit type for variable declaration without initial assignment.")
 	}
 
 	p.expect(lexer.SemiColon)
@@ -136,21 +127,4 @@ func parseIntOffStmt(p *parser) ast.Stmt {
 	p.expect(lexer.IntOff)
 	p.expect(lexer.SemiColon)
 	return ast.IntOffStmt{}
-}
-
-// TODO: delete
-func parseReturnStmt(p *parser) ast.Stmt {
-	p.expect(lexer.RETURN)
-
-	var expr ast.Expr
-	if p.currentTokenKind() != lexer.SemiColon {
-		// Return expression can be any valid expression up to `defalt_bp` (lowest)
-		expr = parseExpr(p, defaultBp)
-	}
-
-	p.expect(lexer.SemiColon)
-
-	return ast.ReturnStmt{
-		Expr: expr,
-	}
 }

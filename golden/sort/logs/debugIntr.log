@@ -173,7 +173,7 @@ WHILE STMT BODY:
 PRINT STMT
 [0x00A1] - 04CC0000 - Opc: MOV, Mode: MvMemReg, D:ROutData, S1:, S2:
 [0x00A2] - 00000088 - Imm
-[0x00A3] - 6AA00000 - Opc: OUT, Mode: Word, D:port Digit, S1:, S2:
+[0x00A3] - 6AA00000 - Opc: OUT, Mode: Digit, D:port Digit, S1:, S2:
 [0x00A4] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
 [0x00A5] - 0000008C - Imm
 [0x00A6] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
@@ -189,7 +189,7 @@ PRINT STMT
 [0x00AF] - 1BE00000 - Opc: HALT, Mode: NoOperands, D:, S1:, S2:
 INTERRUPTION 0 STMT
 READ DIGIT EXPR
-[0x00B0] - 62A00000 - Opc: IN, Mode: Word, D:port Digit, S1:, S2:
+[0x00B0] - 62A00000 - Opc: IN, Mode: Digit, D:port Digit, S1:, S2:
 [0x00B1] - 04E10000 - Opc: MOV, Mode: MvRegMem, D:, S1:RInData, S2:
 [0x00B2] - 00000090 - Imm
 IF STATEMENT CONDITION:

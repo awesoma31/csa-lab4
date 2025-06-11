@@ -65,20 +65,9 @@ const (
 
 	// Reserved Keywords
 	LET
-	// CONST TODO: delete
-	CONST
-	CLASS
-	NEW
-	IMPORT
-	FROM
-	FN
 	IF
 	ELSE
-	FOREACH
 	WHILE
-	FOR
-	EXPORT
-	TYPEOF
 	IN
 
 	INTER
@@ -88,11 +77,9 @@ const (
 	PRINT
 	READCH
 	READINT
-	QOUTE
+	ADDSTR
 
 	LIST
-
-	RETURN
 
 	UNKNOWN
 )
@@ -101,22 +88,10 @@ const (
 var reservedLu = map[string]TokenKind{
 	"true":    TRUE,
 	"false":   FALSE,
-	"null":    NULL,
 	"let":     LET,
-	"const":   CONST,
-	"class":   CLASS,
-	"new":     NEW,
-	"import":  IMPORT,
-	"from":    FROM,
-	"fn":      FN,
 	"if":      IF,
 	"else":    ELSE,
-	"foreach": FOREACH,
 	"while":   WHILE,
-	"for":     FOR,
-	"export":  EXPORT,
-	"typeof":  TYPEOF,
-	"in":      IN,
 	"print":   PRINT,
 	"read":    READCH,
 	"readInt": READINT,
@@ -124,6 +99,7 @@ var reservedLu = map[string]TokenKind{
 	"intOn":   IntOn,
 	"intOff":  IntOff,
 	"list":    LIST,
+	"addStr":  ADDSTR,
 }
 
 type Token struct {
@@ -199,8 +175,6 @@ func TokenKindString(kind TokenKind) string {
 		return "semi_colon"
 	case COLON:
 		return "colon"
-	// case QUESTION:
-	// 	return "question"
 	case COMMA:
 		return "comma"
 	case PlusPlus:
@@ -225,38 +199,18 @@ func TokenKindString(kind TokenKind) string {
 		return "percent"
 	case LET:
 		return "let"
-	// case CONST:
-	// 	return "const"
-	// case CLASS:
-	// 	return "class"
-	// case NEW:
-	// 	return "new"
-	// case IMPORT:
-	// 	return "import"
-	// case FROM:
-	// 	return "from"
-	case FN:
-		return "fn"
 	case IF:
 		return "if"
 	case ELSE:
 		return "else"
-	// case FOREACH:
-	// 	return "foreach"
-	case FOR:
-		return "for"
 	case WHILE:
 		return "while"
-	// case EXPORT:
-	// 	return "export"
-	// case IN:
-	// 	return "in"
 	case PRINT:
 		return "print"
 	case READCH:
 		return "read"
-	case QOUTE:
-		return `"`
+	case ADDSTR:
+		return "addStr"
 	default:
 		return fmt.Sprintf("unknown(%d)", kind)
 	}

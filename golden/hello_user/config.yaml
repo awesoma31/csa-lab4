@@ -3,7 +3,7 @@ data_bin: "hello_user/data.bin"
 debug: false
 log_file: "cpu.log"
 
-tick_limit: 1000
+tick_limit: 10000
 schedule:
   - tick: 50
     input:

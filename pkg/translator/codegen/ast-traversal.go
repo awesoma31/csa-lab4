@@ -149,7 +149,7 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 
 		if !symbol.IsStr {
 			cg.genEx(arg, isa.ROutData)
-			cg.emitInstruction(isa.OpOut, isa.WordM, isa.PortD, -1, -1)
+			cg.emitInstruction(isa.OpOut, isa.DigitM, isa.PortD, -1, -1)
 		} else {
 			cg.genEx(s.Argument, isa.ROutAddr)
 			cg.emitMov(isa.MvRegIndReg, isa.RC, isa.ROutAddr, -1) // mov rc <- mem[routaddr]
@@ -296,7 +296,7 @@ func (cg *CodeGenerator) genReadChEx(rd int) {
 // instead, just keep it in RInData
 func (cg *CodeGenerator) genReadIntEx(rd int) {
 	cg.debugAssembly = append(cg.debugAssembly, "READ DIGIT EXPR")
-	cg.emitInstruction(isa.OpIn, isa.WordM, isa.PortD, -1, -1)
+	cg.emitInstruction(isa.OpIn, isa.DigitM, isa.PortD, -1, -1)
 	if rd != isa.RInData {
 		cg.emitMov(isa.MvRegReg, rd, isa.RInData, -1)
 	}

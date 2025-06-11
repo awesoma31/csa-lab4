@@ -33,9 +33,13 @@ func New(debug bool, logFile string) *Logger {
 	}
 }
 
+func NewForTest(w io.Writer) *Logger {
+	l := New(true, "") // debug-mode
+	l.l.SetOutput(w)   // std = *log.Logger внутри вашего Logger
+	return l
+}
 func (lg *Logger) Debug(v ...any) {
 	lg.l.Print(
-		//TODO: вернуть
 		append([]any{"debug "}, v...)...,
 	// append([]any{""}, v...)...,
 	)

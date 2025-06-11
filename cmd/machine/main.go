@@ -14,16 +14,17 @@ import (
 )
 
 func main() {
-	configPath := flag.String("config", "config/config.yaml", "path to cpu config yml")
+	configPath := flag.String("conf", "config/config.yaml", "path to cpu config yml")
+	flag.Parse()
 	cpu, err := loadCPUFromConfig(*configPath)
 	if err != nil {
 		log.Fatalf("error configuring CPU - %s", err.Error())
 	}
-	cpu.Run()
+	_ = cpu.Run()
 }
 
-func loadCPUFromConfig(path string) (*machine.CPU, error) {
-	raw, err := os.ReadFile(path)
+func loadCPUFromConfig(cfgPath string) (*machine.CPU, error) {
+	raw, err := os.ReadFile(cfgPath)
 	if err != nil {
 		return nil, err
 	}

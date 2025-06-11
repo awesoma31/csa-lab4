@@ -76,14 +76,6 @@ func parseAssignmentExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp, it'
 	}
 }
 
-func parsePrintExpr(p *parser) ast.Expr {
-	p.expect(lexer.PRINT)
-	p.expect(lexer.OpenParen)
-	arg := parseExpr(p, defaultBp)
-	p.expect(lexer.CloseParen)
-	return ast.PrintExpr{Argument: arg}
-}
-
 func parseReadChEx(p *parser) ast.Expr {
 	p.expect(lexer.READCH)
 	p.expect(lexer.OpenParen)
@@ -144,6 +136,20 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 		}
 	case lexer.IDENTIFIER:
 		identTok := p.advance()
+		if p.currentTokenKind() == lexer.OpenParen {
+			p.advance() // «(»
+			var args []ast.Expr
+			if p.currentTokenKind() != lexer.CloseParen {
+				args = append(args, parseExpr(p, primary))
+				for p.currentTokenKind() == lexer.COMMA {
+					p.advance()
+					args = append(args, parseExpr(p, primary))
+				}
+			}
+			p.expect(lexer.CloseParen)
+			return ast.CallExpr{Name: identTok.Value, Args: args}
+		}
+
 		sym := ast.SymbolExpr{Value: identTok.Value}
 
 		/* ---------- arr[i] ---------- */
@@ -157,24 +163,6 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 			}
 		}
 
-		// /* ---------- ident(...)  ---------- */
-		// if p.currentTokenKind() == lexer.OpenParen {
-		// 	p.advance() // '('
-		// 	var args []ast.Expr
-		// 	if p.currentTokenKind() != lexer.OpenParen {
-		// 		args = append(args, p.parseExpr())
-		// 		for p.currentTokenKind() == lexer.COMMA {
-		// 			p.advance()
-		// 			args = append(args, p.parseExpr())
-		// 		}
-		// 	}
-		// 	p.expect(lexer.CloseParen)
-		// 	return ast.FunctionExpr{
-		// 		Name: identTok.Value,
-		// 		Args: args,
-		// 	}
-		// }
-
 		return sym
 	default:
 		p.addError(fmt.Sprintf("Cannot create primary_expr from %s\n", lexer.TokenKindString(p.currentTokenKind())))
@@ -182,60 +170,9 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 	}
 }
 
-// // TODO: delete
-// func parseArrayLiteralExpr(p *parser) ast.Expr {
-// 	p.expect(lexer.OpenBracket)
-// 	arrayContents := make([]ast.Expr, 0)
-//
-// 	// Array elements are typically parsed with a precedence higher than comma,
-// 	// but allowing for full expressions.
-// 	// `logical` (or a similar low precedence) is often a good choice here.
-// 	for p.hasTokens() && p.currentTokenKind() != lexer.CloseBracket {
-// 		arrayContents = append(arrayContents, parseExpr(p, assignment)) // Use assignment for array elements, common practice
-//
-// 		if p.currentTokenKind() == lexer.COMMA {
-// 			p.advance() // Consume the comma
-// 		} else if p.currentTokenKind() != lexer.CloseBracket {
-// 			// If not a comma and not closing bracket, something is wrong
-// 			p.addError(fmt.Sprintf("Expected comma or closing bracket in array literal, but got %s\n", lexer.TokenKindString(p.currentTokenKind())))
-// 			break // Try to recover by breaking the loop
-// 		}
-// 	}
-//
-// 	p.expect(lexer.CloseBracket)
-//
-// 	return ast.ArrayLiteral{
-// 		Contents: arrayContents,
-// 	}
-// }
-
 func parseGroupingExpr(p *parser) ast.Expr {
 	p.expect(lexer.OpenParen)
 	expr := parseExpr(p, defaultBp)
 	p.expect(lexer.CloseParen)
 	return expr
 }
-
-// func parseCallExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
-// 	p.advance() // Consume the OPEN_PAREN token
-// 	arguments := make([]ast.Expr, 0)
-//
-// 	for p.hasTokens() && p.currentTokenKind() != lexer.CloseParen {
-// 		// Arguments are typically parsed with the lowest possible precedence (e.g., assignment or logical)
-// 		// to allow full expressions within the arguments.
-// 		arguments = append(arguments, parseExpr(p, assignment))
-//
-// 		if p.currentTokenKind() == lexer.COMMA {
-// 			p.advance() // Consume the comma
-// 		} else if p.currentTokenKind() != lexer.CloseParen {
-// 			p.addError(fmt.Sprintf("Expected comma or closing parenthesis in call arguments, but got %s\n", lexer.TokenKindString(p.currentTokenKind())))
-// 			break // Try to recover
-// 		}
-// 	}
-//
-// 	p.expect(lexer.CloseParen)
-// 	return ast.CallExpr{
-// 		Method:    left,
-// 		Arguments: arguments,
-// 	}
-// }

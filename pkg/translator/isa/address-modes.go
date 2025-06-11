@@ -12,27 +12,26 @@ const (
 	MvRegMem         uint32 = 0x07 //mem[addr]<-rs1
 	MvImmMem         uint32 = 0x09 //mem[addr]<-imm
 
-	IoMemReg uint32 = 0x0A
-	ImmReg   uint32 = 0x0B
-
-	StImmMode       uint32 = 0x0C
-	CMPRegMode      uint32 = 0x0D
+	// IoMemReg uint32 = 0x0A
+	ImmReg uint32 = 0x0B
+	// StImmMode       uint32 = 0x0C
+	// CMPRegMode      uint32 = 0x0D
 	RegReg          uint32 = 0x0E
 	MvByteRegIndReg uint32 = 0x0F //byte mem[rs1]->rd
 
 	MathRRR uint32 = 0x10
 	MathRMR uint32 = 0x11
 	MathRIR uint32 = 0x12
-	MathMMR uint32 = 0x13
+	// MathMMR uint32 = 0x13
 
-	ByteM uint32 = 0x14
-	WordM uint32 = 0x15
+	ByteM  uint32 = 0x14
+	DigitM uint32 = 0x15
 
 	JAbsAddr      uint32 = 0x18
 	SingleRegMode uint32 = 0x1C
 
-	InPortReg  uint32 = 0x1D
-	OutRegPort uint32 = 0x1E
+	// InPortReg  uint32 = 0x1D
+	// OutRegPort uint32 = 0x1E
 
 	NoOperands uint32 = 0x1F
 )

@@ -86,7 +86,7 @@ func New(cfg *CpuConfig) *CPU {
 	return c
 }
 
-func (c *CPU) Run() {
+func (c *CPU) Run() string {
 	for c.Tick = 0; c.Tick < c.TickLimit; c.Tick++ {
 		if c.halted {
 			break
@@ -107,7 +107,34 @@ func (c *CPU) Run() {
 		}
 	}
 
-	c.PrintAllPortOutputs()
+	// c.PrintAllPortOutputs()
+	return c.GetFormattedPortOutputs()
+}
+
+func (c *CPU) GetFormattedPortOutputs() string {
+	var allOutputs strings.Builder
+	c.log.Debug("───── Port Outputs ─────")
+
+	for port, buf := range c.Ioc.OutBufAll() {
+		if len(buf) == 0 {
+			continue
+		}
+
+		var strBuilder strings.Builder
+		for _, b := range buf {
+			if b >= 32 && b <= 126 { // Печатаемые ASCII символы
+				strBuilder.WriteByte(b)
+			} else {
+				strBuilder.WriteString("*")
+			}
+		}
+		strOutput := strBuilder.String()
+
+		outputLine := fmt.Sprintf("port %d| %s\n", port, strOutput)
+		allOutputs.WriteString(outputLine)
+		c.log.Infof(outputLine)
+	}
+	return allOutputs.String()
 }
 
 func (c *CPU) PrintAllPortOutputs() {
@@ -119,10 +146,10 @@ func (c *CPU) PrintAllPortOutputs() {
 
 		var strBuilder strings.Builder
 		for _, b := range buf {
-			if b >= 32 && b <= 126 { // Диапазон печатаемых ASCII-символов
+			if b >= 32 && b <= 126 {
 				strBuilder.WriteByte(b)
 			} else {
-				strBuilder.WriteString("*") // Непечатаемые -> '*'
+				strBuilder.WriteString("*")
 			}
 		}
 		strOutput := strBuilder.String()
@@ -139,7 +166,7 @@ func (c *CPU) PrintAllPortOutputs() {
 		// }
 		// byteOutput := strings.Join(byteVals, ", ")
 
-		c.log.Infof("port %d| %s\n", port, strOutput) // goiida
+		c.log.Infof("port %d| %s\n", port, strOutput)
 		// c.log.Debugf("    hex|%s\n", hexOutput)
 		// c.log.Debugf("    dec|%s\n", byteOutput)
 	}
@@ -173,7 +200,7 @@ func (c *CPU) raiseIRQ(vec uint8) {
 	c.pending, c.pendNum = true, int(vec)
 }
 func (c *CPU) enterISR() {
-	c.log.Debugf("------------Entering Interruption %d, value=%v------------\n", c.pendNum, c.Ioc.ReadPort(byte(c.pendNum)))
+	c.log.Debugf("------------Entering Interruption %d, value=%v/0x%X------------\n", c.pendNum, c.Ioc.ReadPort(byte(c.pendNum)), c.Ioc.ReadPort(byte(c.pendNum)))
 	c.Reg.savedPC = c.Reg.PC
 	c.SaveNZVC()
 	c.Reg.PC = c.memI[c.pendNum]

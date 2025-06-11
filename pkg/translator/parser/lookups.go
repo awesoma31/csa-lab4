@@ -82,8 +82,10 @@ func createTokenLookups() {
 	nud(lexer.NUMBER, parsePrimaryExpr)
 	nud(lexer.STRING, parsePrimaryExpr)
 	nud(lexer.IDENTIFIER, parsePrimaryExpr)
+	nud(lexer.ADDSTR, parsePrimaryExpr)
+
+	// nud(lexer.ADDSTR, parseAddStrExpr)
 	// Array literals also start expressions, like `[1, 2, 3]`
-	// nud(lexer.OpenBracket, parseArrayLiteralExpr)
 
 	// Unary/Prefix Operators (NUDs)
 	// The `unary` binding power is typically higher than binary operators,
@@ -96,13 +98,11 @@ func createTokenLookups() {
 	nud(lexer.OpenParen, parseGroupingExpr)
 
 	// Built-in fnuctions
-	nud(lexer.PRINT, parsePrintExpr)
 	nud(lexer.READCH, parseReadChEx)
 	nud(lexer.READINT, parseReadIntEx)
 	nud(lexer.LIST, parseListEx)
 
 	// Statement handlers
-	stmt(lexer.RETURN, parseReturnStmt)
 	stmt(lexer.OpenCurly, parseBlockStmt)
 	stmt(lexer.LET, parseVarDeclStmt)
 	stmt(lexer.IF, parseIfStmt)

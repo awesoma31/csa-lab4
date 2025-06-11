@@ -2,5 +2,6 @@ instruction_bin: "hello/instr.bin"
 data_bin: "hello/data.bin"
 debug: false
 log_file: "cpu.log"
+tick_limit: 10000
 
 max_interruptions: 2

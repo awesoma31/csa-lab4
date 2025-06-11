@@ -12,10 +12,10 @@ import (
 )
 
 type Options struct {
-	SrcPath   string
-	OutDir    string
-	Debug     bool
-	DumpFiles bool // true – сохранять *.log / *.bin
+	SrcPath string
+	OutDir  string
+	LogDir  string
+	Debug   bool
 }
 
 func Run(opts Options) (imem []uint32, dmem []byte, err error) {
@@ -34,22 +34,22 @@ func Run(opts Options) (imem []uint32, dmem []byte, err error) {
 		return nil, nil, fmt.Errorf("codegen: %v", cgErr)
 	}
 
-	if opts.DumpFiles {
-		if err := os.MkdirAll(opts.OutDir, 0o755); err != nil {
-			return nil, nil, err
-		}
-
-		_ = bingen.SaveInstructionMemory(filepath.Join(opts.OutDir, "instr.bin"), imem)
-		_ = bingen.SaveDataMemory(filepath.Join(opts.OutDir, "data.bin"), dmem)
-
-		logutil.DumpAst(ast, filepath.Join(opts.OutDir, "ast.log"), opts.Debug)
-		logutil.DumpDebugInstrLog(dbgAsm, filepath.Join(opts.OutDir, "debugIntr.log"), opts.Debug)
-		logutil.DumpMemILog(imem, filepath.Join(opts.OutDir, "instr.log"), opts.Debug)
-		logutil.DumpMemDLog(dmem, filepath.Join(opts.OutDir, "data.log"), opts.Debug)
-		logutil.DumpSymTable(cg, filepath.Join(opts.OutDir, "symtable.log"), opts.Debug)
+	if err := os.MkdirAll(opts.OutDir, 0o755); err != nil {
+		return nil, nil, err
 	}
-	if opts.Debug {
-		fmt.Printf("binaries saved to %s\n", opts.OutDir)
+	if err := os.MkdirAll(opts.LogDir, 0o755); err != nil {
+		return nil, nil, err
 	}
+
+	_ = bingen.SaveInstructionMemory(filepath.Join(opts.OutDir, "instr.bin"), imem)
+	_ = bingen.SaveDataMemory(filepath.Join(opts.OutDir, "data.bin"), dmem)
+
+	logutil.DumpAst(ast, filepath.Join(opts.LogDir, "ast.log"), opts.Debug)
+	logutil.DumpDebugInstrLog(dbgAsm, filepath.Join(opts.LogDir, "debugIntr.log"), opts.Debug)
+	logutil.DumpMemILog(imem, filepath.Join(opts.LogDir, "instr.log"), opts.Debug)
+	logutil.DumpMemDLog(dmem, filepath.Join(opts.LogDir, "data.log"), opts.Debug)
+	logutil.DumpSymTable(cg, filepath.Join(opts.LogDir, "symtable.log"), opts.Debug)
+
+	fmt.Printf("binaries saved to %s\n", opts.OutDir)
 	return imem, dmem, nil
 }

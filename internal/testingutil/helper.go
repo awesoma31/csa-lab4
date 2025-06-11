@@ -1,8 +1,11 @@
 package testingutil
 
 import (
+	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	bingen "github.com/awesoma31/csa-lab4/pkg/bin-gen"
@@ -13,18 +16,22 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+var update = flag.Bool("u", false, "rewrite *.golden files")
+
 func RunGolden(t *testing.T, dir string, tickLimit int) {
 	t.Helper()
 
 	src := filepath.Join(dir, "src.lang")
 	cfgPath := filepath.Join(dir, "config.yaml")
-	outDir := filepath.Join(dir, "logs")
+	outDir := filepath.Join(dir)
+	logDir := filepath.Join(dir, "logs")
+	goldenOutputPath := filepath.Join(dir, "output.golden")
 
 	_, _, err := translator.Run(translator.Options{
-		SrcPath:   src,
-		OutDir:    outDir,
-		Debug:     false,
-		DumpFiles: true,
+		SrcPath: src,
+		OutDir:  outDir,
+		LogDir:  logDir,
+		Debug:   false,
 	})
 	if err != nil {
 		cwd, _ := os.Getwd()
@@ -58,23 +65,62 @@ func RunGolden(t *testing.T, dir string, tickLimit int) {
 	cfg.Logger = lg
 
 	cpu := machine.New(cfg)
-	cpu.Run()
+	gotOutput := cpu.Run()
 
-	// // ── сравниваем вывод ──────────────────────────────────────
-	// gotOut := ioc.OutputAll()
-	// wantOut, _ := os.ReadFile(filepath.Join(goldenDir, "out.txt"))
-	// if diff := cmpBytes(gotOut, wantOut); diff != "" {
-	// 	t.Fatalf("stdout mismatch (-got +want):\n%s", diff)
-	// }
-	//
-	// // ── трасса ────────────────────────────────────────────────
-	// gotTrace := cpu.Trace() // верни slice []string из CPU
-	// wantTrace, _ := os.ReadFile(filepath.Join(goldenDir, "trace.log"))
-	// if needUpdate() {
-	// 	panic("unimpl update golden")
-	// 	// os.WriteFile(...)
-	// }
-	// if diff := cmpLines(gotTrace, wantTrace); diff != "" {
-	// 	t.Fatal(diff)
-	// }
+	// 8. Сравнение с эталонным файлом или его обновление
+	if *update {
+		t.Log("updating golden file...")
+		err := os.WriteFile(goldenOutputPath, []byte(gotOutput), 0644)
+		if err != nil {
+			t.Fatalf("failed to update golden file: %v", err)
+		}
+		return // После обновления золотого файла, тест завершается
+	}
+
+	// Чтение эталонного вывода
+	wantOutputBytes, err := os.ReadFile(goldenOutputPath)
+	if err != nil {
+		t.Fatalf("failed to read golden file %q: %v", goldenOutputPath, err)
+	}
+	wantOutput := string(wantOutputBytes)
+
+	// Сравнение полученного вывода с эталонным
+	if diff := cmpLines(gotOutput, wantOutput); diff != "" {
+		t.Errorf("output mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func cmpLines(got, want string) string {
+	gotLines := strings.Split(got, "\n")
+	wantLines := strings.Split(want, "\n")
+
+	maxLen := len(gotLines)
+	if len(wantLines) > maxLen {
+		maxLen = len(wantLines)
+	}
+
+	var diff strings.Builder
+	for i := 0; i < maxLen; i++ {
+		gotLine := ""
+		if i < len(gotLines) {
+			gotLine = gotLines[i]
+		}
+		wantLine := ""
+		if i < len(wantLines) {
+			wantLine = wantLines[i]
+		}
+
+		if gotLine != wantLine {
+			if i < len(gotLines) {
+				fmt.Fprintf(&diff, "- %s\n", gotLine)
+			}
+			if i < len(wantLines) {
+				fmt.Fprintf(&diff, "+ %s\n", wantLine)
+			}
+		} else {
+			// Опционально: можно выводить общие строки для контекста, но для diff обычно не требуется
+			// fmt.Fprintf(&diff, "  %s\n", gotLine)
+		}
+	}
+	return diff.String()
 }

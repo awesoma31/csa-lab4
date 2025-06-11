@@ -54,22 +54,18 @@ func init() {
 		MvRegMem:         "MvRegMem",
 		MvRegLowToMem:    "MvRegLowMem",
 		MvImmMem:         "MvImmMem",
-		CMPRegMode:       "CMPRegMode",
 		ImmReg:           "ImmReg",
 		RegReg:           "RegReg",
 		MvByteRegIndReg:  "MvLowRegIndReg",
 		ByteM:            "Byte",
-		WordM:            "Word",
+		DigitM:           "Digit",
 
 		MathRRR: "MathRRR",
 		MathRMR: "MathRMR",
 		MathRIR: "MathRIR",
-		MathMMR: "MathMMR",
 
 		JAbsAddr:      "JAbsAddr",
 		SingleRegMode: "SingleReg",
-		InPortReg:     "IN_PORT_REG",
-		OutRegPort:    "OUT_REG_PORT",
 
 		NoOperands: "NoOperands",
 	} {
