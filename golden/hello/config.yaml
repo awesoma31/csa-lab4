@@ -1,0 +1,4 @@
+instruction_bin: "hello/instr.bin"
+data_bin: "hello/data.bin"
+
+max_interruptions: 2

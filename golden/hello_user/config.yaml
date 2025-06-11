@@ -1,5 +1,5 @@
-instruction_bin: "bin/instr.bin"
-data_bin: "bin/data.bin"
+instruction_bin: "hello_user/instr.bin"
+data_bin: "hello_user/data.bin"
 
 tick_limit: 1000
 schedule:

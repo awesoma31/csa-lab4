@@ -1,5 +1,5 @@
-instruction_bin: "bin/instr.bin"
-data_bin: "bin/data.bin"
+instruction_bin: "sort/instr.bin"
+data_bin: "sort/data.bin"
 
 log:
   file: "trace.log"
