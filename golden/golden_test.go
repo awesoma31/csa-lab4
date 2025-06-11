@@ -11,11 +11,11 @@ func TestGolden(t *testing.T) {
 		name string
 		dir  string
 	}{
-		{"hello", "golden/hello"},
-		{"cat", "golden/cat"},
-		{"hello_username", "golden/hello_user"},
-		{"sort", "golden/sort"},
-		// {"variant", "golden/alg"},
+		{"hello", "hello"},
+		{"cat", "cat"},
+		{"hello_username", "hello_user"},
+		{"sort", "sort"},
+		// {"variant", "alg"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

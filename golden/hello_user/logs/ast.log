@@ -1,0 +1,110 @@
+ast.BlockStmt{
+  Body: []ast.Stmt{
+    ast.IntOffStmt{},
+    ast.PrintStmt{
+      Argument: ast.StringExpr{
+        Value: "who? ",
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "f",
+      AssignedValue: ast.NumberExpr{
+        Value: 1,
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "c",
+      AssignedValue: ast.NumberExpr{
+        Value: 0,
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "ch",
+      AssignedValue: ast.NumberExpr{
+        Value: 5,
+      },
+    },
+    ast.IntOnStmt{},
+    ast.WhileStmt{
+      Condition: ast.BinaryExpr{
+        Left: ast.SymbolExpr{
+          Value: "f",
+        },
+        Operator: lexer.Token{
+          Kind: 14,
+          Value: "==",
+        },
+        Right: ast.NumberExpr{
+          Value: 1,
+        },
+      },
+      Body: ast.BlockStmt{
+        Body: nil,
+      },
+    },
+    ast.InterruptionStmt{
+      IrqNumber: 1,
+      Body: ast.BlockStmt{
+        Body: []ast.Stmt{
+          ast.VarDeclarationStmt{
+            Identifier: "b",
+            AssignedValue: ast.ReadChExpr{},
+          },
+          ast.ExpressionStmt{
+            Expression: ast.AssignmentExpr{
+              Assigne: ast.SymbolExpr{
+                Value: "c",
+              },
+              AssignedValue: ast.BinaryExpr{
+                Left: ast.SymbolExpr{
+                  Value: "c",
+                },
+                Operator: lexer.Token{
+                  Kind: 34,
+                  Value: "+",
+                },
+                Right: ast.NumberExpr{
+                  Value: 1,
+                },
+              },
+            },
+          },
+          ast.PrintStmt{
+            Argument: ast.SymbolExpr{
+              Value: "b",
+            },
+          },
+          ast.IfStmt{
+            Condition: ast.BinaryExpr{
+              Left: ast.SymbolExpr{
+                Value: "c",
+              },
+              Operator: lexer.Token{
+                Kind: 20,
+                Value: ">=",
+              },
+              Right: ast.SymbolExpr{
+                Value: "ch",
+              },
+            },
+            Consequent: ast.BlockStmt{
+              Body: []ast.Stmt{
+                ast.ExpressionStmt{
+                  Expression: ast.AssignmentExpr{
+                    Assigne: ast.SymbolExpr{
+                      Value: "f",
+                    },
+                    AssignedValue: ast.NumberExpr{
+                      Value: 0,
+                    },
+                  },
+                },
+              },
+            },
+            Alternate: nil,
+          },
+        },
+      },
+    },
+  },
+}

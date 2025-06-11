@@ -1,6 +1,9 @@
 instruction_bin: "cat/instr.bin"
 data_bin: "cat/data.bin"
 
+debug: false
+log_file: "cpu.log"
+
 tick_limit: 1000
 schedule:
   - tick: 50

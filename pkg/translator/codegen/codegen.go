@@ -212,9 +212,9 @@ func (cg *CodeGenerator) PatchWord(address, value uint32) {
 	}
 	// NOTE: displaying in the wrong address bcs  extra lines of debug
 	cg.instructionMemory[address] = value
-	originalLine := cg.debugAssembly[address]
+	// originalLine := cg.debugAssembly[address]
 	// cg.debugAssembly[address] = fmt.Sprintf("%s ->[%08X] PATCHED to: 0x%08X", originalLine, address, value)
-	fmt.Printf("%s ->[%08X] PATCHED to: 0x%08X\n", originalLine, address, value)
+	// fmt.Printf("%s ->[%08X] PATCHED to: 0x%08X\n", originalLine, address, value)
 }
 
 func (cg *CodeGenerator) PatchDebugAssemblyByAddress(targetAddress uint32, newContent string) {

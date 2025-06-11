@@ -1,9 +1,7 @@
 instruction_bin: "sort/instr.bin"
 data_bin: "sort/data.bin"
-
-log:
-  file: "trace.log"
-  stdout_debug: false
+debug: false
+log_file: "cpu.log"
 
 tick_limit: 10000
 schedule:

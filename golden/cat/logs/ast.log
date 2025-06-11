@@ -1,0 +1,37 @@
+ast.BlockStmt{
+  Body: []ast.Stmt{
+    ast.WhileStmt{
+      Condition: ast.BinaryExpr{
+        Left: ast.NumberExpr{
+          Value: 1,
+        },
+        Operator: lexer.Token{
+          Kind: 14,
+          Value: "==",
+        },
+        Right: ast.NumberExpr{
+          Value: 1,
+        },
+      },
+      Body: ast.BlockStmt{
+        Body: nil,
+      },
+    },
+    ast.InterruptionStmt{
+      IrqNumber: 1,
+      Body: ast.BlockStmt{
+        Body: []ast.Stmt{
+          ast.VarDeclarationStmt{
+            Identifier: "a",
+            AssignedValue: ast.ReadChExpr{},
+          },
+          ast.PrintStmt{
+            Argument: ast.SymbolExpr{
+              Value: "a",
+            },
+          },
+        },
+      },
+    },
+  },
+}

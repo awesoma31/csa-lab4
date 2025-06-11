@@ -1,0 +1,495 @@
+ast.BlockStmt{
+  Body: []ast.Stmt{
+    ast.VarDeclarationStmt{
+      Identifier: "arr",
+      AssignedValue: ast.ListEx{
+        Size: 100,
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "readingData",
+      AssignedValue: ast.NumberExpr{
+        Value: 1,
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "readLen",
+      AssignedValue: ast.NumberExpr{
+        Value: 0,
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "n",
+      AssignedValue: ast.NumberExpr{
+        Value: 0,
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "i",
+      AssignedValue: ast.NumberExpr{
+        Value: 0,
+      },
+    },
+    ast.WhileStmt{
+      Condition: ast.BinaryExpr{
+        Left: ast.SymbolExpr{
+          Value: "readingData",
+        },
+        Operator: lexer.Token{
+          Kind: 14,
+          Value: "==",
+        },
+        Right: ast.NumberExpr{
+          Value: 1,
+        },
+      },
+      Body: ast.BlockStmt{
+        Body: nil,
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "swapped",
+      AssignedValue: ast.NumberExpr{
+        Value: 1,
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "j",
+      AssignedValue: ast.NumberExpr{
+        Value: 0,
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "m",
+      AssignedValue: ast.NumberExpr{
+        Value: 0,
+      },
+    },
+    ast.ExpressionStmt{
+      Expression: ast.AssignmentExpr{
+        Assigne: ast.SymbolExpr{
+          Value: "m",
+        },
+        AssignedValue: ast.SymbolExpr{
+          Value: "n",
+        },
+      },
+    },
+    ast.WhileStmt{
+      Condition: ast.BinaryExpr{
+        Left: ast.SymbolExpr{
+          Value: "swapped",
+        },
+        Operator: lexer.Token{
+          Kind: 14,
+          Value: "==",
+        },
+        Right: ast.NumberExpr{
+          Value: 1,
+        },
+      },
+      Body: ast.BlockStmt{
+        Body: []ast.Stmt{
+          ast.ExpressionStmt{
+            Expression: ast.AssignmentExpr{
+              Assigne: ast.SymbolExpr{
+                Value: "swapped",
+              },
+              AssignedValue: ast.NumberExpr{
+                Value: 0,
+              },
+            },
+          },
+          ast.ExpressionStmt{
+            Expression: ast.AssignmentExpr{
+              Assigne: ast.SymbolExpr{
+                Value: "i",
+              },
+              AssignedValue: ast.NumberExpr{
+                Value: 0,
+              },
+            },
+          },
+          ast.WhileStmt{
+            Condition: ast.BinaryExpr{
+              Left: ast.SymbolExpr{
+                Value: "i",
+              },
+              Operator: lexer.Token{
+                Kind: 17,
+                Value: "<",
+              },
+              Right: ast.BinaryExpr{
+                Left: ast.SymbolExpr{
+                  Value: "m",
+                },
+                Operator: lexer.Token{
+                  Kind: 35,
+                  Value: "-",
+                },
+                Right: ast.NumberExpr{
+                  Value: 1,
+                },
+              },
+            },
+            Body: ast.BlockStmt{
+              Body: []ast.Stmt{
+                ast.ExpressionStmt{
+                  Expression: ast.AssignmentExpr{
+                    Assigne: ast.SymbolExpr{
+                      Value: "j",
+                    },
+                    AssignedValue: ast.BinaryExpr{
+                      Left: ast.SymbolExpr{
+                        Value: "i",
+                      },
+                      Operator: lexer.Token{
+                        Kind: 34,
+                        Value: "+",
+                      },
+                      Right: ast.NumberExpr{
+                        Value: 1,
+                      },
+                    },
+                  },
+                },
+                ast.IfStmt{
+                  Condition: ast.BinaryExpr{
+                    Left: ast.ArrayIndexEx{
+                      Target: ast.SymbolExpr{
+                        Value: "arr",
+                      },
+                      Index: ast.SymbolExpr{
+                        Value: "i",
+                      },
+                    },
+                    Operator: lexer.Token{
+                      Kind: 19,
+                      Value: ">",
+                    },
+                    Right: ast.ArrayIndexEx{
+                      Target: ast.SymbolExpr{
+                        Value: "arr",
+                      },
+                      Index: ast.SymbolExpr{
+                        Value: "j",
+                      },
+                    },
+                  },
+                  Consequent: ast.BlockStmt{
+                    Body: []ast.Stmt{
+                      ast.VarDeclarationStmt{
+                        Identifier: "temp",
+                        AssignedValue: ast.ArrayIndexEx{
+                          Target: ast.SymbolExpr{
+                            Value: "arr",
+                          },
+                          Index: ast.SymbolExpr{
+                            Value: "i",
+                          },
+                        },
+                      },
+                      ast.ExpressionStmt{
+                        Expression: ast.AssignmentExpr{
+                          Assigne: ast.ArrayIndexEx{
+                            Target: ast.SymbolExpr{
+                              Value: "arr",
+                            },
+                            Index: ast.SymbolExpr{
+                              Value: "i",
+                            },
+                          },
+                          AssignedValue: ast.ArrayIndexEx{
+                            Target: ast.SymbolExpr{
+                              Value: "arr",
+                            },
+                            Index: ast.SymbolExpr{
+                              Value: "j",
+                            },
+                          },
+                        },
+                      },
+                      ast.ExpressionStmt{
+                        Expression: ast.AssignmentExpr{
+                          Assigne: ast.ArrayIndexEx{
+                            Target: ast.SymbolExpr{
+                              Value: "arr",
+                            },
+                            Index: ast.SymbolExpr{
+                              Value: "j",
+                            },
+                          },
+                          AssignedValue: ast.SymbolExpr{
+                            Value: "temp",
+                          },
+                        },
+                      },
+                      ast.ExpressionStmt{
+                        Expression: ast.AssignmentExpr{
+                          Assigne: ast.SymbolExpr{
+                            Value: "swapped",
+                          },
+                          AssignedValue: ast.NumberExpr{
+                            Value: 1,
+                          },
+                        },
+                      },
+                    },
+                  },
+                  Alternate: nil,
+                },
+                ast.ExpressionStmt{
+                  Expression: ast.AssignmentExpr{
+                    Assigne: ast.SymbolExpr{
+                      Value: "i",
+                    },
+                    AssignedValue: ast.BinaryExpr{
+                      Left: ast.SymbolExpr{
+                        Value: "i",
+                      },
+                      Operator: lexer.Token{
+                        Kind: 34,
+                        Value: "+",
+                      },
+                      Right: ast.NumberExpr{
+                        Value: 1,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          ast.ExpressionStmt{
+            Expression: ast.AssignmentExpr{
+              Assigne: ast.SymbolExpr{
+                Value: "m",
+              },
+              AssignedValue: ast.BinaryExpr{
+                Left: ast.SymbolExpr{
+                  Value: "m",
+                },
+                Operator: lexer.Token{
+                  Kind: 35,
+                  Value: "-",
+                },
+                Right: ast.NumberExpr{
+                  Value: 1,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "g",
+      AssignedValue: ast.ArrayIndexEx{
+        Target: ast.SymbolExpr{
+          Value: "arr",
+        },
+        Index: ast.NumberExpr{
+          Value: 0,
+        },
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "h",
+      AssignedValue: ast.NumberExpr{
+        Value: 0,
+      },
+    },
+    ast.WhileStmt{
+      Condition: ast.BinaryExpr{
+        Left: ast.SymbolExpr{
+          Value: "h",
+        },
+        Operator: lexer.Token{
+          Kind: 17,
+          Value: "<",
+        },
+        Right: ast.SymbolExpr{
+          Value: "n",
+        },
+      },
+      Body: ast.BlockStmt{
+        Body: []ast.Stmt{
+          ast.ExpressionStmt{
+            Expression: ast.AssignmentExpr{
+              Assigne: ast.SymbolExpr{
+                Value: "g",
+              },
+              AssignedValue: ast.ArrayIndexEx{
+                Target: ast.SymbolExpr{
+                  Value: "arr",
+                },
+                Index: ast.SymbolExpr{
+                  Value: "h",
+                },
+              },
+            },
+          },
+          ast.PrintStmt{
+            Argument: ast.SymbolExpr{
+              Value: "g",
+            },
+          },
+          ast.ExpressionStmt{
+            Expression: ast.AssignmentExpr{
+              Assigne: ast.SymbolExpr{
+                Value: "h",
+              },
+              AssignedValue: ast.BinaryExpr{
+                Left: ast.SymbolExpr{
+                  Value: "h",
+                },
+                Operator: lexer.Token{
+                  Kind: 34,
+                  Value: "+",
+                },
+                Right: ast.NumberExpr{
+                  Value: 1,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    ast.InterruptionStmt{
+      IrqNumber: 0,
+      Body: ast.BlockStmt{
+        Body: []ast.Stmt{
+          ast.VarDeclarationStmt{
+            Identifier: "a",
+            AssignedValue: ast.ReadIntExpr{},
+          },
+          ast.IfStmt{
+            Condition: ast.BinaryExpr{
+              Left: ast.SymbolExpr{
+                Value: "readLen",
+              },
+              Operator: lexer.Token{
+                Kind: 14,
+                Value: "==",
+              },
+              Right: ast.NumberExpr{
+                Value: 0,
+              },
+            },
+            Consequent: ast.BlockStmt{
+              Body: []ast.Stmt{
+                ast.ExpressionStmt{
+                  Expression: ast.AssignmentExpr{
+                    Assigne: ast.SymbolExpr{
+                      Value: "n",
+                    },
+                    AssignedValue: ast.SymbolExpr{
+                      Value: "a",
+                    },
+                  },
+                },
+                ast.ExpressionStmt{
+                  Expression: ast.AssignmentExpr{
+                    Assigne: ast.SymbolExpr{
+                      Value: "readLen",
+                    },
+                    AssignedValue: ast.NumberExpr{
+                      Value: 1,
+                    },
+                  },
+                },
+              },
+            },
+            Alternate: ast.BlockStmt{
+              Body: []ast.Stmt{
+                ast.ExpressionStmt{
+                  Expression: ast.AssignmentExpr{
+                    Assigne: ast.ArrayIndexEx{
+                      Target: ast.SymbolExpr{
+                        Value: "arr",
+                      },
+                      Index: ast.SymbolExpr{
+                        Value: "i",
+                      },
+                    },
+                    AssignedValue: ast.SymbolExpr{
+                      Value: "a",
+                    },
+                  },
+                },
+                ast.ExpressionStmt{
+                  Expression: ast.AssignmentExpr{
+                    Assigne: ast.SymbolExpr{
+                      Value: "i",
+                    },
+                    AssignedValue: ast.BinaryExpr{
+                      Left: ast.SymbolExpr{
+                        Value: "i",
+                      },
+                      Operator: lexer.Token{
+                        Kind: 34,
+                        Value: "+",
+                      },
+                      Right: ast.NumberExpr{
+                        Value: 1,
+                      },
+                    },
+                  },
+                },
+                ast.IfStmt{
+                  Condition: ast.BinaryExpr{
+                    Left: ast.SymbolExpr{
+                      Value: "n",
+                    },
+                    Operator: lexer.Token{
+                      Kind: 15,
+                      Value: "!=",
+                    },
+                    Right: ast.NumberExpr{
+                      Value: 0,
+                    },
+                  },
+                  Consequent: ast.BlockStmt{
+                    Body: []ast.Stmt{
+                      ast.IfStmt{
+                        Condition: ast.BinaryExpr{
+                          Left: ast.SymbolExpr{
+                            Value: "i",
+                          },
+                          Operator: lexer.Token{
+                            Kind: 20,
+                            Value: ">=",
+                          },
+                          Right: ast.SymbolExpr{
+                            Value: "n",
+                          },
+                        },
+                        Consequent: ast.BlockStmt{
+                          Body: []ast.Stmt{
+                            ast.ExpressionStmt{
+                              Expression: ast.AssignmentExpr{
+                                Assigne: ast.SymbolExpr{
+                                  Value: "readingData",
+                                },
+                                AssignedValue: ast.NumberExpr{
+                                  Value: 0,
+                                },
+                              },
+                            },
+                          },
+                        },
+                        Alternate: nil,
+                      },
+                    },
+                  },
+                  Alternate: nil,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}

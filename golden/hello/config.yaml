@@ -1,4 +1,6 @@
 instruction_bin: "hello/instr.bin"
 data_bin: "hello/data.bin"
+debug: false
+log_file: "cpu.log"
 
 max_interruptions: 2

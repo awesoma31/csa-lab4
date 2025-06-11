@@ -11,58 +11,36 @@ import (
 	"github.com/awesoma31/csa-lab4/pkg/machine"
 	"github.com/awesoma31/csa-lab4/pkg/machine/io"
 	"github.com/awesoma31/csa-lab4/pkg/translator"
-	"github.com/sanity-io/litter"
 	"gopkg.in/yaml.v2"
 )
 
-type cpuConfig struct {
-	InstrMemPath     string         `yaml:"instruction_bin"`
-	DataMemPath      string         `yaml:"data_bin"`
-	TickLimit        int            `yaml:"tick_limit"`
-	Schedule         []io.TickEntry `yaml:"schedule"`
-	MaxInterruptions int            `yaml:"max_interruptions"`
-}
-
 func RunGolden(t *testing.T, dir string, tickLimit int) {
 	t.Helper()
+
 	src := filepath.Join(dir, "src.lang")
-	out := filepath.Join(dir, "logs") // сохраняем внутрь каталога теста
+	cfgPath := filepath.Join(dir, "config.yaml")
+	outDir := filepath.Join(dir, "logs")
 
 	_, _, err := translator.Run(translator.Options{
-		SrcPath: src, OutDir: out,
-		Debug:     false, // не шумим в stdout
+		SrcPath:   src,
+		OutDir:    outDir,
+		Debug:     false,
 		DumpFiles: true,
 	})
 	if err != nil {
-		t.Fatalf("translate: %v", err)
+		cwd, _ := os.Getwd()
+		t.Fatalf("translate: %v, \n CWD- %s", err, cwd)
 	}
-
-	// root, err := getProjectRoot()
-	// if err != nil {
-	// 	t.Fatal(err.Error())
-	// }
-	// dir := filepath.Join(root, goldenDir)
-	//
-	// sourceLangPath := filepath.Join(dir, "src.lang")
-	// memIPath := filepath.Join(dir, "instr.bin")
-	// memDPath := filepath.Join(dir, "data.bin")
-	cfgPath := filepath.Join(dir, "config.yaml")
-	// // fmt.Println(os.L)
-	// // println(sourceLangPath, memIPath, memDPath, cfgPath)
-	//
-	// translator.Translate(sourceLangPath, memIPath, memDPath)
-	//
 	raw, err := os.ReadFile(cfgPath)
 	if err != nil {
-		t.Fatal(err.Error())
+		t.Fatalf("cpu config, %s", err.Error())
 	}
-	var cfg cpuConfig
+	var cfg *machine.CpuConfig
 	if err := yaml.Unmarshal(raw, &cfg); err != nil {
 		t.Fatal(err.Error())
 	}
 
 	ioc := io.NewIOController(cfg.Schedule)
-	litter.Dump(cfg.Schedule)
 
 	ins, err := bingen.LoadInstructionMemory(cfg.InstrMemPath)
 	if err != nil {
@@ -72,8 +50,11 @@ func RunGolden(t *testing.T, dir string, tickLimit int) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
+	cfg.IOC = ioc
+	cfg.MemD = data
+	cfg.MemI = ins
 
-	cpu := machine.New(ins, data, ioc, cfg.MaxInterruptions, cfg.TickLimit)
+	cpu := machine.New(cfg)
 	cpu.Run()
 
 	// // ── сравниваем вывод ──────────────────────────────────────

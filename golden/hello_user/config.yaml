@@ -1,5 +1,7 @@
 instruction_bin: "hello_user/instr.bin"
 data_bin: "hello_user/data.bin"
+debug: false
+log_file: "cpu.log"
 
 tick_limit: 1000
 schedule:

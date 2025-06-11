@@ -6,10 +6,9 @@ import (
 	"log/slog"
 	"strings"
 
-	"slices"
-
 	"github.com/awesoma31/csa-lab4/pkg/machine/decoder"
 	"github.com/awesoma31/csa-lab4/pkg/machine/io"
+	"github.com/awesoma31/csa-lab4/pkg/machine/logger"
 	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
 )
 
@@ -20,6 +19,22 @@ const (
 var (
 	StackStart uint32 = 0x100
 )
+
+type CpuConfig struct {
+	InstrMemPath     string         `yaml:"instruction_bin"`
+	DataMemPath      string         `yaml:"data_bin"`
+	TickLimit        int            `yaml:"tick_limit"`
+	Schedule         []io.TickEntry `yaml:"schedule"`
+	MaxInterruptions int            `yaml:"max_interruptions"`
+	Debug            bool           `yaml:"debug"`
+	LogFilePath      string         `yaml:"log_file"`
+
+	IOC  *io.Controller
+	MemI []uint32
+	MemD []byte
+
+	Logger *logger.Logger
+}
 
 type CPU struct {
 	memI []uint32
@@ -39,36 +54,38 @@ type CPU struct {
 
 	step      microStep // current micro-routine
 	inISR     bool
-	pending   bool // slot for deferred IRQ
+	pending   bool
 	pendNum   int
 	Tick      int
 	TickLimit int
 	halted    bool
 	maxInt    int
+
+	log *logger.Logger
 }
 
-func New(memI []uint32, memD []byte, ioc *io.Controller, mi int, tickLimit int) *CPU {
+func New(cfg *CpuConfig) *CPU {
 	c := &CPU{
-		memI:      slices.Clone(memI),
-		memD:      slices.Clone(memD),
-		Ioc:       ioc,
-		TickLimit: tickLimit,
+		memI:      cfg.MemI,
+		memD:      cfg.MemD,
+		Ioc:       cfg.IOC,
+		TickLimit: cfg.TickLimit,
 		halted:    false,
-		maxInt:    mi,
+		maxInt:    cfg.MaxInterruptions,
 		IsIntOn:   true,
+		log:       cfg.Logger,
 	}
 
 	if StackStart < uint32(len(c.memD)) {
 		StackStart = uint32(len(c.memD) + StackSize)
 	}
 	c.Reg.GPR[isa.SpReg] = StackStart
-	c.Reg.PC = uint32(mi) // skip vector table addreses go to prog
+	c.Reg.PC = uint32(c.maxInt)
 
 	c.step = c.fetch()
 	return c
 }
 
-// Run – execute at most nTicks; stop earlier on HALT
 func (c *CPU) Run() {
 	for c.Tick = 0; c.Tick < c.TickLimit; c.Tick++ {
 		if c.halted {
@@ -135,7 +152,9 @@ func (c *CPU) fetch() microStep {
 		op, mode, rd, rs1, rs2 := decoder.Dec(c.Reg.IR)
 
 		f := ucode[op][mode]
-		fmt.Printf("TICK % 4d @ 0x%08X -  %v %v; PC++ | %v\n", c.Tick, c.Reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC())
+		c.log.Debug(
+			fmt.Sprintf("TICK % 4d @ 0x%08X -  %v %v; PC++ | %v\n", c.Tick, c.Reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC()),
+		)
 		if f == nil {
 			slog.Error("unknown instruction", "PC", c.Reg.PC-1, "IR", c.Reg.IR)
 			log.Fatal()
