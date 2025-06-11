@@ -139,7 +139,7 @@ func (c *CPU) PrintAllPortOutputs() {
 		// }
 		// byteOutput := strings.Join(byteVals, ", ")
 
-		fmt.Printf("port % 2d| %s\n", port, strOutput)
+		fmt.Printf("port %d| %s\n", port, strOutput)
 		// fmt.Printf("    hex|%s\n", hexOutput)
 		// fmt.Printf("    dec|%s\n", byteOutput)
 	}
@@ -217,7 +217,7 @@ func (c *CPU) RestoreNZVC() {
 }
 
 func (c *CPU) ReprPC() string {
-	return fmt.Sprintf("PC=% 4d/0x%X", c.Reg.PC, c.Reg.PC)
+	return fmt.Sprintf("PC=%d/0x%X", c.Reg.PC, c.Reg.PC)
 }
 
 func (c *CPU) ReprFlags() string {
@@ -237,7 +237,7 @@ func (c *CPU) ReprFlags() string {
 }
 
 func (c *CPU) ReprRegVal(r int) any {
-	return fmt.Sprintf("%v=% 4d/0x%X", isa.GetRegMnem(r), c.Reg.GPR[r], c.Reg.GPR[r])
+	return fmt.Sprintf("%v=%d/0x%X", isa.GetRegMnem(r), c.Reg.GPR[r], c.Reg.GPR[r])
 }
 
 func (c *CPU) ensureDataSize(last uint32) {
