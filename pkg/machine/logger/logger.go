@@ -36,19 +36,27 @@ func New(debug bool, logFile string) *Logger {
 func (lg *Logger) Debug(v ...any) {
 	lg.l.Print(
 		//TODO: вернуть
-		append([]any{"DEBUG "}, v...)...,
+		append([]any{"debug "}, v...)...,
 	// append([]any{""}, v...)...,
 	)
 }
 
 func (lg *Logger) Debugf(format string, v ...any) {
-	lg.l.Printf("DEBUG "+format, v...)
+	// lg.l.Printf(""+format, v...)
+	lg.l.Printf("debug "+format, v...)
 }
 
 func (lg *Logger) Info(v ...any) {
+	w := lg.l.Writer()
+	lg.l.SetOutput(os.Stdout)
 	lg.l.Print(append([]any{"INFO"}, v...)...)
+	lg.l.SetOutput(w)
 }
 
 func (lg *Logger) Infof(format string, v ...any) {
-	lg.l.Printf("INFO "+format, v...)
+	// lg.l.Printf("INFO "+format, v...)
+	w := lg.l.Writer()
+	lg.l.SetOutput(os.Stdout)
+	lg.l.Printf(""+format, v...)
+	lg.l.SetOutput(w)
 }

@@ -111,7 +111,7 @@ func (c *CPU) Run() {
 }
 
 func (c *CPU) PrintAllPortOutputs() {
-	fmt.Println("───── Port Outputs ─────")
+	c.log.Debug("───── Port Outputs ─────")
 	for port, buf := range c.Ioc.OutBufAll() {
 		if len(buf) == 0 {
 			continue
@@ -139,9 +139,9 @@ func (c *CPU) PrintAllPortOutputs() {
 		// }
 		// byteOutput := strings.Join(byteVals, ", ")
 
-		fmt.Printf("port %d| %s\n", port, strOutput)
-		// fmt.Printf("    hex|%s\n", hexOutput)
-		// fmt.Printf("    dec|%s\n", byteOutput)
+		c.log.Infof("port %d| %s\n", port, strOutput) // goiida
+		// c.log.Debugf("    hex|%s\n", hexOutput)
+		// c.log.Debugf("    dec|%s\n", byteOutput)
 	}
 }
 
@@ -167,13 +167,13 @@ func (c *CPU) fetch() microStep {
 
 func (c *CPU) raiseIRQ(vec uint8) {
 	if c.inISR || c.pending {
-		fmt.Printf("interruption ignored, either in one or one is already pending, %v\n", vec)
+		c.log.Debugf("interruption ignored, either in one or one is already pending, %v\n", vec)
 		return
 	}
 	c.pending, c.pendNum = true, int(vec)
 }
 func (c *CPU) enterISR() {
-	fmt.Printf("------------Entering Interruption %d, value=%v------------\n", c.pendNum, c.Ioc.ReadPort(byte(c.pendNum)))
+	c.log.Debugf("------------Entering Interruption %d, value=%v------------\n", c.pendNum, c.Ioc.ReadPort(byte(c.pendNum)))
 	c.Reg.savedPC = c.Reg.PC
 	c.SaveNZVC()
 	c.Reg.PC = c.memI[c.pendNum]

@@ -10,6 +10,7 @@ import (
 	bingen "github.com/awesoma31/csa-lab4/pkg/bin-gen"
 	"github.com/awesoma31/csa-lab4/pkg/machine"
 	"github.com/awesoma31/csa-lab4/pkg/machine/io"
+	"github.com/awesoma31/csa-lab4/pkg/machine/logger"
 	"github.com/awesoma31/csa-lab4/pkg/translator"
 	"gopkg.in/yaml.v2"
 )
@@ -50,9 +51,13 @@ func RunGolden(t *testing.T, dir string, tickLimit int) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
+
+	lg := logger.New(cfg.Debug, cfg.LogFilePath)
+
 	cfg.IOC = ioc
 	cfg.MemD = data
 	cfg.MemI = ins
+	cfg.Logger = lg
 
 	cpu := machine.New(cfg)
 	cpu.Run()
