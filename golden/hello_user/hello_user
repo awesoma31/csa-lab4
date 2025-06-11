@@ -1,0 +1,17 @@
+intOff;
+print("who? ");
+let f = 1;
+let c = 0;
+let ch = 5;
+intOn;
+
+while f == 1 {}
+
+inter 1{
+    let b = read();
+    c = c + 1;
+    print(b);
+    if c >= ch {
+        f = 0;
+    }
+}
