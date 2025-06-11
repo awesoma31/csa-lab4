@@ -12,9 +12,9 @@ func TestGolden(t *testing.T) {
 		dir  string
 	}{
 		{"hello", "golden/hello"},
-		// {"cat", "golden/cat"},
-		// {"hello_username", "golden/hello_user"},
-		// {"sort", "golden/sort"},
+		{"cat", "golden/cat"},
+		{"hello_username", "golden/hello_user"},
+		{"sort", "golden/sort"},
 		// {"variant", "golden/alg"},
 	}
 	for _, tt := range tests {

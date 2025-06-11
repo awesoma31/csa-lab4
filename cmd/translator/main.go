@@ -1,19 +1,17 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/awesoma31/csa-lab4/pkg/logutil"
 	"log"
 	"log/slog"
 	"os"
+	"path/filepath"
 
 	bingen "github.com/awesoma31/csa-lab4/pkg/bin-gen"
-	"github.com/awesoma31/csa-lab4/pkg/translator/ast"
 	"github.com/awesoma31/csa-lab4/pkg/translator/codegen"
 	"github.com/awesoma31/csa-lab4/pkg/translator/parser"
-	"github.com/sanity-io/litter"
 )
 
 var instrAmount int = 0
@@ -28,7 +26,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	program, parseErrors := parser.Parse(string(sourceBytes))
+	ast, parseErrors := parser.Parse(string(sourceBytes))
 	if len(parseErrors) > 0 {
 		fmt.Println("Ошибки парсера:")
 		for _, err := range parseErrors {
@@ -37,10 +35,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	printAst(program)
-
 	cg := codegen.NewCodeGenerator()
-	instructionMemory, dataMemory, debugAssembly, cgErrors := cg.Generate(program)
+	memI, memD, debugAssembly, cgErrors := cg.Generate(ast)
 	if len(cgErrors) > 0 {
 		for _, e := range cgErrors {
 			fmt.Println("[TRANSLATE ERROR]:", e)
@@ -50,26 +46,39 @@ func main() {
 
 	instrAmount = int(cg.NextInstructionAddres())
 
-	printDebugAsm(debugAssembly)
-	printInstrMem(instructionMemory)
-	printDataMem(dataMemory)
-	printSymTable(cg)
+	if flags.Debug {
+		logutil.PrintAst(ast)
+		logutil.PrintDebugAsm(debugAssembly)
+		logutil.PrintInstrMem(memI)
+		logutil.PrintDataMem(memD)
+		logutil.PrintSymTable(cg)
+	}
 
-	instrMemPath := "bin/instr.bin"
-	err = bingen.SaveInstructionMemory(instrMemPath, instructionMemory)
+	logDirPath := "logs"
+
+	if err := os.MkdirAll(logDirPath, 0o755); err != nil {
+		log.Fatalf("Error creating log directory %s: %v", logDirPath, err)
+	}
+	logutil.WriteAstToFile(ast, filepath.Join(logDirPath, "ast.log"))
+	logutil.WriteDataMemLogToFile(memD, "logs/memD.log")
+	logutil.WriteDebugInstrLogToFile(debugAssembly, filepath.Join(logDirPath, "instr.log"))
+	logutil.WriteInstrMemLogToFile(memI, instrAmount, filepath.Join(logDirPath, "memI.log"))
+	logutil.WriteSymTableLogToFile(cg, filepath.Join(logDirPath, "symtable.log"))
+
+	memIPath := "bin/instr.bin"
+	err = bingen.SaveInstructionMemory(memIPath, memI)
 	if err != nil {
 		slog.Error(fmt.Sprintf("error writeing instr mem bin - %s", err.Error()))
 		log.Fatal("fatal")
 	}
-	slog.Info(fmt.Sprintf("instructionMemory saved to %s", instrMemPath))
+	slog.Info(fmt.Sprintf("instructionMemory saved to %s", memIPath))
 
-	dataMemPath := "bin/data.bin"
-	err = bingen.SaveDataMemory(dataMemPath, dataMemory)
+	memDPath := "bin/data.bin"
+	err = bingen.SaveDataMemory(memDPath, memD)
 	if err != nil {
 		slog.Error(fmt.Sprintf("error writeing data mem bin - %s", err.Error()))
 	}
-	slog.Info(fmt.Sprintf("data memory saved to %s", dataMemPath))
-
+	slog.Info(fmt.Sprintf("data memory saved to %s", memDPath))
 }
 
 func Translate(inPath string, memIPath, memDPath string) {
@@ -79,7 +88,7 @@ func Translate(inPath string, memIPath, memDPath string) {
 		os.Exit(1)
 	}
 
-	progAst, parseErrors := parser.Parse(string(sourceBytes))
+	ast, parseErrors := parser.Parse(string(sourceBytes))
 	if len(parseErrors) > 0 {
 		fmt.Println("Parse errors:")
 		for _, err := range parseErrors {
@@ -91,7 +100,7 @@ func Translate(inPath string, memIPath, memDPath string) {
 	// printAst(program)
 
 	cg := codegen.NewCodeGenerator()
-	memI, memD, _, cgErrors := cg.Generate(progAst)
+	memI, memD, _, cgErrors := cg.Generate(ast)
 	if len(cgErrors) > 0 {
 		for _, e := range cgErrors {
 			fmt.Println("[TRANSLATE ERROR]:", e)
@@ -123,74 +132,20 @@ func Translate(inPath string, memIPath, memDPath string) {
 
 }
 
-func printAst(program ast.BlockStmt) {
-	fmt.Println("-------------------AST----------------------")
-	litter.Dump(program)
-}
-
-func printSymTable(cg *codegen.CodeGenerator) {
-	fmt.Println("-------------------SymTable--------------------------")
-	fmt.Println("[var_name | addres]")
-	scopeStack := cg.ScopeStack()
-
-	for k, v := range scopeStack[0].Symbols() {
-		fmt.Print(k, " | ")
-		fmt.Printf(" %X\n", v.AbsAddress)
-	}
-}
-
-func printDataMem(dataMemory []byte) {
-	fmt.Println("-------------------dataMemory----------------------")
-	for i, val := range dataMemory {
-		if i%4 == 0 {
-			fmt.Println("_____")
-		}
-		fmt.Println(fmt.Sprintf("[0x%X|%d]:", i, i), fmt.Sprintf("0x%02X", val))
-	}
-}
-
-func printInstrMem(instructionMemory []uint32) {
-
-	fmt.Println("-------------------instructionMemory----------------------")
-	for i, instr := range instructionMemory {
-		if i <= instrAmount {
-			fmt.Println(
-				fmt.Sprintf("[0x%04X|%04d]:", i, i),
-				fmt.Sprintf("0x%08X - %d", instr, instr),
-			)
-		}
-	}
-}
-
-func printDebugAsm(debugAssembly []string) {
-	fmt.Println("-------------------debugAssembly----------------------")
-	for _, val := range debugAssembly {
-		fmt.Println(val)
-	}
-}
-
 type flags struct {
 	InPath     string
 	OutDirPath string
+	Debug      bool
 }
 
 func (f *flags) parseFlags() {
-	flag.StringVar(&f.InPath, "in", "", "файл исходной программы (*.lang)")
-	flag.StringVar(&f.OutDirPath, "out", "out", "каталог с результатами компиляции")
+	flag.StringVar(&f.InPath, "in", "", "source file path")
+	flag.StringVar(&f.OutDirPath, "out", "out", "directory to save bin files ")
+	flag.BoolVar(&f.Debug, "debug", false, "print dumps to stdout")
 	flag.Parse()
 
 	if f.InPath == "" {
-		fmt.Println("usage: translator -in=source.lang [-out dir]")
+		fmt.Println("usage: translator -in=source-path [-out dir] [-debug]")
 		os.Exit(1)
 	}
-}
-
-// getPrettyJson форматирует JSON байты в удобочитаемую строку с отступами.
-func getPrettyJson(in []byte) (string, error) {
-	var prettyJson bytes.Buffer
-	err := json.Indent(&prettyJson, in, "", " ")
-	if err != nil {
-		return "", err
-	}
-	return prettyJson.String(), nil
 }

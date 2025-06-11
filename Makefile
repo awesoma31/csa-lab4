@@ -8,10 +8,10 @@ PLATFORMS := linux windows darwin
 ARCHS := amd64 arm64
 
 .PHONY: all
-all: build
+all: test build
 
 .PHONY: build
-build: test build-translator build-machine   
+build: build-translator build-machine   
 
 .PHONY: build-translator
 build-translator:
@@ -26,27 +26,13 @@ build-machine:
 	go build $(GOFLAGS) -o $(BIN_DIR)/$(NAME_MACHINE) ./cmd/$(NAME_MACHINE)
 
 .PHONY: release
-release: release-translator release-machine
-
-release-machine:
-
-release-translator:
-
+release: test build-translator build-machine
 
 .PHONY: test
 test:        ## go test ./...
-	@echo "Running unit-tests…"
+	@echo "Running tests…"
 	go test -v ./...
 
-test-hello-world: clean build
-	./$(BIN_DIR)/$(NAME_TRANSLATOR) --in=tests/golden/hello
-
-.PHONY: coverage
-coverage:    ## выводит суммарное покрытие
-	@echo "Generating coverage report…"
-	go test -coverprofile=coverage.out ./...
-	go tool cover -func=coverage.out
-	@rm coverage.out
 
 .PHONY: clean
 clean:
@@ -61,7 +47,5 @@ help:
 	@echo "  build-translator    - Build only translator for current platform"
 	@echo "  build-machine       - Build only machine for current platform"
 	@echo "  release             - Cross-compile both executables for all platforms"
-	@echo "  release-translator  - Cross-compile only translator for all platforms"
-	@echo "  release-machine     - Cross-compile only machine for all platforms"
 	@echo "  clean               - Remove build artifacts"
 	@echo "  help                - Show this help message"

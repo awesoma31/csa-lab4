@@ -111,7 +111,7 @@ func (cg *CodeGenerator) lookupSymbol(name string) (SymbolEntry, bool) {
 
 func (cg *CodeGenerator) addSymbolToScope(entry SymbolEntry) {
 	cg.currentScope().symbols[entry.Name] = entry
-	fmt.Println("added to scope", entry.Name, cg.currentScope().symbols[entry.Name])
+	// fmt.Println("added to scope", entry.Name, cg.currentScope().symbols[entry.Name])
 }
 
 // emitInstruction encodes an instruction to the instruction memory and stores dubeg info in debugAssembly.

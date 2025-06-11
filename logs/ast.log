@@ -1,0 +1,39 @@
+ast.BlockStmt{
+  Body: []ast.Stmt{
+    ast.VarDeclarationStmt{
+      Identifier: "a",
+      AssignedValue: ast.BinaryExpr{
+        Left: ast.BinaryExpr{
+          Left: ast.NumberExpr{
+            Value: 0,
+          },
+          Operator: lexer.Token{
+            Kind: 35,
+            Value: "-",
+          },
+          Right: ast.NumberExpr{
+            Value: 3,
+          },
+        },
+        Operator: lexer.Token{
+          Kind: 35,
+          Value: "-",
+        },
+        Right: ast.NumberExpr{
+          Value: 5,
+        },
+      },
+    },
+    ast.PrintStmt{
+      Argument: ast.SymbolExpr{
+        Value: "a",
+      },
+    },
+    ast.InterruptionStmt{
+      IrqNumber: 1,
+      Body: ast.BlockStmt{
+        Body: nil,
+      },
+    },
+  },
+}

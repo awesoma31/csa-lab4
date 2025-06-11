@@ -1,0 +1,9 @@
+# конфигурация для translator
+log:
+  dir: "logs" # куда писать файлы-логи (относительно CWD)
+  stdout_level: "info" # info | debug | off
+  files:
+    ast: "ast.log"
+    instr_mem: "memI.log"
+    data_mem: "memD.log"
+    sym_table: "symtable.log"
