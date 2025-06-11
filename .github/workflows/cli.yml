@@ -1,4 +1,4 @@
-name: Go CI
+name: csa-lab4 CI
 
 on:
   push: { paths: ["**.go", ".github/workflows/**", "golden/**"] }
@@ -12,4 +12,21 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with: { go-version: "1.24.2" }
-      - run: go test ./... -v
+
+      - name: Go fmt/imports check
+        run: |
+          go install golang.org/x/tools/cmd/goimports@latest
+          if ! goimports -l .; then
+            echo "::error file=.::Go files not formatted with goimports or imports are unorganized. Please run 'goimports -w .' on your local machine."
+            exit 1
+          fi
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: v1.57.2
+          # config-path: .golangci.yml
+          # args: --timeout=5m
+
+      - name: Run Go Tests
+        run: go test ./... -v

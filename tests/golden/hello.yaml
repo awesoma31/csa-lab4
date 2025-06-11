@@ -1,4 +1,0 @@
-instruction_bin: "bin/instr.bin"
-data_bin: "bin/data.bin"
-
-max_interruptions: 2
