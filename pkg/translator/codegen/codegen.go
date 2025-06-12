@@ -24,7 +24,7 @@ type SymbolEntry struct {
 	MemoryArea  string
 	AbsAddress  uint32
 	SizeInBytes int
-	NumberValue int32
+	NumberValue int32 // str addr if points to str
 	StringValue string
 	IsStr       bool
 }

@@ -200,6 +200,7 @@ func (c *CPU) raiseIRQ(vec uint8) {
 	c.pending, c.pendNum = true, int(vec)
 }
 func (c *CPU) enterISR() {
+	c.log.Debug(c.DumpState())
 	c.log.Debugf("------------Entering Interruption %d, value=%v/0x%X------------\n", c.pendNum, c.Ioc.ReadPort(byte(c.pendNum)), c.Ioc.ReadPort(byte(c.pendNum)))
 	c.Reg.savedPC = c.Reg.PC
 	c.SaveNZVC()
@@ -207,6 +208,8 @@ func (c *CPU) enterISR() {
 	c.SaveGPRValues()
 	c.inISR = true
 	c.pending = false
+	c.log.Debug(c.DumpState())
+
 }
 
 func (c *CPU) SaveGPRValues() {
@@ -273,4 +276,50 @@ func (c *CPU) ensureDataSize(last uint32) {
 	}
 	need := last - uint32(len(c.memD)) + 1
 	c.memD = append(c.memD, make([]byte, need)...)
+}
+
+func (c *CPU) DumpState() string {
+	var sb strings.Builder
+	sb.WriteString("---------- CPU State Dump ----------\n")
+	sb.WriteString(fmt.Sprintf("Tick: %d/%d | ", c.Tick, c.TickLimit))
+	sb.WriteString(fmt.Sprintf("PC: %d(0x%X) | ", c.Reg.PC, c.Reg.PC))
+	sb.WriteString(fmt.Sprintf("IR: %d(0x%X) | ", c.Reg.IR, c.Reg.IR))
+	sb.WriteString(fmt.Sprintf("Flags: %s\n", c.ReprFlags()))
+	sb.WriteString(fmt.Sprintf("Interrupts On:%t | In ISR:%t | Pending:%t(num: %d)\n", c.IsIntOn, c.inISR, c.pending, c.pendNum))
+
+	for i := range len(c.Reg.GPR) {
+		sb.WriteString(fmt.Sprintf("%s: %d (0x%X)\n", isa.GetRegMnem(i), c.Reg.GPR[i], c.Reg.GPR[i]))
+	}
+
+	// sb.WriteString("\n--- Stack Pointer (SP) and Stack Content (top 16 bytes) ---\n")
+	// spVal := c.Reg.GPR[isa.SpReg] // Assuming SpReg is the index for the stack pointer register
+	// sb.WriteString(fmt.Sprintf("SP (R%d): %d (0x%X)\n", isa.SpReg, spVal, spVal))
+	//
+	// stackDumpStart := max(int(spVal)-8, 0)
+	// stackDumpEnd := min(int(spVal)+8, len(c.memD))
+	//
+	// if stackDumpEnd > stackDumpStart {
+	// 	sb.WriteString("Stack (data memory around SP):\n")
+	// 	for i := stackDumpStart; i < stackDumpEnd; i++ {
+	// 		if i%8 == 0 {
+	// 			sb.WriteString(fmt.Sprintf("0x%08X: ", i))
+	// 		}
+	// 		sb.WriteString(fmt.Sprintf("%02X ", c.memD[i]))
+	// 		if (i+1)%8 == 0 || i == stackDumpEnd-1 {
+	// 			sb.WriteString("\n")
+	// 		}
+	// 	}
+	// } else {
+	// 	sb.WriteString("Stack content not accessible or empty.\n")
+	// }
+
+	sb.WriteString("--- Saved Registers (for ISR) ---\n")
+	for i := range len(c.Reg.savedGPR) {
+		sb.WriteString(fmt.Sprintf("%s: %d (0x%X)\n", isa.GetRegMnem(i), c.Reg.GPR[i], c.Reg.GPR[i]))
+	}
+	sb.WriteString(fmt.Sprintf("Saved PC: %d (0x%X)\n", c.Reg.savedPC, c.Reg.savedPC))
+	sb.WriteString(fmt.Sprintf("Saved Flags: %08b\n", c.savedNZVCFlags))
+
+	sb.WriteString("------------------------------------\n")
+	return sb.String()
 }

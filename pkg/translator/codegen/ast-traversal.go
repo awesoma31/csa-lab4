@@ -117,7 +117,7 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 	cg.debugAssembly = append(cg.debugAssembly, "PRINT STMT")
 	switch arg := s.Argument.(type) {
 	case ast.StringExpr:
-		cg.genEx(s.Argument, isa.ROutAddr)
+		cg.genStringExPl1(arg, isa.ROutAddr)
 		strLen := len(arg.Value)
 		if strLen > 255 {
 			cg.addError(fmt.Sprintf("String length cannot be more than 1 byte (255): %d - %s", strLen, arg.Value))
@@ -245,7 +245,9 @@ func (cg *CodeGenerator) genEx(expr ast.Expr, rd int) {
 	case ast.FunctionExpr:
 		cg.addError("FunctionExpr code generation not implemented.")
 	case ast.StringExpr:
-		cg.genStringEx(e, rd)
+		cg.genStringExPl1(e, rd)
+	case ast.CallExpr:
+		cg.genAddStr(e, rd)
 	case ast.PrefixExpr:
 		newExpr := ast.NumberExpr{}
 		switch a := e.Right.(type) {
@@ -346,6 +348,35 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 			symbolEntry.MemoryArea = "data"
 			symbolEntry.AbsAddress = cg.addNumberData(assignedVal.Value)
 			cg.addSymbolToScope(symbolEntry)
+		case ast.CallExpr:
+			switch assignedVal.Name {
+			case lexer.TokenKindString(lexer.ADDSTR):
+				if len(assignedVal.Args) != 2 {
+					cg.addError(fmt.Sprintf("addStr( , ) must have 2 arguments, got %d", len(assignedVal.Args)))
+					return
+				}
+				ptrAddr := cg.addNumberData(0) // 4-байт ptr
+				sym := SymbolEntry{
+					Name:        s.Identifier,
+					Type:        ast.IntType,
+					SizeInBytes: WordSizeBytes,
+					AbsAddress:  ptrAddr,
+					IsStr:       true,
+					MemoryArea:  "data",
+				}
+				cg.addSymbolToScope(sym)
+
+				// ── 2. генерируем addStr(arg1,arg2)  →  RA = newPtr ──────
+				cg.genAddStr(assignedVal, isa.Ra)
+
+				// ── 3. сохраняем ptr в память переменной ─────────────────
+				//TODO: почему то адрес на 1 больше
+				cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, isa.Ra, -1)
+				cg.emitImmediate(ptrAddr)
+
+			default:
+				cg.addError(fmt.Sprintf("unknown function name %v", assignedVal.Name))
+			}
 
 		case ast.StringExpr:
 			strAddr := cg.addString(assignedVal.Value)
@@ -358,7 +389,6 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 			symbolEntry.MemoryArea = "data"
 			cg.addSymbolToScope(symbolEntry)
 		case ast.ReadChExpr:
-			//TODO: stores invalid adress into var
 			strAddr := cg.addString("")
 			ptrAddr := cg.addNumberData(int32(strAddr))
 
@@ -391,8 +421,6 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 			return
 
 		case ast.BinaryExpr:
-			//TODO: string check for operations
-
 			symbolEntry.Type = ast.IntType
 			symbolEntry.SizeInBytes = WordSizeBytes
 
@@ -408,7 +436,6 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 			cg.genAssignEx(assign, isa.Ra)
 			return
 		case ast.PrefixExpr:
-			//TODO: for now movs expr to placeholder
 			symbolEntry.Type = ast.IntType
 			symbolEntry.SizeInBytes = WordSizeBytes
 
@@ -458,10 +485,68 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 
 }
 
+func (cg *CodeGenerator) genAddStr(call ast.CallExpr, rd int) {
+	var newSLen byte
+	var s1str string
+	var s2str string
+	if len(call.Args) != 2 {
+		cg.addError("addStr() needs 2 arguments")
+		return
+	}
+	switch a1 := call.Args[0].(type) {
+	case ast.SymbolExpr:
+		s1, found := cg.lookupSymbol(a1.Value)
+		if !found {
+			cg.addError(fmt.Sprintf("Undeclared variable '%s' used in addStr func.", a1.Value))
+			return
+		}
+		s1Addr := s1.NumberValue
+
+		s1Len := cg.dataMemory[s1Addr]
+		s1bytes := cg.dataMemory[s1Addr+1 : s1Addr+1+int32(s1Len)]
+		s1str = string(s1bytes)
+		newSLen += s1Len
+	default:
+		cg.addError("Using not symbol expr in addStr is not supported")
+		return
+	}
+
+	switch a2 := call.Args[1].(type) {
+	case ast.SymbolExpr:
+		s2, found := cg.lookupSymbol(a2.Value)
+		if !found {
+			cg.addError(fmt.Sprintf("Undeclared variable '%s' used in addStr func.", a2.Value))
+			return
+		}
+		s2Addr := s2.NumberValue
+		s2Len := cg.dataMemory[s2Addr]
+		s2bytes := cg.dataMemory[s2Addr+1 : s2Addr+1+int32(s2Len)]
+		s2str = string(s2bytes)
+		newSLen += s2Len
+	default:
+		cg.addError("Using not symbol expr in addStr is not supported")
+		return
+	}
+
+	newStr := s1str + s2str
+	cg.genStringEx(ast.StringExpr{Value: newStr}, rd)
+}
+
 // genAssignEx generates code for assignment expressions.
 func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd int) {
 	// Evaluate the right-hand side expression, result is left in rd
-	cg.genEx(e.AssignedValue, rd)
+	switch r := e.AssignedValue.(type) {
+	case ast.CallExpr:
+		if r.Name != lexer.TokenKindString(lexer.ADDSTR) {
+			cg.addError(fmt.Sprintf("not supported func assignment %s", r.Name))
+		}
+		//TODO:
+		cg.genAddStr(r, isa.Ra)
+		rd = isa.Ra
+
+	default:
+		cg.genEx(e.AssignedValue, rd)
+	}
 	switch target := e.Assigne.(type) {
 	case ast.SymbolExpr:
 		symbol, found := cg.lookupSymbol(target.Value)
@@ -569,10 +654,18 @@ func (cg *CodeGenerator) genIfStmt(s ast.IfStmt) {
 
 }
 
-// genStringEx generates code for string literals.
-func (cg *CodeGenerator) genStringEx(e ast.StringExpr, rd int) {
+// genStringExPl1 generates code to move string literal's ptr to rd. rd <- strAddr + 1
+func (cg *CodeGenerator) genStringExPl1(e ast.StringExpr, rd int) {
 	stringAddr := cg.addString(e.Value)
 
 	cg.emitInstruction(isa.OpMov, isa.MvImmReg, rd, -1, -1)
 	cg.emitImmediate(stringAddr + 1)
+}
+
+// genStringEx generates code to move string len ptr to rd. rd <- strAddr
+func (cg *CodeGenerator) genStringEx(e ast.StringExpr, rd int) {
+	stringAddr := cg.addString(e.Value)
+
+	cg.emitInstruction(isa.OpMov, isa.MvImmReg, rd, -1, -1)
+	cg.emitImmediate(stringAddr)
 }

@@ -67,25 +67,26 @@ func RunGolden(t *testing.T, dir string, tickLimit int) {
 	cpu := machine.New(cfg)
 	gotOutput := cpu.Run()
 
-	// 8. Сравнение с эталонным файлом или его обновление
 	if *update {
 		t.Log("updating golden file...")
 		err := os.WriteFile(goldenOutputPath, []byte(gotOutput), 0644)
 		if err != nil {
 			t.Fatalf("failed to update golden file: %v", err)
 		}
-		return // После обновления золотого файла, тест завершается
+		return
 	}
 
-	// Чтение эталонного вывода
 	wantOutputBytes, err := os.ReadFile(goldenOutputPath)
 	if err != nil {
 		t.Fatalf("failed to read golden file %q: %v", goldenOutputPath, err)
 	}
 	wantOutput := string(wantOutputBytes)
 
-	// Сравнение полученного вывода с эталонным
-	if diff := cmpLines(gotOutput, wantOutput); diff != "" {
+	gotOutput = strings.TrimSuffix(gotOutput, "\n")
+	wantOutput = strings.TrimSuffix(wantOutput, "\n")
+
+	if gotOutput != wantOutput {
+		diff := cmpLines(gotOutput, wantOutput)
 		t.Errorf("output mismatch (-got +want):\n%s", diff)
 	}
 }
@@ -94,32 +95,26 @@ func cmpLines(got, want string) string {
 	gotLines := strings.Split(got, "\n")
 	wantLines := strings.Split(want, "\n")
 
-	maxLen := len(gotLines)
-	if len(wantLines) > maxLen {
-		maxLen = len(wantLines)
-	}
-
 	var diff strings.Builder
-	for i := 0; i < maxLen; i++ {
-		gotLine := ""
+	maxLen := max(len(wantLines), len(gotLines))
+
+	for i := range maxLen {
+		currentGotLine := ""
 		if i < len(gotLines) {
-			gotLine = gotLines[i]
+			currentGotLine = gotLines[i]
 		}
-		wantLine := ""
+		currentWantLine := ""
 		if i < len(wantLines) {
-			wantLine = wantLines[i]
+			currentWantLine = wantLines[i]
 		}
 
-		if gotLine != wantLine {
+		if currentGotLine != currentWantLine {
 			if i < len(gotLines) {
-				fmt.Fprintf(&diff, "- %s\n", gotLine)
+				fmt.Fprintf(&diff, "-%s\n", currentGotLine)
 			}
 			if i < len(wantLines) {
-				fmt.Fprintf(&diff, "+ %s\n", wantLine)
+				fmt.Fprintf(&diff, "+%s\n", currentWantLine)
 			}
-		} else {
-			// Опционально: можно выводить общие строки для контекста, но для diff обычно не требуется
-			// fmt.Fprintf(&diff, "  %s\n", gotLine)
 		}
 	}
 	return diff.String()

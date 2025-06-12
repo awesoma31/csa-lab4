@@ -136,20 +136,6 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 		}
 	case lexer.IDENTIFIER:
 		identTok := p.advance()
-		if p.currentTokenKind() == lexer.OpenParen {
-			p.advance() // «(»
-			var args []ast.Expr
-			if p.currentTokenKind() != lexer.CloseParen {
-				args = append(args, parseExpr(p, primary))
-				for p.currentTokenKind() == lexer.COMMA {
-					p.advance()
-					args = append(args, parseExpr(p, primary))
-				}
-			}
-			p.expect(lexer.CloseParen)
-			return ast.CallExpr{Name: identTok.Value, Args: args}
-		}
-
 		sym := ast.SymbolExpr{Value: identTok.Value}
 
 		/* ---------- arr[i] ---------- */
@@ -167,6 +153,19 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 	default:
 		p.addError(fmt.Sprintf("Cannot create primary_expr from %s\n", lexer.TokenKindString(p.currentTokenKind())))
 		return ast.StringExpr{}
+	}
+}
+func parseAddStrExpr(p *parser) ast.Expr {
+	nameTok := p.expect(lexer.ADDSTR)
+	p.expect(lexer.OpenParen)
+	arg1 := parseExpr(p, primary)
+	p.expect(lexer.COMMA)
+	arg2 := parseExpr(p, primary)
+
+	p.expect(lexer.CloseParen)
+	return ast.CallExpr{
+		Name: nameTok.Value,
+		Args: []ast.Expr{arg1, arg2},
 	}
 }
 

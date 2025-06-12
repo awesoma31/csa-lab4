@@ -96,6 +96,8 @@ func uIRet(_, _, _ int) microStep {
 		c.RestoreNZVC()
 		c.log.Debugf("TICK % 4d - restore register values | %v\n", c.Tick, c.ReprPC())
 		c.log.Debug("------------Exiting interruption------------")
+		c.log.Debug("after exiting irq")
+		c.log.Debug(c.DumpState())
 		return true
 	}
 }

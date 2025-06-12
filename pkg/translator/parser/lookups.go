@@ -82,7 +82,7 @@ func createTokenLookups() {
 	nud(lexer.NUMBER, parsePrimaryExpr)
 	nud(lexer.STRING, parsePrimaryExpr)
 	nud(lexer.IDENTIFIER, parsePrimaryExpr)
-	nud(lexer.ADDSTR, parsePrimaryExpr)
+	nud(lexer.ADDSTR, parseAddStrExpr)
 
 	// nud(lexer.ADDSTR, parseAddStrExpr)
 	// Array literals also start expressions, like `[1, 2, 3]`
