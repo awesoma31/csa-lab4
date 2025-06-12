@@ -104,7 +104,7 @@ func uIRet(_, _, _ int) microStep {
 func uInCh(_, _, _ int) microStep {
 	return func(c *CPU) bool {
 		val := c.Ioc.ReadPort(isa.PortCh)
-		c.Reg.GPR[isa.RInData] = uint32(val)
+		c.Reg.GPR[isa.RInData] = val
 		c.log.Debugf("TICK % 4d - %s <- %v (%d/0x%X) | %v\n", c.Tick, isa.GetRegMnem(isa.RInData), isa.GetPortMnem(isa.PortCh), val, val, c.ReprRegVal(isa.RInData))
 		return true
 	}
@@ -113,7 +113,7 @@ func uInCh(_, _, _ int) microStep {
 func uInD(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
 		val := c.Ioc.ReadPort(isa.PortD)
-		signedVal := int32(int8(val))
+		signedVal := int32(val)
 		c.Reg.GPR[isa.RInData] = uint32(signedVal)
 		c.log.Debugf("TICK % 4d - %s <- %d digit (%d/0x%X) | %v\n", c.Tick, isa.GetRegMnem(isa.RInData), isa.PortD, val, val, c.ReprRegVal(isa.RInData))
 		return true
@@ -123,147 +123,43 @@ func uInD(rd, _, _ int) microStep {
 func uOutB(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
 		port := uint8(isa.PortCh)
-		data := byte(c.Reg.GPR[isa.ROutData])
+		data := c.Reg.GPR[isa.ROutData]
 		c.Ioc.WritePort(port, data)
-		c.log.Debugf("TICK % 4d - port %d <- %s (0x%02X) byte | %v\n", c.Tick, port, isa.GetRegMnem(isa.ROutData), data, c.Ioc.Output(port))
+		c.log.Debugf("TICK % 4d - port %d <- %s (0x%02X) byte | %v\n", c.Tick, port, isa.GetRegMnem(isa.ROutData), data, c.Ioc.Output32(port))
 		return true
 	}
 }
 
-// func uOutW(rd, _, _ int) microStep {
-// 	return func(c *CPU) bool {
-// 		data := int32(c.Reg.GPR[isa.ROutData])
-// 		numStr := fmt.Sprintf("%d", int32(data))
-// 		for _, ch := range numStr {
-// 			c.Ioc.WritePort(isa.PortD, byte(ch))
-// 		}
-// 		return true
-// 	}
-// }
-
-func uOutW(_, _, _ int) microStep {
-	var digits []byte
-	var idx int
-
+func uOutW(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
-		if digits == nil {
-			v := int32(c.Reg.GPR[isa.ROutData])
-
-			if v == 0 {
-				digits = []byte{'0'}
-			} else {
-				neg := v < 0
-				if neg {
-					v = -v
-				}
-
-				for v > 0 {
-					d := v % 10
-					digits = append(digits, byte('0'+d))
-					v /= 10
-				}
-				if neg {
-					digits = append(digits, '-')
-				}
-				for i, j := 0, len(digits)-1; i < j; i, j = i+1, j-1 {
-					digits[i], digits[j] = digits[j], digits[i]
-				}
-			}
-			idx = 0
-		}
-		ch := digits[idx]
-		c.Ioc.WritePort(isa.PortD, ch)
-		// TODO: log
-		c.log.Debugf("TICK % 4d char=%q (0x%02X)",
-			c.Tick, ch, ch)
-		idx++
-
-		if idx >= len(digits) {
-			digits = nil
-			idx = 0
-			return true
-		}
-		return false
+		val := c.Reg.GPR[isa.ROutData]
+		c.Ioc.WritePort(isa.PortD, val)
+		c.log.Debugf("TICK %4d - OUTW %d → port %d\n",
+			c.Tick, int32(val), isa.PortD)
+		return true
 	}
 }
-func uOutQ(_, _, _ int) microStep {
-	const regL = isa.R6 // low  word
-	const regH = isa.RT // high word
 
-	var bigStage = 0  // 0 = чтение, 1 = prepare, 2 = вывод
-	var readStage = 1 // 1‥9  для read64
-	var insStage = 0  // счётчик тактов (read64 увеличит)
-	var digits []byte
-	var idx int
+func uOutQ(_, _, _ int) microStep {
+	// читаем 64-бит из памяти (read64 уже делает low→R6, high→RT)
+	const regL, regH = isa.R6, isa.RT
+	var stage int // 0 — чтение, 1 — вывод low, 2 — вывод high
 
 	return func(c *CPU) bool {
-
-		switch bigStage {
-
-		//------------------------------------------------------------------
-		// 0. Читаем два слова из памяти (9 тактов)
-		//------------------------------------------------------------------
+		switch stage {
 		case 0:
-			done := read64(c, &readStage, &insStage, isa.ROutAddr, regL, regH)
-
-			if !done {
-				return false
+			if !read64(c, new(int), new(int), isa.ROutAddr, regL, regH) {
+				return false // ещё читаем
 			}
-			bigStage = 1
-
-		//------------------------------------------------------------------
-		// 1. Собираем строку
-		//------------------------------------------------------------------
+			stage = 1
 		case 1:
-			lo := uint32(c.Reg.GPR[regL])
-			hi := uint32(c.Reg.GPR[regH])
-			v := int64(uint64(hi)<<32 | uint64(lo))
-
-			// int64 → ASCII
-			var u uint64
-			neg := v < 0
-			if neg {
-				u = uint64(-v)
-			} else {
-				u = uint64(v)
-			}
-			if u == 0 {
-				digits = []byte{'0'}
-			} else {
-				for u > 0 {
-					digits = append(digits, byte('0'+u%10))
-					u /= 10
-				}
-				if neg {
-					digits = append(digits, '-')
-				}
-				// разворот
-				for i, j := 0, len(digits)-1; i < j; i, j = i+1, j-1 {
-					digits[i], digits[j] = digits[j], digits[i]
-				}
-			}
-			idx = 0
-			bigStage = 2 // переходим к выводу
-
-		//------------------------------------------------------------------
-		// 2. Выводим по одному символу
-		//------------------------------------------------------------------
+			c.Ioc.WritePort(isa.PortD, c.Reg.GPR[regL]) // low word
+			stage = 2
+			return false
 		case 2:
-			ch := digits[idx]
-			c.Reg.GPR[isa.ROutData] = uint32(ch) // данные реально в регистре
-			c.Ioc.WritePort(isa.PortD, ch)
-
-			c.log.Debugf("TICK % 4d - OUTQ char=%q (0x%02X)",
-				c.Tick, ch, ch)
-
-			idx++
-			if idx < len(digits) {
-				return false // ждём следующий тик
-			}
-			return true // вся строка выведена
+			c.Ioc.WritePort(isa.PortD, c.Reg.GPR[regH]) // high word
+			return true
 		}
-
-		// после переключения bigStage → повторный вызов в тот же тик
 		return false
 	}
 }
@@ -836,18 +732,18 @@ func read32LE(c *CPU, stage *int, regWithAddr int, regToStoreTo int) bool {
 	switch *stage {
 	case 1:
 		c.Reg.GPR[regToStoreTo] = uint32(c.memD[c.Reg.GPR[regWithAddr]])
-		c.log.Debugf("TICK % 4d - %v<-memD[%X] | %v\n", c.Tick, isa.GetRegMnem(regToStoreTo),
-			c.Reg.GPR[regWithAddr], c.ReprRegVal(regToStoreTo))
+		c.log.Debugf("TICK % 4d - %v<-memD[%X]; %v++ | %v %v\n", c.Tick, isa.GetRegMnem(regToStoreTo),
+			c.Reg.GPR[regWithAddr], isa.GetRegMnem(regWithAddr), c.ReprRegVal(regToStoreTo), c.ReprRegVal(regWithAddr))
 		c.Reg.GPR[regWithAddr]++
 	case 2:
 		c.Reg.GPR[regToStoreTo] |= uint32(c.memD[c.Reg.GPR[regWithAddr]]) << 8
-		c.log.Debugf("TICK % 4d - %v<-memD[%X] | %v\n", c.Tick, isa.GetRegMnem(regToStoreTo),
-			c.Reg.GPR[regWithAddr], c.ReprRegVal(regToStoreTo))
+		c.log.Debugf("TICK % 4d - %v<-memD[%X]; %v++ | %v %v\n", c.Tick, isa.GetRegMnem(regToStoreTo),
+			c.Reg.GPR[regWithAddr], isa.GetRegMnem(regWithAddr), c.ReprRegVal(regToStoreTo), c.ReprRegVal(regWithAddr))
 		c.Reg.GPR[regWithAddr]++
 	case 3:
 		c.Reg.GPR[regToStoreTo] |= uint32(c.memD[c.Reg.GPR[regWithAddr]]) << 16
-		c.log.Debugf("TICK % 4d - %v<-memD[%X] | %v\n", c.Tick, isa.GetRegMnem(regToStoreTo),
-			c.Reg.GPR[regWithAddr], c.ReprRegVal(regToStoreTo))
+		c.log.Debugf("TICK % 4d - %v<-memD[%X]; %v++ | %v %v\n", c.Tick, isa.GetRegMnem(regToStoreTo),
+			c.Reg.GPR[regWithAddr], isa.GetRegMnem(regWithAddr), c.ReprRegVal(regToStoreTo), c.ReprRegVal(regWithAddr))
 		c.Reg.GPR[regWithAddr]++
 	case 4:
 		c.Reg.GPR[regToStoreTo] |= uint32(c.memD[c.Reg.GPR[regWithAddr]]) << 24
@@ -858,5 +754,6 @@ func read32LE(c *CPU, stage *int, regWithAddr int, regToStoreTo int) bool {
 		return true
 	}
 	*stage++
+	c.Tick++ // bcs cannot read and inc reg on 1 tick
 	return false
 }

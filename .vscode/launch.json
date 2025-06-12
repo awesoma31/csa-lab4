@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch cmd/machine/main.go",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/machine/main.go", // Path to your main.go
+            "cwd": "${workspaceFolder}", // This explicitly sets the working directory to the workspace root
+            "env": {}, // Add any environment variables here if needed
+            "args": [] // Add any command-line arguments here if needed
+        }
+    ]
+}

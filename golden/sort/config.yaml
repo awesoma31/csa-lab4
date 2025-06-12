@@ -9,7 +9,8 @@ schedule:
     input:
       interrupt: 0
       value: 4
-  - tick: 150
+
+  - tick: 200
     input:
       interrupt: 0
       value: 2
@@ -17,11 +18,11 @@ schedule:
     input:
       interrupt: 0
       value: 1
-  - tick: 700
+  - tick: 600
     input:
       interrupt: 0
       value: 3
-  - tick: 1000
+  - tick: 900
     input:
       interrupt: 0
       value: 0

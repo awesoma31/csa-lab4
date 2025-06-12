@@ -146,7 +146,6 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 			cg.addError(fmt.Sprintf("Undeclared variable in print expr: %s; %v", arg.Value, litter.Sdump(cg.scopeStack)))
 			return
 		}
-		fmt.Println(litter.Sdump(symbol))
 
 		if !symbol.IsStr && !symbol.IsLong {
 			cg.genEx(arg, isa.ROutData)

@@ -36,6 +36,10 @@ type CpuConfig struct {
 	Logger *logger.Logger
 }
 
+func (c *CpuConfig) Magic() {
+	panic("unimplemented")
+}
+
 type CPU struct {
 	memI []uint32
 	memD []byte
@@ -112,29 +116,42 @@ func (c *CPU) Run() string {
 }
 
 func (c *CPU) GetFormattedPortOutputs() string {
-	var allOutputs strings.Builder
-	c.log.Debug("───── Port Outputs ─────")
+	var all strings.Builder
 
 	for port, buf := range c.Ioc.OutBufAll() {
 		if len(buf) == 0 {
 			continue
 		}
 
-		var strBuilder strings.Builder
-		for _, b := range buf {
-			if b >= 32 && b <= 126 { // Печатаемые ASCII символы
-				strBuilder.WriteByte(b)
-			} else {
-				strBuilder.WriteString("*")
-			}
-		}
-		strOutput := strBuilder.String()
+		//------------------------------------------------------------------
+		var line string
+		switch port {
 
-		outputLine := fmt.Sprintf("port %d| %s\n", port, strOutput)
-		allOutputs.WriteString(outputLine)
-		c.log.Infof(outputLine)
+		case isa.PortCh:
+			var bld strings.Builder
+			for _, w := range buf {
+				ch := byte(w)
+				if ch >= 32 && ch <= 126 {
+					bld.WriteByte(ch)
+				} else {
+					bld.WriteByte('*')
+				}
+			}
+			line = bld.String()
+
+		default:
+			nums := make([]string, len(buf))
+			for i, w := range buf {
+				nums[i] = fmt.Sprintf("%d", w)
+			}
+			line = strings.Join(nums, " ")
+		}
+
+		out := fmt.Sprintf("port %d| %s\n", port, line)
+		all.WriteString(out)
+		c.log.Infof(out)
 	}
-	return allOutputs.String()
+	return all.String()
 }
 
 func (c *CPU) PrintAllPortOutputs() {
@@ -147,28 +164,14 @@ func (c *CPU) PrintAllPortOutputs() {
 		var strBuilder strings.Builder
 		for _, b := range buf {
 			if b >= 32 && b <= 126 {
-				strBuilder.WriteByte(b)
+				strBuilder.WriteByte(byte(b))
 			} else {
 				strBuilder.WriteString("*")
 			}
 		}
 		strOutput := strBuilder.String()
 
-		// var hexVals []string
-		// for _, b := range buf {
-		// 	hexVals = append(hexVals, fmt.Sprintf("%X", b))
-		// }
-		// hexOutput := strings.Join(hexVals, ", ")
-		//
-		// var byteVals []string
-		// for _, b := range buf {
-		// 	byteVals = append(byteVals, fmt.Sprintf("%d", b))
-		// }
-		// byteOutput := strings.Join(byteVals, ", ")
-
 		c.log.Infof("port %d| %s\n", port, strOutput)
-		// c.log.Debugf("    hex|%s\n", hexOutput)
-		// c.log.Debugf("    dec|%s\n", byteOutput)
 	}
 }
 
@@ -200,15 +203,15 @@ func (c *CPU) raiseIRQ(vec uint8) {
 	c.pending, c.pendNum = true, int(vec)
 }
 func (c *CPU) enterISR() {
-	// c.log.Debug(c.DumpState())
-	c.log.Debugf("------------Entering Interruption %d, value=%v/0x%X------------\n", c.pendNum, c.Ioc.ReadPort(byte(c.pendNum)), c.Ioc.ReadPort(byte(c.pendNum)))
+	c.log.Debugf("------------Entering Interruption %d, value=%d/0x%X/%v------------\n",
+		c.pendNum, c.Ioc.ReadPort(byte(c.pendNum)), c.Ioc.ReadPort(byte(c.pendNum)), c.Ioc.ReadPort(byte(c.pendNum)),
+	)
 	c.Reg.savedPC = c.Reg.PC
 	c.SaveNZVC()
 	c.Reg.PC = c.memI[c.pendNum]
 	c.SaveGPRValues()
 	c.inISR = true
 	c.pending = false
-	// c.log.Debug(c.DumpState())
 
 }
 

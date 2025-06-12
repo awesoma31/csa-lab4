@@ -21,6 +21,6 @@ const (
 )
 
 const (
-	PortCh = 1
 	PortD  = 0
+	PortCh = 1
 )
