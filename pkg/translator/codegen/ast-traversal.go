@@ -16,7 +16,7 @@ func (cg *CodeGenerator) generateStmt(stmt ast.Stmt) {
 	case ast.VarDeclarationStmt:
 		cg.genVarDeclStmt(s)
 	case ast.ExpressionStmt:
-		cg.genEx(s.Expression, isa.Ra)
+		cg.genEx(s.Expression, isa.RA)
 	case ast.BlockStmt:
 		cg.generateBlockStmt(s)
 	case ast.IfStmt:
@@ -247,7 +247,7 @@ func (cg *CodeGenerator) genEx(expr ast.Expr, rd int) {
 	case ast.StringExpr:
 		cg.genStringExPl1(e, rd)
 	case ast.CallExpr:
-		cg.genAddStr(e, rd)
+		cg.genAddStrConst(e, rd)
 	case ast.PrefixExpr:
 		newExpr := ast.NumberExpr{}
 		switch a := e.Right.(type) {
@@ -367,11 +367,11 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 				cg.addSymbolToScope(sym)
 
 				// ── 2. генерируем addStr(arg1,arg2)  →  RA = newPtr ──────
-				cg.genAddStr(assignedVal, isa.Ra)
+				cg.genAddStrConst(assignedVal, isa.RA)
 
 				// ── 3. сохраняем ptr в память переменной ─────────────────
 				//TODO: почему то адрес на 1 больше
-				cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, isa.Ra, -1)
+				cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, isa.RA, -1)
 				cg.emitImmediate(ptrAddr)
 
 			default:
@@ -433,7 +433,7 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 				Assigne:       ast.SymbolExpr{Value: s.Identifier},
 				AssignedValue: s.AssignedValue,
 			}
-			cg.genAssignEx(assign, isa.Ra)
+			cg.genAssignEx(assign, isa.RA)
 			return
 		case ast.PrefixExpr:
 			symbolEntry.Type = ast.IntType
@@ -447,7 +447,7 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 				Assigne:       ast.SymbolExpr{Value: s.Identifier},
 				AssignedValue: s.AssignedValue,
 			}
-			cg.genAssignEx(assign, isa.Ra)
+			cg.genAssignEx(assign, isa.RA)
 			return
 		case ast.ListEx:
 			listPtr := cg.nextDataAddr
@@ -485,8 +485,9 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 
 }
 
-func (cg *CodeGenerator) genAddStr(call ast.CallExpr, rd int) {
-	var newSLen byte
+func (cg *CodeGenerator) genAddStrConst(call ast.CallExpr, rd int) {
+	var s1Len byte
+	var s2Len byte
 	var s1str string
 	var s2str string
 	if len(call.Args) != 2 {
@@ -502,10 +503,9 @@ func (cg *CodeGenerator) genAddStr(call ast.CallExpr, rd int) {
 		}
 		s1Addr := s1.NumberValue
 
-		s1Len := cg.dataMemory[s1Addr]
+		s1Len = cg.dataMemory[s1Addr]
 		s1bytes := cg.dataMemory[s1Addr+1 : s1Addr+1+int32(s1Len)]
 		s1str = string(s1bytes)
-		newSLen += s1Len
 	default:
 		cg.addError("Using not symbol expr in addStr is not supported")
 		return
@@ -519,10 +519,9 @@ func (cg *CodeGenerator) genAddStr(call ast.CallExpr, rd int) {
 			return
 		}
 		s2Addr := s2.NumberValue
-		s2Len := cg.dataMemory[s2Addr]
+		s2Len = cg.dataMemory[s2Addr]
 		s2bytes := cg.dataMemory[s2Addr+1 : s2Addr+1+int32(s2Len)]
 		s2str = string(s2bytes)
-		newSLen += s2Len
 	default:
 		cg.addError("Using not symbol expr in addStr is not supported")
 		return
@@ -530,6 +529,161 @@ func (cg *CodeGenerator) genAddStr(call ast.CallExpr, rd int) {
 
 	newStr := s1str + s2str
 	cg.genStringEx(ast.StringExpr{Value: newStr}, rd)
+}
+
+const addStrBufSize = 64
+
+// genAddStrRuntime — конкатенация строки-приёмника (arg0) и одного символа (arg1)
+// rd = регистр, в который надо вернуть новый ptr.
+//
+//	arg0 → RA  (ptr lenA)
+//	arg1 → RM1 (ptr lenB)
+//	heapPtr  → R4
+//	lenA     → RT
+//	lenB     → R6
+//	lenTot   → RC
+//	dstPtr   → RAddr    (двигаем вперёд когда пишем)
+func (cg *CodeGenerator) genAddStrRuntime(call ast.CallExpr, rd int) {
+	//FIX:
+
+	if len(call.Args) != 2 {
+		cg.addError("addStr(): нужно два аргумента")
+		return
+	}
+	// ---------- исходные указатели ---------------
+	cg.genEx(call.Args[0], isa.RA)  // ptr lenA
+	cg.genEx(call.Args[1], isa.RM1) // ptr lenB
+
+	// ---------- длины ---------------------------
+	cg.emitMov(isa.MvByteRegIndReg, isa.RT, isa.RA, -1)  // lenA = *ptrA
+	cg.emitMov(isa.MvByteRegIndReg, isa.R6, isa.RM1, -1) // lenB = *ptrB
+
+	// dstPtr = heapPtr + 1  (а heapPtr хранится в памяти)
+	cg.emitInstruction(isa.OpMov, isa.MvMemReg, isa.RD, -1, -1)
+	cg.emitImmediate(cg.heapPtrAddr) // R4 = heapPtr
+	cg.emitMov(isa.MvRegReg, isa.RAddr, isa.RD, -1)
+	cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.RAddr, isa.RAddr, -1)
+	cg.emitImmediate(1) // RAddr = dstPtr
+
+	// lenTot = lenA + lenB
+	cg.emitInstruction(isa.OpAdd, isa.MathRRR, isa.RC, isa.RT, isa.R6)
+
+	// *heapPtr = lenTot
+	cg.emitInstruction(isa.OpMov, isa.MvLowRegToRegInd, isa.RD, isa.RC, -1)
+
+	// ptrA += 1 ; ptrB += 1   – теперь указывают на первый символ
+	cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.RA, isa.RA, -1)
+	cg.emitImmediate(1)
+	cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.RM1, isa.RM1, -1)
+	cg.emitImmediate(1)
+
+	// ---------- копируем lenA байт --------------
+	cg.genCopyBytes(isa.RA, isa.RAddr, isa.RT)
+
+	// ---------- копируем lenB байт --------------
+	cg.genCopyBytes(isa.RM1, isa.RAddr, isa.R6)
+
+	// ---------- heapPtr += lenTot + 1 -----------
+	cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.RD, isa.RD, -1)
+	cg.emitImmediate(1)
+	cg.emitInstruction(isa.OpAdd, isa.MathRRR, isa.RD, isa.RD, isa.RC)
+	cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, isa.RD, -1)
+	cg.emitImmediate(cg.heapPtrAddr)
+
+	// ---------- вернуть ptr len  ----------------
+	if rd >= 0 {
+		cg.emitMov(isa.MvRegReg, rd, isa.RD, -1) // rd = ptr len новой строки
+	}
+
+	// ─── 1. подцепляем оба указателя на первый символ ───────────────
+	// cg.genEx(call.Args[0], isa.RA)  // RA = a_ptr+1
+	// cg.genEx(call.Args[1], isa.RM1) // RM1 = b_ptr+1
+	//
+	// // ─── 2. читаем длины a и b  (по адресу-1) ────────────────────────
+	// cg.emitMov(isa.MvRegReg, isa.RD, isa.RA, -1) // RD = a_ptr+1
+	// cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RD, isa.RD, -1)
+	// cg.emitImmediate(1)                                  // RD = addr lenA
+	// cg.emitMov(isa.MvByteRegIndReg, isa.RT2, isa.RD, -1) // RT2 = lenA
+	//
+	// cg.emitMov(isa.MvRegReg, isa.RD, isa.RM1, -1)
+	// cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RD, isa.RD, -1)
+	// cg.emitImmediate(1)                                 // RD = addr lenB
+	// cg.emitMov(isa.MvByteRegIndReg, isa.R6, isa.RD, -1) // R6 = lenB
+	//
+	// // ─── 3. RT = HEAP_PTR; RC = lenA+lenB ───────────────────────────
+	// cg.emitInstruction(isa.OpMov, isa.MvMemReg, isa.RT, -1, -1)
+	// cg.emitImmediate(cg.heapPtrAddr)                                    // RT = heap_ptr
+	// cg.emitInstruction(isa.OpAdd, isa.MathRRR, isa.RC, isa.RT2, isa.R6) // RC=lenTot
+	//
+	// // ─── 4. записываем длину и сдвигаем RT на начало символов ────────
+	// cg.emitInstruction(isa.OpMov, isa.MvLowRegToRegInd, isa.RT, isa.RC, -1) // *RT = lenTot
+	// cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.RT, isa.RT, -1)          //
+	// cg.emitImmediate(1)                                                     // RT = dstPtr (=heap+1)
+	//
+	// // ─── 5. копируем A, затем B  ─────────────────────────────────────
+	// cg.genCopyBytes(isa.RA, isa.RT, isa.RT2) // RC=lenA   src=RA
+	// cg.genCopyBytes(isa.RM1, isa.RT, isa.R6) // RC=lenB   src=RM1
+	//
+	// // ─── 6. bump-alloc: HEAP_PTR += lenTot+1  ────────────────────────
+	// cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.RT, isa.RT, -1) // RT = endPtr
+	// cg.emitImmediate(0)                                            // (RT уже указывает за строкой)
+	// cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, isa.RT, -1)
+	// cg.emitImmediate(cg.heapPtrAddr)
+	//
+	// // ─── 7. вернуть ptr+1 в rd  ─────────────────────────────────────
+	// if rd >= 0 && rd != isa.RT {
+	// 	cg.emitMov(isa.MvRegReg, rd, isa.RT, -1) // RT уже ptr+1
+	// } else {
+	// 	panic("cannot pass RD or -1 as rd ")
+	// }
+}
+
+// copyBytes(srcReg, dstReg, counterReg) // uses r6
+//
+// RC  – счётчик (уходя в 0 → выход)
+// RS1 – src ptr (инкрементируется)
+// RS2 – dst ptr (инкрементируется)
+func (cg *CodeGenerator) genCopyBytes(src, dst, cnt int) {
+	top := cg.nextInstructionAddr
+
+	cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, cnt, isa.ZERO)
+	cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
+	end := cg.ReserveWord()
+
+	cg.emitMov(isa.MvByteRegIndReg, isa.RT2, src, -1) // RT2 = *src
+	cg.emitInstruction(isa.OpMov, isa.MvLowRegToRegInd, dst, isa.RT2, -1)
+
+	cg.emitInstruction(isa.OpAdd, isa.MathRIR, src, src, -1)
+	cg.emitImmediate(1)
+	cg.emitInstruction(isa.OpAdd, isa.MathRIR, dst, dst, -1)
+	cg.emitImmediate(1)
+	cg.emitInstruction(isa.OpSub, isa.MathRIR, cnt, cnt, -1)
+	cg.emitImmediate(1)
+
+	cg.emitInstruction(isa.OpJmp, isa.JAbsAddr, -1, -1, -1)
+	cg.emitImmediate(top)
+
+	cg.PatchWord(end, cg.nextInstructionAddr)
+	// loopTop := cg.nextInstructionAddr // метка
+	//
+	// cg.emitInstruction(isa.OpCmp, isa.RegReg, // if RC==0 → jump end
+	// 	-1, counterReg, isa.ZERO)
+	// cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
+	// jEnd := cg.ReserveWord()
+	//
+	// cg.emitMov(isa.MvByteRegIndReg, isa.R6, srcReg, -1)                     // R6 ← *src
+	// cg.emitInstruction(isa.OpMov, isa.MvLowRegToRegInd, dstReg, isa.R6, -1) // *dst ← R6
+	// cg.emitInstruction(isa.OpAdd, isa.MathRIR, srcReg, srcReg, -1)          // src++
+	// cg.emitImmediate(1)
+	// cg.emitInstruction(isa.OpAdd, isa.MathRIR, dstReg, dstReg, -1) // dst++
+	// cg.emitImmediate(1)
+	// cg.emitInstruction(isa.OpSub, isa.MathRIR, counterReg, counterReg, -1) // RC--
+	// cg.emitImmediate(1)
+	//
+	// cg.emitInstruction(isa.OpJmp, isa.JAbsAddr, -1, -1, -1) // back to top
+	// cg.emitImmediate(loopTop)
+	//
+	// cg.PatchWord(jEnd, cg.nextInstructionAddr) // <- exit
 }
 
 // genAssignEx generates code for assignment expressions.
@@ -541,8 +695,8 @@ func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd int) {
 			cg.addError(fmt.Sprintf("not supported func assignment %s", r.Name))
 		}
 		//TODO:
-		cg.genAddStr(r, isa.Ra)
-		rd = isa.Ra
+		cg.genAddStrRuntime(r, isa.RA)
+		rd = isa.RA
 
 	default:
 		cg.genEx(e.AssignedValue, rd)
@@ -567,7 +721,7 @@ func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd int) {
 
 func (cg *CodeGenerator) genAssignArray(e ast.AssignmentExpr, target ast.ArrayIndexEx) {
 	regWithAddr := isa.RAddr
-	regWithVal := isa.Ra
+	regWithVal := isa.RA
 	cg.genEx(e.AssignedValue, regWithVal)
 	cg.genArrayAddress(target, regWithAddr)
 	cg.emitInstruction(isa.OpMov, isa.MvLowRegToRegInd, regWithAddr, regWithVal, -1)

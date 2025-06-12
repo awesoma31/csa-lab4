@@ -40,14 +40,14 @@ func NewForTest(w io.Writer) *Logger {
 }
 func (lg *Logger) Debug(v ...any) {
 	lg.l.Print(
-		append([]any{"debug "}, v...)...,
-	// append([]any{""}, v...)...,
+		// append([]any{"debug "}, v...)...,
+		append([]any{""}, v...)...,
 	)
 }
 
 func (lg *Logger) Debugf(format string, v ...any) {
-	// lg.l.Printf(""+format, v...)
-	lg.l.Printf("debug "+format, v...)
+	lg.l.Printf(""+format, v...)
+	// lg.l.Printf("debug "+format, v...)
 }
 
 func (lg *Logger) Info(v ...any) {

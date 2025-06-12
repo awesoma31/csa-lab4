@@ -74,11 +74,11 @@ func init() {
 
 	// registers → strings (0-15)
 	for k, v := range map[int]string{
-		Ra:       "RA",
+		RA:       "RA",
 		RM1:      "RM1",
 		RM2:      "RM2",
 		RAddr:    "RAddr",
-		R4:       "R4",
+		RD:       "RD",
 		RC:       "RC",
 		ZERO:     "zero",
 		ROutData: "ROutData",

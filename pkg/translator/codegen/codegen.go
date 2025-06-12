@@ -48,6 +48,7 @@ type CodeGenerator struct {
 	scopeStack          []Scope
 	nextInstructionAddr uint32 // Next free address in instruction memory (word-addresses)
 	nextDataAddr        uint32 // Next free address in data memory (byte-addresses)
+	heapPtrAddr         uint32
 	errors              []string
 }
 
@@ -68,6 +69,7 @@ func NewCodeGenerator() *CodeGenerator {
 		nextDataAddr:        0,
 		errors:              make([]string, 0),
 	}
+	cg.heapPtrAddr = cg.addNumberData(0)
 	return cg
 }
 
@@ -78,6 +80,11 @@ func (cg *CodeGenerator) ScopeStack() []Scope {
 func (cg *CodeGenerator) Generate(program ast.BlockStmt) ([]uint32, []byte, []string, []string) {
 	cg.VisitProgram(&program)
 
+	heapStart := cg.nextDataAddr
+	binary.LittleEndian.PutUint32(
+		cg.dataMemory[cg.heapPtrAddr:cg.heapPtrAddr+4],
+		uint32(heapStart),
+	)
 	return cg.instructionMemory, cg.dataMemory, cg.debugAssembly, cg.errors
 }
 

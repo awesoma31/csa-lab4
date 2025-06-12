@@ -1,6 +1,6 @@
 PRINT STMT
 [0x0002] - 042A0000 - Opc: MOV, Mode: MvImmReg, D:ROutAddr, S1:, S2:
-[0x0003] - 00000001 - Imm
+[0x0003] - 00000005 - Imm
 [0x0004] - 04320000 - Opc: MOV, Mode: MvImmReg, D:RC, S1:, S2:
 [0x0005] - 0000000B - Imm
 [0x0006] - 51C13A00 - Opc: CMP, Mode: RegReg, D:, S1:RC, S2:zero

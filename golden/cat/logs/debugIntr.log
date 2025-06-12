@@ -17,10 +17,10 @@ INTERRUPTION 1 STMT
 READ_CHAR EXPR
 [0x000E] - 62820000 - Opc: IN, Mode: Byte, D:port Char, S1:, S2:
 [0x000F] - 04410000 - Opc: MOV, Mode: MvRegLowMem, D:, S1:RInData, S2:
-[0x0010] - 00000001 - Imm
+[0x0010] - 00000005 - Imm
 PRINT STMT
 [0x0011] - 04CA0000 - Opc: MOV, Mode: MvMemReg, D:ROutAddr, S1:, S2:
-[0x0012] - 00000004 - Imm
+[0x0012] - 00000008 - Imm
 [0x0013] - 0472A000 - Opc: MOV, Mode: MvRegIndReg, D:RC, S1:ROutAddr, S2:
 [0x0014] - 8D732000 - Opc: AND, Mode: ImmReg, D:RC, S1:RC, S2:
 [0x0015] - 000000FF - Imm

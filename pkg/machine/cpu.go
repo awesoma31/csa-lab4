@@ -200,7 +200,7 @@ func (c *CPU) raiseIRQ(vec uint8) {
 	c.pending, c.pendNum = true, int(vec)
 }
 func (c *CPU) enterISR() {
-	c.log.Debug(c.DumpState())
+	// c.log.Debug(c.DumpState())
 	c.log.Debugf("------------Entering Interruption %d, value=%v/0x%X------------\n", c.pendNum, c.Ioc.ReadPort(byte(c.pendNum)), c.Ioc.ReadPort(byte(c.pendNum)))
 	c.Reg.savedPC = c.Reg.PC
 	c.SaveNZVC()
@@ -208,7 +208,7 @@ func (c *CPU) enterISR() {
 	c.SaveGPRValues()
 	c.inISR = true
 	c.pending = false
-	c.log.Debug(c.DumpState())
+	// c.log.Debug(c.DumpState())
 
 }
 

@@ -2,11 +2,11 @@ package isa
 
 // ──────────────────────── registers (4 bits) ─────────────────
 const (
-	Ra          = iota // 0
+	RA          = iota // 0
 	RM1                // 1
 	RM2                //2
 	RAddr              //3
-	R4                 //4
+	RD                 //4
 	ROutAddr           //5
 	ROutData           //6
 	R6                 //7

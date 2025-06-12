@@ -1,7 +1,6 @@
 package machine
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
@@ -97,7 +96,7 @@ func uIRet(_, _, _ int) microStep {
 		c.log.Debugf("TICK % 4d - restore register values | %v\n", c.Tick, c.ReprPC())
 		c.log.Debug("------------Exiting interruption------------")
 		c.log.Debug("after exiting irq")
-		c.log.Debug(c.DumpState())
+		// c.log.Debug(c.DumpState())
 		return true
 	}
 }
@@ -131,14 +130,60 @@ func uOutB(rd, _, _ int) microStep {
 	}
 }
 
+// func uOutW(rd, _, _ int) microStep {
+// 	return func(c *CPU) bool {
+// 		data := int32(c.Reg.GPR[isa.ROutData])
+// 		numStr := fmt.Sprintf("%d", int32(data))
+// 		for _, ch := range numStr {
+// 			c.Ioc.WritePort(isa.PortD, byte(ch))
+// 		}
+// 		return true
+// 	}
+// }
+
 func uOutW(rd, _, _ int) microStep {
+	var digits []byte
+	var idx int
+
 	return func(c *CPU) bool {
-		data := int32(c.Reg.GPR[isa.ROutData])
-		numStr := fmt.Sprintf("%d", int32(data))
-		for _, ch := range numStr {
-			c.Ioc.WritePort(isa.PortD, byte(ch))
+		if digits == nil {
+			v := int32(c.Reg.GPR[isa.ROutData])
+
+			if v == 0 {
+				digits = []byte{'0'}
+			} else {
+				neg := v < 0
+				if neg {
+					v = -v
+				}
+
+				for v > 0 {
+					d := v % 10
+					digits = append(digits, byte('0'+d))
+					v /= 10
+				}
+				if neg {
+					digits = append(digits, '-')
+				}
+				for i, j := 0, len(digits)-1; i < j; i, j = i+1, j-1 {
+					digits[i], digits[j] = digits[j], digits[i]
+				}
+			}
+			idx = 0
 		}
-		return true
+		ch := digits[idx]
+		c.Ioc.WritePort(isa.PortD, ch)
+		// TODO: log
+		c.log.Debugf("TICK % 4d char=%q (0x%02X)",
+			c.Tick, ch, ch)
+		idx++
+
+		if idx >= len(digits) {
+			digits = nil
+			idx = 0
+			return true
+		}
+		return false
 	}
 }
 
@@ -343,7 +388,7 @@ func uAddRIR(rd, rs1, _ int) microStep {
 			stage++
 		case 1:
 			MathRRR(c, rd, rs1, isa.RM1, isa.OpAdd)
-			c.log.Debugf("TICK % 4d - %v<-%v + %v | %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(isa.RM1), c.ReprRegVal(rd))
+			// c.log.Debugf("TICK % 4d - %v<-%v + %v | %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(isa.RM1), c.ReprRegVal(rd))
 			return true
 		}
 		return false
@@ -463,12 +508,12 @@ func uPopReg(rd, _, _ int) microStep {
 		switch stage {
 		case 0:
 			c.Reg.GPR[isa.RAddr] = c.Reg.GPR[isa.SpReg]
-			c.log.Debugf("TICK % 4d - %v<-%v | ", c.Tick, isa.GetRegMnem(isa.RAddr), isa.GetRegMnem(isa.SpReg))
-			c.log.Debugf("%v\n", c.ReprRegVal(isa.RAddr))
+			c.log.Debugf("TICK % 4d - %v<-%v | %v", c.Tick, isa.GetRegMnem(isa.RAddr), isa.GetRegMnem(isa.SpReg), c.ReprRegVal(isa.RAddr))
+			// c.log.Debugf("%v\n", c.ReprRegVal(isa.RAddr))
 			stage++
 		case 1, 2, 3, 4, 5:
 			if read32LE(c, &stage, isa.RAddr, rd) {
-				c.log.Debugf("TICK % 4d - SP=SP+4 \n", c.Tick)
+				c.log.Debugf("TICK % 4d - SP=SP+4 | %v\n", c.Tick, c.ReprRegVal(isa.SpReg))
 				c.Reg.GPR[isa.SpReg] += 4
 				stage++
 				return true
@@ -479,14 +524,15 @@ func uPopReg(rd, _, _ int) microStep {
 }
 func uPushReg(_, rs1, _ int) microStep {
 	stage := 0
+	//TODO: check
 	return func(c *CPU) bool {
 		switch stage {
 		case 0: // sp -4
-			c.log.Debugf("TICK % 4d - SP=SP-4 \n", c.Tick)
 			// c.log.Debugf("rs1 % 4d %v\n", rs1, isa.GetRegMnem(rs1))
 			c.Reg.GPR[isa.SpReg] -= 4
 			c.Reg.GPR[isa.RAddr] = c.Reg.GPR[isa.SpReg]
 			c.Reg.GPR[isa.RT] = c.Reg.GPR[rs1]
+			c.log.Debugf("TICK % 4d - SP=SP-4 | %v\n", c.Tick, c.ReprRegVal(isa.SpReg))
 			stage = 1
 		case 1, 2, 3, 4, 5:
 			if write32LE(c, &stage, isa.RAddr, rs1) {
