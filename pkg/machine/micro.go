@@ -124,7 +124,6 @@ func uOutB(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
 		port := uint8(isa.PortCh)
 		data := byte(c.Reg.GPR[isa.ROutData])
-		//TODO: check
 		c.Ioc.WritePort(port, uint32(data))
 		c.log.Debugf("TICK % 4d - port %d <- %s (0x%02X) byte | %v\n", c.Tick, port, isa.GetRegMnem(isa.ROutData), data, c.Ioc.Output(port))
 		return true
@@ -134,7 +133,6 @@ func uOutB(rd, _, _ int) microStep {
 func uOutW(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
 		data := int32(c.Reg.GPR[isa.ROutData])
-		//TODO: check
 		// numStr := fmt.Sprintf("%d", int32(data))
 		c.Ioc.WritePort(isa.PortD, uint32(data))
 		return true
