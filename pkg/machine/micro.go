@@ -61,6 +61,7 @@ func init() {
 	// IO
 	ucode[isa.OpOut][isa.ByteM] = uOutB
 	ucode[isa.OpOut][isa.DigitM] = uOutW
+	ucode[isa.OpOut][isa.LongM] = uOutQ
 	ucode[isa.OpIn][isa.ByteM] = uInCh
 	ucode[isa.OpIn][isa.DigitM] = uInD // word mode but really read 1 byte digit
 
@@ -96,7 +97,6 @@ func uIRet(_, _, _ int) microStep {
 		c.log.Debugf("TICK % 4d - restore register values | %v\n", c.Tick, c.ReprPC())
 		c.log.Debug("------------Exiting interruption------------")
 		c.log.Debug("after exiting irq")
-		// c.log.Debug(c.DumpState())
 		return true
 	}
 }
@@ -141,7 +141,7 @@ func uOutB(rd, _, _ int) microStep {
 // 	}
 // }
 
-func uOutW(rd, _, _ int) microStep {
+func uOutW(_, _, _ int) microStep {
 	var digits []byte
 	var idx int
 
@@ -183,6 +183,87 @@ func uOutW(rd, _, _ int) microStep {
 			idx = 0
 			return true
 		}
+		return false
+	}
+}
+func uOutQ(_, _, _ int) microStep {
+	const regL = isa.R6 // low  word
+	const regH = isa.RT // high word
+
+	var bigStage = 0  // 0 = чтение, 1 = prepare, 2 = вывод
+	var readStage = 1 // 1‥9  для read64
+	var insStage = 0  // счётчик тактов (read64 увеличит)
+	var digits []byte
+	var idx int
+
+	return func(c *CPU) bool {
+
+		switch bigStage {
+
+		//------------------------------------------------------------------
+		// 0. Читаем два слова из памяти (9 тактов)
+		//------------------------------------------------------------------
+		case 0:
+			done := read64(c, &readStage, &insStage, isa.ROutAddr, regL, regH)
+
+			if !done {
+				return false
+			}
+			bigStage = 1
+
+		//------------------------------------------------------------------
+		// 1. Собираем строку
+		//------------------------------------------------------------------
+		case 1:
+			lo := uint32(c.Reg.GPR[regL])
+			hi := uint32(c.Reg.GPR[regH])
+			v := int64(uint64(hi)<<32 | uint64(lo))
+
+			// int64 → ASCII
+			var u uint64
+			neg := v < 0
+			if neg {
+				u = uint64(-v)
+			} else {
+				u = uint64(v)
+			}
+			if u == 0 {
+				digits = []byte{'0'}
+			} else {
+				for u > 0 {
+					digits = append(digits, byte('0'+u%10))
+					u /= 10
+				}
+				if neg {
+					digits = append(digits, '-')
+				}
+				// разворот
+				for i, j := 0, len(digits)-1; i < j; i, j = i+1, j-1 {
+					digits[i], digits[j] = digits[j], digits[i]
+				}
+			}
+			idx = 0
+			bigStage = 2 // переходим к выводу
+
+		//------------------------------------------------------------------
+		// 2. Выводим по одному символу
+		//------------------------------------------------------------------
+		case 2:
+			ch := digits[idx]
+			c.Reg.GPR[isa.ROutData] = uint32(ch) // данные реально в регистре
+			c.Ioc.WritePort(isa.PortD, ch)
+
+			c.log.Debugf("TICK % 4d - OUTQ char=%q (0x%02X)",
+				c.Tick, ch, ch)
+
+			idx++
+			if idx < len(digits) {
+				return false // ждём следующий тик
+			}
+			return true // вся строка выведена
+		}
+
+		// после переключения bigStage → повторный вызов в тот же тик
 		return false
 	}
 }
@@ -703,6 +784,50 @@ func write32LE(c *CPU, stage *int, regWithAddr int, regSource int) bool {
 	}
 	*stage++
 	return false
+}
+
+func read64(c *CPU,
+	readStage *int, // 1-9
+	insStage *int, // счётчик тиков
+	regWithAddr int, // указатель в памяти
+	regL, regH int, // куда кладём low / high
+) bool {
+	switch *readStage {
+	// ─────── 1-4. читаем low word ────────────────────────────────────
+	case 1, 2, 3, 4:
+		sub := *readStage // подстадия 1-4 для read32LE
+		if read32LE(c, &sub, regWithAddr, regL) {
+			*readStage = 5 // переходим к инкременту адреса
+		} else {
+			*readStage = sub // продолжаем 2-й,3-й,4-й байт
+		}
+	// ─────── 5. такт инкремента адреса ───────────────────────────────
+	case 5:
+		// c.Reg.GPR[regWithAddr] += 0
+		// c.log.Debugf("TICK % 4d - %s = %s + 1 | %v\n",
+		// 	c.Tick,
+		// 	isa.GetRegMnem(regWithAddr),
+		// 	isa.GetRegMnem(regWithAddr),
+		// 	c.ReprRegVal(regWithAddr),
+		// )
+		*readStage = 6
+
+	// ─────── 6-9. читаем high word ───────────────────────────────────
+	case 6, 7, 8, 9:
+		sub := *readStage - 5 // снова 1-4 для read32LE
+		if read32LE(c, &sub, regWithAddr, regH) {
+			*readStage = 10 // всё готово
+			return true
+		} else {
+			*readStage = sub + 5 // 7,8,9-я глобальная стадия
+		}
+
+	default:
+		return true
+	}
+
+	*insStage++ // каждый вызов – новый такт
+	return *readStage >= 10
 }
 
 // возвращают true, когда все 4 байта обработаны

@@ -121,10 +121,16 @@ func parseBinaryExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
 func parsePrimaryExpr(p *parser) ast.Expr {
 	switch p.currentTokenKind() {
 	case lexer.NUMBER:
-		number, err := strconv.ParseUint(p.advance().Value, 10, 32)
+		tok := p.advance()
+		// number, err := strconv.ParseUint(tok.Value, 10, 32)
+		number, err := strconv.ParseInt(tok.Value, 10, 32)
 		if err != nil {
-			p.addError(fmt.Sprintf("Failed to parse number: %v", err))
-			return ast.NumberExpr{Value: 0}
+			number, err := strconv.ParseInt(tok.Value, 10, 64)
+			if err != nil {
+				p.addError(fmt.Sprintf("Failed to parse number: %v", err))
+			}
+			return ast.LongNumberExpr{Value: int64(number)}
+
 		}
 		return ast.NumberExpr{
 			Value: int32(number),
@@ -157,6 +163,19 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 }
 func parseAddStrExpr(p *parser) ast.Expr {
 	nameTok := p.expect(lexer.ADDSTR)
+	p.expect(lexer.OpenParen)
+	arg1 := parseExpr(p, primary)
+	p.expect(lexer.COMMA)
+	arg2 := parseExpr(p, primary)
+
+	p.expect(lexer.CloseParen)
+	return ast.CallExpr{
+		Name: nameTok.Value,
+		Args: []ast.Expr{arg1, arg2},
+	}
+}
+func parseAddLExpr(p *parser) ast.Expr {
+	nameTok := p.expect(lexer.ADDL)
 	p.expect(lexer.OpenParen)
 	arg1 := parseExpr(p, primary)
 	p.expect(lexer.COMMA)

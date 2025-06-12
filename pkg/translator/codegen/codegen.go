@@ -25,8 +25,10 @@ type SymbolEntry struct {
 	AbsAddress  uint32
 	SizeInBytes int
 	NumberValue int32 // str addr if points to str
+	LongValue   int64
 	StringValue string
 	IsStr       bool
+	IsLong      bool
 }
 
 type Scope struct {
@@ -240,6 +242,14 @@ func (cg *CodeGenerator) addString(s string) uint32 {
 	allignDataMem(cg)
 
 	return strStartAddr
+}
+
+func (cg *CodeGenerator) addLongData(v int64) uint32 {
+	lo := int32(v & 0xFFFF_FFFF)         // младшее 32 бита
+	hi := int32((v >> 32) & 0xFFFF_FFFF) // старшие 32 бита
+	addr := cg.addNumberData(lo)         // [addr+0 … addr+3] ← lo
+	cg.addNumberData(hi)                 // [addr+4 … addr+7] ← hi
+	return addr                          // адрес всей 8-байтовой константы
 }
 
 // addNumberData adds an uint32 number to data memory.

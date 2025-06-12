@@ -26,6 +26,7 @@ const (
 
 	ByteM  uint32 = 0x14
 	DigitM uint32 = 0x15
+	LongM  uint32 = 0x16
 
 	JAbsAddr      uint32 = 0x18
 	SingleRegMode uint32 = 0x1C

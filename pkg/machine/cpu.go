@@ -183,7 +183,7 @@ func (c *CPU) fetch() microStep {
 			fmt.Sprintf("TICK % 4d @ 0x%08X -  %v %v; PC++ | %v\n", c.Tick, c.Reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC()),
 		)
 		if f == nil {
-			slog.Error("unknown instruction", "PC", c.Reg.PC-1, "IR", c.Reg.IR)
+			slog.Error("unknown instruction", "PC", c.Reg.PC-1, "IR", c.Reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode))
 			log.Fatal()
 			return false
 		}

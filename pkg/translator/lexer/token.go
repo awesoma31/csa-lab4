@@ -65,6 +65,7 @@ const (
 
 	// Reserved Keywords
 	LET
+	LETL
 	IF
 	ELSE
 	WHILE
@@ -78,6 +79,7 @@ const (
 	READCH
 	READINT
 	ADDSTR
+	ADDL
 
 	LIST
 
@@ -89,6 +91,7 @@ var reservedLu = map[string]TokenKind{
 	"true":    TRUE,
 	"false":   FALSE,
 	"let":     LET,
+	"letL":    LETL,
 	"if":      IF,
 	"else":    ELSE,
 	"while":   WHILE,
@@ -100,6 +103,7 @@ var reservedLu = map[string]TokenKind{
 	"intOff":  IntOff,
 	"list":    LIST,
 	"addStr":  ADDSTR,
+	"addL":    ADDL,
 }
 
 type Token struct {
@@ -211,6 +215,8 @@ func TokenKindString(kind TokenKind) string {
 		return "read"
 	case ADDSTR:
 		return "addStr"
+	case ADDL:
+		return "addL"
 	default:
 		return fmt.Sprintf("unknown(%d)", kind)
 	}
