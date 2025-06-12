@@ -531,8 +531,6 @@ func (cg *CodeGenerator) genAddStrConst(call ast.CallExpr, rd int) {
 	cg.genStringEx(ast.StringExpr{Value: newStr}, rd)
 }
 
-const addStrBufSize = 64
-
 // genAddStrRuntime — конкатенация строки-приёмника (arg0) и одного символа (arg1)
 // rd = регистр, в который надо вернуть новый ptr.
 //

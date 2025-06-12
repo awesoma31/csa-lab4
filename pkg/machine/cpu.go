@@ -112,29 +112,36 @@ func (c *CPU) Run() string {
 }
 
 func (c *CPU) GetFormattedPortOutputs() string {
-	var allOutputs strings.Builder
-	c.log.Debug("───── Port Outputs ─────")
-
+	var all strings.Builder
 	for port, buf := range c.Ioc.OutBufAll() {
 		if len(buf) == 0 {
 			continue
 		}
 
-		var strBuilder strings.Builder
-		for _, b := range buf {
-			if b >= 32 && b <= 126 { // Печатаемые ASCII символы
-				strBuilder.WriteByte(b)
-			} else {
-				strBuilder.WriteString("*")
+		var line string
+		switch port {
+		case isa.PortCh:
+			var b strings.Builder
+			for _, w := range buf {
+				ch := byte(w)
+				if ch >= 32 && ch <= 126 {
+					b.WriteByte(ch)
+				} else {
+					b.WriteByte('*')
+				}
 			}
+			line = b.String()
+		default:
+			nums := make([]string, len(buf))
+			for i, w := range buf {
+				nums[i] = fmt.Sprintf("%d", int32(w))
+			}
+			line = strings.Join(nums, " ")
 		}
-		strOutput := strBuilder.String()
-
-		outputLine := fmt.Sprintf("port %d| %s\n", port, strOutput)
-		allOutputs.WriteString(outputLine)
-		c.log.Infof(outputLine)
+		fmt.Fprintf(&all, "port %d| %s\n", port, line)
+		c.log.Infof("port %d| %s", port, line)
 	}
-	return allOutputs.String()
+	return all.String()
 }
 
 func (c *CPU) PrintAllPortOutputs() {
@@ -147,7 +154,7 @@ func (c *CPU) PrintAllPortOutputs() {
 		var strBuilder strings.Builder
 		for _, b := range buf {
 			if b >= 32 && b <= 126 {
-				strBuilder.WriteByte(b)
+				strBuilder.WriteByte(byte(b))
 			} else {
 				strBuilder.WriteString("*")
 			}

@@ -124,68 +124,68 @@ func uOutB(rd, _, _ int) microStep {
 	return func(c *CPU) bool {
 		port := uint8(isa.PortCh)
 		data := byte(c.Reg.GPR[isa.ROutData])
-		c.Ioc.WritePort(port, data)
+		//TODO: check
+		c.Ioc.WritePort(port, uint32(data))
 		c.log.Debugf("TICK % 4d - port %d <- %s (0x%02X) byte | %v\n", c.Tick, port, isa.GetRegMnem(isa.ROutData), data, c.Ioc.Output(port))
 		return true
 	}
 }
 
-// func uOutW(rd, _, _ int) microStep {
-// 	return func(c *CPU) bool {
-// 		data := int32(c.Reg.GPR[isa.ROutData])
-// 		numStr := fmt.Sprintf("%d", int32(data))
-// 		for _, ch := range numStr {
-// 			c.Ioc.WritePort(isa.PortD, byte(ch))
-// 		}
-// 		return true
-// 	}
-// }
-
 func uOutW(rd, _, _ int) microStep {
-	var digits []byte
-	var idx int
-
 	return func(c *CPU) bool {
-		if digits == nil {
-			v := int32(c.Reg.GPR[isa.ROutData])
-
-			if v == 0 {
-				digits = []byte{'0'}
-			} else {
-				neg := v < 0
-				if neg {
-					v = -v
-				}
-
-				for v > 0 {
-					d := v % 10
-					digits = append(digits, byte('0'+d))
-					v /= 10
-				}
-				if neg {
-					digits = append(digits, '-')
-				}
-				for i, j := 0, len(digits)-1; i < j; i, j = i+1, j-1 {
-					digits[i], digits[j] = digits[j], digits[i]
-				}
-			}
-			idx = 0
-		}
-		ch := digits[idx]
-		c.Ioc.WritePort(isa.PortD, ch)
-		// TODO: log
-		c.log.Debugf("TICK % 4d char=%q (0x%02X)",
-			c.Tick, ch, ch)
-		idx++
-
-		if idx >= len(digits) {
-			digits = nil
-			idx = 0
-			return true
-		}
-		return false
+		data := int32(c.Reg.GPR[isa.ROutData])
+		//TODO: check
+		// numStr := fmt.Sprintf("%d", int32(data))
+		c.Ioc.WritePort(isa.PortD, uint32(data))
+		return true
 	}
 }
+
+// func uOutW(rd, _, _ int) microStep {
+// 	var digits []byte
+// 	var idx int
+//
+// 	return func(c *CPU) bool {
+// 		if digits == nil {
+// 			v := int32(c.Reg.GPR[isa.ROutData])
+//
+// 			if v == 0 {
+// 				digits = []byte{'0'}
+// 			} else {
+// 				neg := v < 0
+// 				if neg {
+// 					v = -v
+// 				}
+//
+// 				for v > 0 {
+// 					d := v % 10
+// 					digits = append(digits, byte('0'+d))
+// 					v /= 10
+// 				}
+// 				if neg {
+// 					digits = append(digits, '-')
+// 				}
+// 				for i, j := 0, len(digits)-1; i < j; i, j = i+1, j-1 {
+// 					digits[i], digits[j] = digits[j], digits[i]
+// 				}
+// 			}
+// 			idx = 0
+// 		}
+// 		ch := digits[idx]
+// 		c.Ioc.WritePort(isa.PortD, ch)
+// 		// TODO: log
+// 		c.log.Debugf("TICK % 4d char=%q (0x%02X)",
+// 			c.Tick, ch, ch)
+// 		idx++
+//
+// 		if idx >= len(digits) {
+// 			digits = nil
+// 			idx = 0
+// 			return true
+// 		}
+// 		return false
+// 	}
+// }
 
 func uCmpRR(_, rs1, rs2 int) microStep {
 	return func(c *CPU) bool {

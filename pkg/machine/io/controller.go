@@ -6,11 +6,11 @@ import (
 
 type Controller struct {
 	Sched    map[int]Input
-	portsVal map[uint8]byte
-	outBuf   map[uint8][]byte
+	portsVal map[uint8]uint32
+	outBuf   map[uint8][]uint32
 }
 
-func (ioc *Controller) OutBufAll() map[uint8][]byte {
+func (ioc *Controller) OutBufAll() map[uint8][]uint32 {
 	return ioc.outBuf
 }
 
@@ -21,8 +21,8 @@ func NewIOController(entries []TickEntry) *Controller {
 	}
 	return &Controller{
 		Sched:    m,
-		portsVal: make(map[uint8]byte),
-		outBuf:   make(map[uint8][]byte),
+		portsVal: make(map[uint8]uint32),
+		outBuf:   make(map[uint8][]uint32),
 	}
 }
 
@@ -33,43 +33,44 @@ func (ioc *Controller) CheckTick(tick int) (bool, uint8) {
 	}
 
 	port := byte(inp.IrqNumber)
-	ioc.portsVal[port] = toByte(inp.Value)
+	// ioc.portsVal[port] = toByte(inp.Value)
+	ioc.portsVal[port] = toUint32(inp.Value)
 	delete(ioc.Sched, tick)
 	return true, port
 }
 
-func (ioc *Controller) ReadPort(p uint8) uint8 {
+func (ioc *Controller) ReadPort(p uint8) uint32 {
 	return ioc.portsVal[p]
 }
 
-func (ioc *Controller) WritePort(p uint8, v byte) {
+func (ioc *Controller) WritePort(p uint8, v uint32) {
 	ioc.outBuf[p] = append(ioc.outBuf[p], v)
 }
 
-func (ioc *Controller) Output(port uint8) []byte {
+func (ioc *Controller) Output(port uint8) []uint32 {
 	return ioc.outBuf[port]
 }
 
-func (ioc *Controller) OutputAll() []byte {
-	var all []byte
+func (ioc *Controller) OutputAll() []uint32 {
+	var all []uint32
 	for _, b := range ioc.outBuf {
 		all = append(all, b...)
 	}
 	return all
 }
 
-func toByte(v any) byte {
+func toUint32(v any) uint32 {
 	switch t := v.(type) {
 	case int, int8, int16, int32, int64:
-		return byte(reflect.ValueOf(t).Int() & 0xFF)
+		return uint32(reflect.ValueOf(t).Int())
 	case uint, uint16, uint32, uint64:
-		return byte(reflect.ValueOf(t).Uint() & 0xFF)
+		return uint32(reflect.ValueOf(t).Uint())
 	case string:
 		if len(t) > 0 {
-			return t[0]
+			return uint32(t[0]) // берём первый символ
 		}
 	case byte:
-		return t
+		return uint32(t)
 	}
 	return 0
 }
