@@ -16,7 +16,7 @@ const (
 	RT                 //11
 	RT2                //12
 	ZERO               // 13
-	ONE                // 14
+	R7                 // 14
 	placeholder        // 15
 )
 

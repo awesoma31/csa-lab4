@@ -7,7 +7,7 @@ PRINT STMT
 [0x0007] - 51C13A00 - Opc: CMP, Mode: RegReg, D:, S1:RC, S2:zero
 [0x0008] - C3000000 - Opc: JE, Mode: JAbsAddr, D:, S1:, S2:
 [0x0009] - 03E00000 - Opc: NOP, Mode: NoOperands, D:, S1:, S2:
-[0x000A] - 05ECA000 - Opc: MOV, Mode: MvLowRegIndReg, D:ROutData, S1:ROutAddr, S2:
+[0x000A] - 05ECA000 - Opc: MOV, Mode: MvLowRegIndToReg, D:ROutData, S1:ROutAddr, S2:
 [0x000B] - 6A820000 - Opc: OUT, Mode: Byte, D:port Char, S1:, S2:
 [0x000C] - 46532000 - Opc: SUB, Mode: MathRIR, D:RC, S1:RC, S2:
 [0x000D] - 00000001 - Imm
@@ -48,7 +48,7 @@ READ_CHAR EXPR
 PRINT STMT
 [0x002B] - 04CA0000 - Opc: MOV, Mode: MvMemReg, D:ROutAddr, S1:, S2:
 [0x002C] - 0000001C - Imm
-[0x002D] - 0472A000 - Opc: MOV, Mode: MvRegIndReg, D:RC, S1:ROutAddr, S2:
+[0x002D] - 0472A000 - Opc: MOV, Mode: MvRegIndToReg, D:RC, S1:ROutAddr, S2:
 [0x002E] - 8D732000 - Opc: AND, Mode: ImmReg, D:RC, S1:RC, S2:
 [0x002F] - 000000FF - Imm
 [0x0030] - 424AA000 - Opc: ADD, Mode: MathRIR, D:ROutAddr, S1:ROutAddr, S2:
@@ -56,7 +56,7 @@ PRINT STMT
 [0x0032] - 51C13A00 - Opc: CMP, Mode: RegReg, D:, S1:RC, S2:zero
 [0x0033] - C3000000 - Opc: JE, Mode: JAbsAddr, D:, S1:, S2:
 [0x0034] - 03E00000 - Opc: NOP, Mode: NoOperands, D:, S1:, S2:
-[0x0035] - 05ECA000 - Opc: MOV, Mode: MvLowRegIndReg, D:ROutData, S1:ROutAddr, S2:
+[0x0035] - 05ECA000 - Opc: MOV, Mode: MvLowRegIndToReg, D:ROutData, S1:ROutAddr, S2:
 [0x0036] - 6A820000 - Opc: OUT, Mode: Byte, D:port Char, S1:, S2:
 [0x0037] - 46532000 - Opc: SUB, Mode: MathRIR, D:RC, S1:RC, S2:
 [0x0038] - 00000001 - Imm

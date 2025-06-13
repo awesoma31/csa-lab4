@@ -118,7 +118,7 @@ func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) 
 	cg.instructionMemory = append(cg.instructionMemory, instructionWord)
 	var rdMnem string
 	switch opcode {
-	case isa.OpIn, isa.OpOut, isa.OpOutB:
+	case isa.OpIn, isa.OpOut:
 		rdMnem = isa.GetPortMnem(dest)
 	default:
 		rdMnem = isa.GetRegMnem(dest)
@@ -158,10 +158,12 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 	case isa.MvRegMem: // reg to mem; dest=addr, s1=reg
 		cg.emitInstruction(isa.OpMov, mode, -1, s1, -1)
 		cg.emitImmediate(uint32(dest))
-	case isa.MvRegIndReg:
-		cg.emitInstruction(isa.OpMov, isa.MvRegIndReg, dest, s1, -1)
-	case isa.MvByteRegIndReg:
-		cg.emitInstruction(isa.OpMov, isa.MvByteRegIndReg, dest, s1, -1)
+	case isa.MvRegIndToReg:
+		cg.emitInstruction(isa.OpMov, isa.MvRegIndToReg, dest, s1, -1)
+	case isa.MvRegToRegInd: // mem[dest]<-rs1
+		cg.emitInstruction(isa.OpMov, isa.MvRegToRegInd, dest, s1, -1)
+	case isa.MvByteRegIndToReg:
+		cg.emitInstruction(isa.OpMov, isa.MvByteRegIndToReg, dest, s1, -1)
 	case isa.MvRegLowToMem:
 		cg.emitInstruction(isa.OpMov, isa.MvRegLowToMem, -1, s1, -1)
 		cg.emitImmediate(uint32(dest))
@@ -191,11 +193,7 @@ func (cg *CodeGenerator) PatchWord(address, value uint32) {
 		cg.addError(fmt.Sprintf("Attempted to patch address %d out of bounds (instruction memory size %d).", address, len(cg.instructionMemory)))
 		return
 	}
-	// NOTE: displaying in the wrong address bcs  extra lines of debug
 	cg.instructionMemory[address] = value
-	// originalLine := cg.debugAssembly[address]
-	// cg.debugAssembly[address] = fmt.Sprintf("%s ->[%08X] PATCHED to: 0x%08X", originalLine, address, value)
-	// fmt.Printf("%s ->[%08X] PATCHED to: 0x%08X\n", originalLine, address, value)
 }
 
 func (cg *CodeGenerator) PatchDebugAssemblyByAddress(targetAddress uint32, newContent string) {

@@ -66,14 +66,14 @@ IF STATEMENT CONDITION:
 [0x003B] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
 [0x003C] - 00000078 - Imm
 [0x003D] - 42062400 - Opc: ADD, Mode: MathRRR, D:RAddr, S1:RM1, S2:RM2
-[0x003E] - 05E26000 - Opc: MOV, Mode: MvLowRegIndReg, D:RM1, S1:RAddr, S2:
+[0x003E] - 05E26000 - Opc: MOV, Mode: MvLowRegIndToReg, D:RM1, S1:RAddr, S2:
 [0x003F] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
 [0x0040] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
 [0x0041] - 00000068 - Imm
 [0x0042] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
 [0x0043] - 00000080 - Imm
 [0x0044] - 42062400 - Opc: ADD, Mode: MathRRR, D:RAddr, S1:RM1, S2:RM2
-[0x0045] - 05E46000 - Opc: MOV, Mode: MvLowRegIndReg, D:RM2, S1:RAddr, S2:
+[0x0045] - 05E46000 - Opc: MOV, Mode: MvLowRegIndToReg, D:RM2, S1:RAddr, S2:
 [0x0046] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
 [0x0047] - 51C02400 - Opc: CMP, Mode: RegReg, D:, S1:RM1, S2:RM2
 [0x0048] - D7000000 - Opc: JLE, Mode: JAbsAddr, D:, S1:, S2:
@@ -84,7 +84,7 @@ IF STMT CONSEQUENCE:
 [0x004C] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
 [0x004D] - 00000078 - Imm
 [0x004E] - 42062400 - Opc: ADD, Mode: MathRRR, D:RAddr, S1:RM1, S2:RM2
-[0x004F] - 05F86000 - Opc: MOV, Mode: MvLowRegIndReg, D:RT2, S1:RAddr, S2:
+[0x004F] - 05F86000 - Opc: MOV, Mode: MvLowRegIndToReg, D:RT2, S1:RAddr, S2:
 [0x0050] - 04418000 - Opc: MOV, Mode: MvRegLowMem, D:, S1:RT2, S2:
 [0x0051] - 00000088 - Imm
 [0x0052] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
@@ -92,13 +92,13 @@ IF STMT CONSEQUENCE:
 [0x0054] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
 [0x0055] - 00000080 - Imm
 [0x0056] - 42062400 - Opc: ADD, Mode: MathRRR, D:RAddr, S1:RM1, S2:RM2
-[0x0057] - 05E06000 - Opc: MOV, Mode: MvLowRegIndReg, D:RA, S1:RAddr, S2:
+[0x0057] - 05E06000 - Opc: MOV, Mode: MvLowRegIndToReg, D:RA, S1:RAddr, S2:
 [0x0058] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
 [0x0059] - 00000068 - Imm
 [0x005A] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
 [0x005B] - 00000080 - Imm
 [0x005C] - 42062400 - Opc: ADD, Mode: MathRRR, D:RAddr, S1:RM1, S2:RM2
-[0x005D] - 05E06000 - Opc: MOV, Mode: MvLowRegIndReg, D:RA, S1:RAddr, S2:
+[0x005D] - 05E06000 - Opc: MOV, Mode: MvLowRegIndToReg, D:RA, S1:RAddr, S2:
 [0x005E] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
 [0x005F] - 00000068 - Imm
 [0x0060] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
@@ -148,7 +148,7 @@ IF STMT CONSEQUENCE:
 [0x008A] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
 [0x008B] - 00000000 - Imm
 [0x008C] - 42062400 - Opc: ADD, Mode: MathRRR, D:RAddr, S1:RM1, S2:RM2
-[0x008D] - 05F86000 - Opc: MOV, Mode: MvLowRegIndReg, D:RT2, S1:RAddr, S2:
+[0x008D] - 05F86000 - Opc: MOV, Mode: MvLowRegIndToReg, D:RT2, S1:RAddr, S2:
 [0x008E] - 04418000 - Opc: MOV, Mode: MvRegLowMem, D:, S1:RT2, S2:
 [0x008F] - 0000008C - Imm
 WHILE STATEMENT CONDITION:
@@ -167,7 +167,7 @@ WHILE STMT BODY:
 [0x009B] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
 [0x009C] - 00000090 - Imm
 [0x009D] - 42062400 - Opc: ADD, Mode: MathRRR, D:RAddr, S1:RM1, S2:RM2
-[0x009E] - 05E06000 - Opc: MOV, Mode: MvLowRegIndReg, D:RA, S1:RAddr, S2:
+[0x009E] - 05E06000 - Opc: MOV, Mode: MvLowRegIndToReg, D:RA, S1:RAddr, S2:
 [0x009F] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
 [0x00A0] - 0000008C - Imm
 PRINT STMT

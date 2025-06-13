@@ -26,8 +26,8 @@ func init() {
 	ucode[isa.OpMov][isa.MvRegReg] = uMovRegReg
 	ucode[isa.OpMov][isa.MvImmMem] = uMovImmMem
 	ucode[isa.OpMov][isa.MvRegMem] = uMovRegMem
-	ucode[isa.OpMov][isa.MvRegIndReg] = uMovRegIndReg
-	ucode[isa.OpMov][isa.MvByteRegIndReg] = uMovByteRegIndReg
+	ucode[isa.OpMov][isa.MvRegIndToReg] = uMovRegIndReg
+	ucode[isa.OpMov][isa.MvByteRegIndToReg] = uMovByteRegIndReg
 	ucode[isa.OpMov][isa.MvRegLowToMem] = uMovRegLowToMem
 	ucode[isa.OpMov][isa.MvLowRegToRegInd] = uMovLowRegToRegInd
 
@@ -41,6 +41,8 @@ func init() {
 	ucode[isa.OpJl][isa.JAbsAddr] = uJL
 	ucode[isa.OpJge][isa.JAbsAddr] = uJGE
 	ucode[isa.OpJle][isa.JAbsAddr] = uJLE
+	ucode[isa.OpJcc][isa.JAbsAddr] = uJCC
+	ucode[isa.OpJcs][isa.JAbsAddr] = uJCS
 
 	//stack
 	ucode[isa.OpPush][isa.SingleRegMode] = uPushReg
@@ -183,6 +185,51 @@ func uCmpRR(_, rs1, rs2 int) microStep {
 		c.log.Debugf("TICK % 4d - CMP %v, %v | %v; %v %v\n", c.Tick, isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprFlags(), c.ReprRegVal(rs1), c.ReprRegVal(rs2))
 
 		return true
+	}
+}
+
+func uJCC(_, _, _ int) microStep {
+	stage := 0
+	r := isa.RAddr
+	return func(c *CPU) bool {
+		switch stage {
+		case 0:
+			c.Reg.GPR[r] = c.memI[c.Reg.PC]
+			c.log.Debugf("TICK % 4d - %v<-memI[0x%X]; PC++ | %v\n", c.Tick, isa.GetRegMnem(r), c.Reg.PC, c.ReprRegVal(r))
+			c.Reg.PC++
+			stage++
+		case 1:
+			if !c.C {
+				c.Reg.PC = c.Reg.GPR[r]
+				c.log.Debugf("TICK % 4d - PC<-%v | %v\n", c.Tick, isa.GetRegMnem(r), c.ReprPC())
+				return true
+			}
+			c.log.Debugf("TICK % 4d - JCC not taken | %v; %v\n", c.Tick, c.ReprPC(), c.ReprFlags())
+			return true
+		}
+		return false
+	}
+}
+func uJCS(_, _, _ int) microStep {
+	stage := 0
+	r := isa.RAddr
+	return func(c *CPU) bool {
+		switch stage {
+		case 0:
+			c.Reg.GPR[r] = c.memI[c.Reg.PC]
+			c.log.Debugf("TICK % 4d - %v<-memI[0x%X]; PC++ | %v\n", c.Tick, isa.GetRegMnem(r), c.Reg.PC, c.ReprRegVal(r))
+			c.Reg.PC++
+			stage++
+		case 1:
+			if c.C {
+				c.Reg.PC = c.Reg.GPR[r]
+				c.log.Debugf("TICK % 4d - PC<-%v | %v\n", c.Tick, isa.GetRegMnem(r), c.ReprPC())
+				return true
+			}
+			c.log.Debugf("TICK % 4d - JCS not taken | %v; %v\n", c.Tick, c.ReprPC(), c.ReprFlags())
+			return true
+		}
+		return false
 	}
 }
 
@@ -360,16 +407,16 @@ func uAddRRR(rd, rs1, rs2 int) microStep {
 }
 func uAddRIR(rd, rs1, _ int) microStep {
 	stage := 0
+	r := isa.RC
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
-			c.Reg.GPR[isa.RM1] = c.memI[c.Reg.PC]
-			c.log.Debugf("TICK % 4d - %v<-memI[0x%X]; PC++ | %v\n", c.Tick, isa.GetRegMnem(isa.RM1), c.Reg.PC, c.ReprRegVal(isa.RM1))
+			c.Reg.GPR[r] = c.memI[c.Reg.PC]
+			c.log.Debugf("TICK % 4d - %v<-memI[0x%X]; PC++ | %v\n", c.Tick, isa.GetRegMnem(r), c.Reg.PC, c.ReprRegVal(r))
 			c.Reg.PC++
 			stage++
 		case 1:
-			MathRRR(c, rd, rs1, isa.RM1, isa.OpAdd)
-			// c.log.Debugf("TICK % 4d - %v<-%v + %v | %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(isa.RM1), c.ReprRegVal(rd))
+			MathRRR(c, rd, rs1, r, isa.OpAdd)
 			return true
 		}
 		return false
@@ -480,7 +527,7 @@ func MathRRR(c *CPU, rd, rs1, rs2 int, opc uint32) {
 		isa.OpDiv: "/",
 	}
 
-	c.log.Debugf("TICK % 4d - %v<-(%v%v%v) | %v %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), aluOpLu[opc], isa.GetRegMnem(rs2), c.ReprRegVal(rd), c.ReprFlags())
+	c.log.Debugf("TICK % 4d - %v<-%v%v%v | %v %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), aluOpLu[opc], isa.GetRegMnem(rs2), c.ReprRegVal(rd), c.ReprFlags())
 }
 
 func uPopReg(rd, _, _ int) microStep {

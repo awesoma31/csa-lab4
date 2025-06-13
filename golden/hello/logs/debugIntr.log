@@ -7,7 +7,7 @@ PRINT STMT
 [0x0007] - 51C13A00 - Opc: CMP, Mode: RegReg, D:, S1:RC, S2:zero
 [0x0008] - C3000000 - Opc: JE, Mode: JAbsAddr, D:, S1:, S2:
 [0x0009] - 03E00000 - Opc: NOP, Mode: NoOperands, D:, S1:, S2:
-[0x000A] - 05ECA000 - Opc: MOV, Mode: MvLowRegIndReg, D:ROutData, S1:ROutAddr, S2:
+[0x000A] - 05ECA000 - Opc: MOV, Mode: MvLowRegIndToReg, D:ROutData, S1:ROutAddr, S2:
 [0x000B] - 6A820000 - Opc: OUT, Mode: Byte, D:port Char, S1:, S2:
 [0x000C] - 46532000 - Opc: SUB, Mode: MathRIR, D:RC, S1:RC, S2:
 [0x000D] - 00000001 - Imm

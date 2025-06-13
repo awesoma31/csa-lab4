@@ -44,9 +44,9 @@ type CPU struct {
 	Ioc *io.Controller
 
 	Reg struct {
-		GPR      [14]uint32
+		GPR      [16]uint32
 		PC, IR   uint32
-		savedGPR [14]uint32
+		savedGPR [16]uint32
 		savedPC  uint32
 	}
 	N, Z, V, C     bool

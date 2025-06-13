@@ -18,11 +18,11 @@ const (
 	OpDiv uint32 = 0x13
 	OpCmp uint32 = 0x14
 
-	// 0x18-0x1F: I/O
+	//I/O
 	OpIn uint32 = 0x18
 	// OpOutB uint32 = 0x19
-	OpOut    uint32 = 0x1A
-	OpOutB   uint32 = 0x1B
+	OpOut uint32 = 0x1A
+	// OpOutB   uint32 = 0x1B
 	OpIntOn  uint32 = 0x1C
 	OpIntOff uint32 = 0x1D
 
@@ -44,4 +44,6 @@ const (
 	OpJb  uint32 = 0x37
 	OpJae uint32 = 0x38
 	OpJbe uint32 = 0x39
+	OpJcc uint32 = 0x3A
+	OpJcs uint32 = 0x3B
 )

@@ -129,7 +129,7 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 		cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
 		cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
 		jToEndAddr := cg.ReserveWord()
-		cg.emitMov(isa.MvByteRegIndReg, isa.ROutData, isa.ROutAddr, -1)
+		cg.emitMov(isa.MvByteRegIndToReg, isa.ROutData, isa.ROutAddr, -1)
 		cg.emitInstruction(isa.OpOut, isa.ByteM, isa.PortCh, -1, -1)
 		cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RC, isa.RC, -1)
 		cg.emitImmediate(1)
@@ -159,7 +159,7 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 
 		} else {
 			cg.genEx(s.Argument, isa.ROutAddr)
-			cg.emitMov(isa.MvRegIndReg, isa.RC, isa.ROutAddr, -1) // mov rc <- mem[routaddr]
+			cg.emitMov(isa.MvRegIndToReg, isa.RC, isa.ROutAddr, -1) // mov rc <- mem[routaddr]
 			cg.emitInstruction(isa.OpAnd, isa.ImmReg, isa.RC, isa.RC, -1)
 			cg.emitImmediate(0xFF)
 			// add 1 to routaddr bcs generateExpr will store ptr to str len initially
@@ -172,7 +172,7 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 			cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
 			cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
 			jToEndAddr := cg.ReserveWord()
-			cg.emitMov(isa.MvByteRegIndReg, isa.ROutData, isa.ROutAddr, -1)
+			cg.emitMov(isa.MvByteRegIndToReg, isa.ROutData, isa.ROutAddr, -1)
 
 			cg.emitInstruction(isa.OpOut, isa.ByteM, isa.PortCh, -1, -1)
 			cg.emitInstruction(isa.OpSub, isa.MathRIR, isa.RC, isa.RC, -1)
@@ -188,7 +188,7 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 
 	case ast.NumberExpr:
 		cg.genEx(arg, isa.ROutData)
-		cg.emitInstruction(isa.OpOutB, isa.NoOperands, isa.PortD, -1, -1)
+		cg.emitInstruction(isa.OpOut, isa.NoOperands, isa.PortD, -1, -1)
 
 	default:
 		cg.addError(fmt.Sprintf("Unsupported argument type for print: %T", arg))
@@ -204,8 +204,8 @@ func (cg *CodeGenerator) genEx(expr ast.Expr, rd int) {
 		cg.addError("generating long expr is not supported")
 
 	case ast.ArrayIndexEx:
-		cg.genArrayAddress(e, isa.RAddr)                   // arr addr -> raddr
-		cg.emitMov(isa.MvByteRegIndReg, rd, isa.RAddr, -1) // byte mem[raddr]->rd
+		cg.genArrayAddress(e, isa.RAddr)                     // arr addr -> raddr
+		cg.emitMov(isa.MvByteRegIndToReg, rd, isa.RAddr, -1) // byte mem[raddr]->rd
 
 	case ast.BinaryExpr:
 		cg.genEx(e.Left, isa.RM1)
@@ -259,8 +259,9 @@ func (cg *CodeGenerator) genEx(expr ast.Expr, rd int) {
 		switch e.Name {
 		case lexer.TokenKindString(lexer.ADDSTR):
 			cg.genAddStrConst(e, rd)
-		// case lexer.TokenKindString(lexer.ADDL):
-		// 	cg.genAddLong(e)
+		case lexer.TokenKindString(lexer.ADDL):
+			panic("long expr is unimpl")
+			// cg.genAddLong(e.Args)
 		default:
 			cg.addError(fmt.Sprintf("unknown func name %s", e.Name))
 		}
@@ -292,8 +293,70 @@ func (cg *CodeGenerator) genEx(expr ast.Expr, rd int) {
 	}
 }
 
-func (cg *CodeGenerator) genAddLong() {
-	panic("unimplemented")
+// rd<-ptr to long number
+// uses RA RT RT2 RM1 RM2 R6 R7
+func (cg *CodeGenerator) genAddLongAssign(args []ast.Expr, rd int) {
+	var addrA, addrB uint32
+	resPtr := cg.addLongData(0)
+	rdLo := isa.RA
+	rdHi := isa.RT2
+
+	aPtrReg := isa.RM1
+	bPtrReg := isa.RM2
+
+	switch arg1 := args[0].(type) {
+	case ast.SymbolExpr:
+		addrA = cg.FindSymbol(arg1).AbsAddress
+	}
+	switch arg2 := args[1].(type) {
+	case ast.SymbolExpr:
+		addrB = cg.FindSymbol(arg2).AbsAddress
+	}
+
+	cg.emitMov(isa.MvImmReg, aPtrReg, int(addrA), -1) // RM1 = ptr long A
+	cg.emitMov(isa.MvImmReg, bPtrReg, int(addrB), -1) // RM2 = ptr long B
+
+	// lo
+	cg.emitMov(isa.MvRegIndToReg, isa.RT, aPtrReg, -1) // RT = lowA // rt<-[rm1]
+	cg.emitInstruction(isa.OpAdd, isa.MathRIR, aPtrReg, aPtrReg, -1)
+	cg.emitImmediate(4) // RM1 += 4
+
+	cg.emitMov(isa.MvRegIndToReg, isa.R6, bPtrReg, -1) // R6 = lowB
+	cg.emitInstruction(isa.OpAdd, isa.MathRIR, bPtrReg, bPtrReg, -1)
+	cg.emitImmediate(4) // RM2 += 4
+
+	cg.emitInstruction(isa.OpAdd, isa.MathRRR, rdLo, isa.RT, isa.R6) // RA = lawA + lowB
+	cg.emitInstruction(isa.OpJcc, isa.JAbsAddr, -1, -1, -1)
+	skip := cg.ReserveWord()
+	cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.R7, isa.ZERO, -1) // if C high++ now // 0 + 1
+	cg.emitImmediate(1)
+
+	// hi
+	high := cg.nextInstructionAddr
+	cg.PatchWord(skip, high)
+
+	cg.emitMov(isa.MvRegIndToReg, isa.RT, aPtrReg, -1) // RT = highA
+	cg.emitMov(isa.MvRegIndToReg, isa.R6, bPtrReg, -1) // R6 = highB
+
+	cg.emitInstruction(isa.OpAdd, isa.MathRRR, rdHi, isa.RT, isa.R6) // RT2 = high
+	cg.emitInstruction(isa.OpAdd, isa.MathRRR, rdHi, rdHi, isa.R7)   // if C was set
+
+	// move to mem
+	cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, rdLo, -1) // mem<-res low
+	cg.emitImmediate(resPtr)
+	cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, rdHi, -1) // mem<-res hi
+	cg.emitImmediate(resPtr + 4)
+
+	// rd<-res ptr (low part)
+	cg.emitInstruction(isa.OpMov, isa.MvImmReg, rd, -1, -1)
+	cg.emitImmediate(resPtr)
+}
+
+func (cg *CodeGenerator) FindSymbol(arg ast.SymbolExpr) *SymbolEntry {
+	if s1, found := cg.currentScope().symbols[arg.Value]; found {
+		return &s1
+	}
+	panic("undeclared variable")
 }
 
 func (cg *CodeGenerator) emitPushReg(reg int) {
@@ -396,11 +459,8 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 				}
 				cg.addSymbolToScope(sym)
 
-				// ── 2. генерируем addStr(arg1,arg2)  →  RA = newPtr ──────
 				cg.genAddStrConst(assignedVal, isa.RA)
 
-				// ── 3. сохраняем ptr в память переменной ─────────────────
-				//TODO: почему то адрес на 1 больше
 				cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, isa.RA, -1)
 				cg.emitImmediate(ptrAddr)
 			case lexer.TokenKindString(lexer.ADDL):
@@ -616,8 +676,8 @@ func (cg *CodeGenerator) genAddStrRuntime(call ast.CallExpr, rd int) {
 	cg.genEx(call.Args[1], isa.RM1) // ptr lenB
 
 	// ---------- длины ---------------------------
-	cg.emitMov(isa.MvByteRegIndReg, isa.RT, isa.RA, -1)  // lenA = *ptrA
-	cg.emitMov(isa.MvByteRegIndReg, isa.R6, isa.RM1, -1) // lenB = *ptrB
+	cg.emitMov(isa.MvByteRegIndToReg, isa.RT, isa.RA, -1)  // lenA = *ptrA
+	cg.emitMov(isa.MvByteRegIndToReg, isa.R6, isa.RM1, -1) // lenB = *ptrB
 
 	// dstPtr = heapPtr + 1  (а heapPtr хранится в памяти)
 	cg.emitInstruction(isa.OpMov, isa.MvMemReg, isa.RD, -1, -1)
@@ -711,7 +771,7 @@ func (cg *CodeGenerator) genCopyBytes(src, dst, cnt int) {
 	cg.emitInstruction(isa.OpJe, isa.JAbsAddr, -1, -1, -1)
 	end := cg.ReserveWord()
 
-	cg.emitMov(isa.MvByteRegIndReg, isa.RT2, src, -1) // RT2 = *src
+	cg.emitMov(isa.MvByteRegIndToReg, isa.RT2, src, -1) // RT2 = *src
 	cg.emitInstruction(isa.OpMov, isa.MvLowRegToRegInd, dst, isa.RT2, -1)
 
 	cg.emitInstruction(isa.OpAdd, isa.MathRIR, src, src, -1)
@@ -754,12 +814,12 @@ func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd int) {
 	case ast.CallExpr:
 		switch r.Name {
 		case lexer.TokenKindString(lexer.ADDSTR):
-			//TODO:
+			//TODO: rd<- ptr to new str
 			cg.addError(fmt.Sprintf("not supported func assignment %s", r.Name))
 			cg.genAddStrRuntime(r, isa.RA)
 			rd = isa.RA
 		case lexer.TokenKindString(lexer.ADDL):
-			cg.genAddLong()
+			cg.genAddLongAssign(r.Args, rd) // rd<-ptr to long
 		default:
 			cg.addError(fmt.Sprintf("unknown func name %s", r.Name))
 		}
@@ -767,6 +827,7 @@ func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd int) {
 	default:
 		cg.genEx(e.AssignedValue, rd)
 	}
+
 	switch target := e.Assigne.(type) {
 	case ast.SymbolExpr:
 		symbol, found := cg.lookupSymbol(target.Value)
