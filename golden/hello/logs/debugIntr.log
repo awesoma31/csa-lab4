@@ -1,19 +1,18 @@
+[0x0002] - 77E00000 - Opc: IntOff, Mode: NoOperands, D:, S1:, S2:
 PRINT STMT
-[0x0002] - 042A0000 - Opc: MOV, Mode: MvImmReg, D:ROutAddr, S1:, S2:
-[0x0003] - 00000005 - Imm
-[0x0004] - 04320000 - Opc: MOV, Mode: MvImmReg, D:RC, S1:, S2:
-[0x0005] - 0000000B - Imm
-[0x0006] - 51C13A00 - Opc: CMP, Mode: RegReg, D:, S1:RC, S2:zero
-[0x0007] - C3000000 - Opc: JE, Mode: JAbsAddr, D:, S1:, S2:
-[0x0008] - 03E00000 - Opc: NOP, Mode: NoOperands, D:, S1:, S2:
-[0x0009] - 05ECA000 - Opc: MOV, Mode: MvLowRegIndReg, D:ROutData, S1:ROutAddr, S2:
-[0x000A] - 6A820000 - Opc: OUT, Mode: Byte, D:port Char, S1:, S2:
-[0x000B] - 46532000 - Opc: SUB, Mode: MathRIR, D:RC, S1:RC, S2:
-[0x000C] - 00000001 - Imm
-[0x000D] - 424AA000 - Opc: ADD, Mode: MathRIR, D:ROutAddr, S1:ROutAddr, S2:
-[0x000E] - 00000001 - Imm
-[0x000F] - 83000000 - Opc: JMP, Mode: JAbsAddr, D:, S1:, S2:
-[0x0010] - 00000006 - Imm
-[0x0011] - 1BE00000 - Opc: HALT, Mode: NoOperands, D:, S1:, S2:
-INTERRUPTION 1 STMT
-[0x0012] - 93E20000 - Opc: IRet, Mode: NoOperands, D:RM1, S1:, S2:
+[0x0003] - 042A0000 - Opc: MOV, Mode: MvImmReg, D:ROutAddr, S1:, S2:
+[0x0004] - 00000005 - Imm
+[0x0005] - 04320000 - Opc: MOV, Mode: MvImmReg, D:RC, S1:, S2:
+[0x0006] - 0000000B - Imm
+[0x0007] - 51C13A00 - Opc: CMP, Mode: RegReg, D:, S1:RC, S2:zero
+[0x0008] - C3000000 - Opc: JE, Mode: JAbsAddr, D:, S1:, S2:
+[0x0009] - 03E00000 - Opc: NOP, Mode: NoOperands, D:, S1:, S2:
+[0x000A] - 05ECA000 - Opc: MOV, Mode: MvLowRegIndReg, D:ROutData, S1:ROutAddr, S2:
+[0x000B] - 6A820000 - Opc: OUT, Mode: Byte, D:port Char, S1:, S2:
+[0x000C] - 46532000 - Opc: SUB, Mode: MathRIR, D:RC, S1:RC, S2:
+[0x000D] - 00000001 - Imm
+[0x000E] - 424AA000 - Opc: ADD, Mode: MathRIR, D:ROutAddr, S1:ROutAddr, S2:
+[0x000F] - 00000001 - Imm
+[0x0010] - 83000000 - Opc: JMP, Mode: JAbsAddr, D:, S1:, S2:
+[0x0011] - 00000007 - Imm
+[0x0012] - 1BE00000 - Opc: HALT, Mode: NoOperands, D:, S1:, S2:

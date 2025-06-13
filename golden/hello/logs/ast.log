@@ -1,14 +1,9 @@
 ast.BlockStmt{
   Body: []ast.Stmt{
+    ast.IntOffStmt{},
     ast.PrintStmt{
       Argument: ast.StringExpr{
         Value: "hello world",
-      },
-    },
-    ast.InterruptionStmt{
-      IrqNumber: 1,
-      Body: ast.BlockStmt{
-        Body: nil,
       },
     },
   },

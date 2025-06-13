@@ -1,0 +1,8 @@
+instruction_bin: "math/instr.bin"
+data_bin: "math/data.bin"
+debug: false
+log_file: "cpu.log"
+
+tick_limit: 10000
+
+max_interruptions: 2
