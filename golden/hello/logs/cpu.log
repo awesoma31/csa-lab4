@@ -1,0 +1,211 @@
+TICK    0 @ 0x77E00000 -  IntOff NoOperands; PC++ | PC=3/0x3
+TICK    1 - interruptions on | false
+TICK    2 @ 0x042A0000 -  MOV MvImmReg; PC++ | PC=4/0x4
+TICK    3 - ROutAddr<-#5; PC++ | SP=272/0x110
+TICK    4 @ 0x04320000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK    5 - RC<-#11; PC++ | SP=272/0x110
+TICK    6 @ 0x51C13A00 -  CMP RegReg; PC++ | PC=8/0x8
+TICK    7 - CMP RC, zero | N=0,Z=0,V=0,C=0; RC=11/0xB zero=0/0x0
+TICK    8 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=9/0x9
+TICK    9 - RF2<-memI[0x9]; PC++ | RF2=18/0x12
+TICK   10 - no jump | PC=10/0xA; N=0,Z=0,V=0,C=0
+TICK   11 @ 0x05ECA000 -  MOV MvLowRegIndToReg; PC++ | PC=11/0xB
+TICK   12 - ROutData <- memD[5] | ROutData=104/0x68
+TICK   13 @ 0x6A820000 -  OUT Byte; PC++ | PC=12/0xC
+TICK   14 - port 1 <- ROutData(0x68) char | [104]
+TICK   15 @ 0x46532000 -  SUB MathRIR; PC++ | PC=13/0xD
+TICK   16 - RF1<-memI[0xD]; PC++ | RF1=1/0x1
+TICK   17 - RC<-RC-RF1 | RC=11/0xB
+TICK   17 - RC<-RC-RF1 | RC=10/0xA N=0,Z=0,V=0,C=1
+TICK   18 @ 0x424AA000 -  ADD MathRIR; PC++ | PC=15/0xF
+TICK   19 - RF1<-memI[0xF]; PC++ | RF1=1/0x1
+TICK   20 - ROutAddr<-ROutAddr+RF1 | ROutAddr=6/0x6 N=0,Z=0,V=0,C=0
+TICK   21 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=17/0x11
+TICK   22 - PC<-memI[0x7]| PC=7/0x7
+TICK   23 @ 0x51C13A00 -  CMP RegReg; PC++ | PC=8/0x8
+TICK   24 - CMP RC, zero | N=0,Z=0,V=0,C=0; RC=10/0xA zero=0/0x0
+TICK   25 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=9/0x9
+TICK   26 - RF2<-memI[0x9]; PC++ | RF2=18/0x12
+TICK   27 - no jump | PC=10/0xA; N=0,Z=0,V=0,C=0
+TICK   28 @ 0x05ECA000 -  MOV MvLowRegIndToReg; PC++ | PC=11/0xB
+TICK   29 - ROutData <- memD[6] | ROutData=101/0x65
+TICK   30 @ 0x6A820000 -  OUT Byte; PC++ | PC=12/0xC
+TICK   31 - port 1 <- ROutData(0x65) char | [104 101]
+TICK   32 @ 0x46532000 -  SUB MathRIR; PC++ | PC=13/0xD
+TICK   33 - RF1<-memI[0xD]; PC++ | RF1=1/0x1
+TICK   34 - RC<-RC-RF1 | RC=10/0xA
+TICK   34 - RC<-RC-RF1 | RC=9/0x9 N=0,Z=0,V=0,C=1
+TICK   35 @ 0x424AA000 -  ADD MathRIR; PC++ | PC=15/0xF
+TICK   36 - RF1<-memI[0xF]; PC++ | RF1=1/0x1
+TICK   37 - ROutAddr<-ROutAddr+RF1 | ROutAddr=7/0x7 N=0,Z=0,V=0,C=0
+TICK   38 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=17/0x11
+TICK   39 - PC<-memI[0x7]| PC=7/0x7
+TICK   40 @ 0x51C13A00 -  CMP RegReg; PC++ | PC=8/0x8
+TICK   41 - CMP RC, zero | N=0,Z=0,V=0,C=0; RC=9/0x9 zero=0/0x0
+TICK   42 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=9/0x9
+TICK   43 - RF2<-memI[0x9]; PC++ | RF2=18/0x12
+TICK   44 - no jump | PC=10/0xA; N=0,Z=0,V=0,C=0
+TICK   45 @ 0x05ECA000 -  MOV MvLowRegIndToReg; PC++ | PC=11/0xB
+TICK   46 - ROutData <- memD[7] | ROutData=108/0x6C
+TICK   47 @ 0x6A820000 -  OUT Byte; PC++ | PC=12/0xC
+TICK   48 - port 1 <- ROutData(0x6C) char | [104 101 108]
+TICK   49 @ 0x46532000 -  SUB MathRIR; PC++ | PC=13/0xD
+TICK   50 - RF1<-memI[0xD]; PC++ | RF1=1/0x1
+TICK   51 - RC<-RC-RF1 | RC=9/0x9
+TICK   51 - RC<-RC-RF1 | RC=8/0x8 N=0,Z=0,V=0,C=1
+TICK   52 @ 0x424AA000 -  ADD MathRIR; PC++ | PC=15/0xF
+TICK   53 - RF1<-memI[0xF]; PC++ | RF1=1/0x1
+TICK   54 - ROutAddr<-ROutAddr+RF1 | ROutAddr=8/0x8 N=0,Z=0,V=0,C=0
+TICK   55 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=17/0x11
+TICK   56 - PC<-memI[0x7]| PC=7/0x7
+TICK   57 @ 0x51C13A00 -  CMP RegReg; PC++ | PC=8/0x8
+TICK   58 - CMP RC, zero | N=0,Z=0,V=0,C=0; RC=8/0x8 zero=0/0x0
+TICK   59 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=9/0x9
+TICK   60 - RF2<-memI[0x9]; PC++ | RF2=18/0x12
+TICK   61 - no jump | PC=10/0xA; N=0,Z=0,V=0,C=0
+TICK   62 @ 0x05ECA000 -  MOV MvLowRegIndToReg; PC++ | PC=11/0xB
+TICK   63 - ROutData <- memD[8] | ROutData=108/0x6C
+TICK   64 @ 0x6A820000 -  OUT Byte; PC++ | PC=12/0xC
+TICK   65 - port 1 <- ROutData(0x6C) char | [104 101 108 108]
+TICK   66 @ 0x46532000 -  SUB MathRIR; PC++ | PC=13/0xD
+TICK   67 - RF1<-memI[0xD]; PC++ | RF1=1/0x1
+TICK   68 - RC<-RC-RF1 | RC=8/0x8
+TICK   68 - RC<-RC-RF1 | RC=7/0x7 N=0,Z=0,V=0,C=1
+TICK   69 @ 0x424AA000 -  ADD MathRIR; PC++ | PC=15/0xF
+TICK   70 - RF1<-memI[0xF]; PC++ | RF1=1/0x1
+TICK   71 - ROutAddr<-ROutAddr+RF1 | ROutAddr=9/0x9 N=0,Z=0,V=0,C=0
+TICK   72 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=17/0x11
+TICK   73 - PC<-memI[0x7]| PC=7/0x7
+TICK   74 @ 0x51C13A00 -  CMP RegReg; PC++ | PC=8/0x8
+TICK   75 - CMP RC, zero | N=0,Z=0,V=0,C=0; RC=7/0x7 zero=0/0x0
+TICK   76 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=9/0x9
+TICK   77 - RF2<-memI[0x9]; PC++ | RF2=18/0x12
+TICK   78 - no jump | PC=10/0xA; N=0,Z=0,V=0,C=0
+TICK   79 @ 0x05ECA000 -  MOV MvLowRegIndToReg; PC++ | PC=11/0xB
+TICK   80 - ROutData <- memD[9] | ROutData=111/0x6F
+TICK   81 @ 0x6A820000 -  OUT Byte; PC++ | PC=12/0xC
+TICK   82 - port 1 <- ROutData(0x6F) char | [104 101 108 108 111]
+TICK   83 @ 0x46532000 -  SUB MathRIR; PC++ | PC=13/0xD
+TICK   84 - RF1<-memI[0xD]; PC++ | RF1=1/0x1
+TICK   85 - RC<-RC-RF1 | RC=7/0x7
+TICK   85 - RC<-RC-RF1 | RC=6/0x6 N=0,Z=0,V=0,C=1
+TICK   86 @ 0x424AA000 -  ADD MathRIR; PC++ | PC=15/0xF
+TICK   87 - RF1<-memI[0xF]; PC++ | RF1=1/0x1
+TICK   88 - ROutAddr<-ROutAddr+RF1 | ROutAddr=10/0xA N=0,Z=0,V=0,C=0
+TICK   89 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=17/0x11
+TICK   90 - PC<-memI[0x7]| PC=7/0x7
+TICK   91 @ 0x51C13A00 -  CMP RegReg; PC++ | PC=8/0x8
+TICK   92 - CMP RC, zero | N=0,Z=0,V=0,C=0; RC=6/0x6 zero=0/0x0
+TICK   93 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=9/0x9
+TICK   94 - RF2<-memI[0x9]; PC++ | RF2=18/0x12
+TICK   95 - no jump | PC=10/0xA; N=0,Z=0,V=0,C=0
+TICK   96 @ 0x05ECA000 -  MOV MvLowRegIndToReg; PC++ | PC=11/0xB
+TICK   97 - ROutData <- memD[A] | ROutData=32/0x20
+TICK   98 @ 0x6A820000 -  OUT Byte; PC++ | PC=12/0xC
+TICK   99 - port 1 <- ROutData(0x20) char | [104 101 108 108 111 32]
+TICK  100 @ 0x46532000 -  SUB MathRIR; PC++ | PC=13/0xD
+TICK  101 - RF1<-memI[0xD]; PC++ | RF1=1/0x1
+TICK  102 - RC<-RC-RF1 | RC=6/0x6
+TICK  102 - RC<-RC-RF1 | RC=5/0x5 N=0,Z=0,V=0,C=1
+TICK  103 @ 0x424AA000 -  ADD MathRIR; PC++ | PC=15/0xF
+TICK  104 - RF1<-memI[0xF]; PC++ | RF1=1/0x1
+TICK  105 - ROutAddr<-ROutAddr+RF1 | ROutAddr=11/0xB N=0,Z=0,V=0,C=0
+TICK  106 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=17/0x11
+TICK  107 - PC<-memI[0x7]| PC=7/0x7
+TICK  108 @ 0x51C13A00 -  CMP RegReg; PC++ | PC=8/0x8
+TICK  109 - CMP RC, zero | N=0,Z=0,V=0,C=0; RC=5/0x5 zero=0/0x0
+TICK  110 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=9/0x9
+TICK  111 - RF2<-memI[0x9]; PC++ | RF2=18/0x12
+TICK  112 - no jump | PC=10/0xA; N=0,Z=0,V=0,C=0
+TICK  113 @ 0x05ECA000 -  MOV MvLowRegIndToReg; PC++ | PC=11/0xB
+TICK  114 - ROutData <- memD[B] | ROutData=119/0x77
+TICK  115 @ 0x6A820000 -  OUT Byte; PC++ | PC=12/0xC
+TICK  116 - port 1 <- ROutData(0x77) char | [104 101 108 108 111 32 119]
+TICK  117 @ 0x46532000 -  SUB MathRIR; PC++ | PC=13/0xD
+TICK  118 - RF1<-memI[0xD]; PC++ | RF1=1/0x1
+TICK  119 - RC<-RC-RF1 | RC=5/0x5
+TICK  119 - RC<-RC-RF1 | RC=4/0x4 N=0,Z=0,V=0,C=1
+TICK  120 @ 0x424AA000 -  ADD MathRIR; PC++ | PC=15/0xF
+TICK  121 - RF1<-memI[0xF]; PC++ | RF1=1/0x1
+TICK  122 - ROutAddr<-ROutAddr+RF1 | ROutAddr=12/0xC N=0,Z=0,V=0,C=0
+TICK  123 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=17/0x11
+TICK  124 - PC<-memI[0x7]| PC=7/0x7
+TICK  125 @ 0x51C13A00 -  CMP RegReg; PC++ | PC=8/0x8
+TICK  126 - CMP RC, zero | N=0,Z=0,V=0,C=0; RC=4/0x4 zero=0/0x0
+TICK  127 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=9/0x9
+TICK  128 - RF2<-memI[0x9]; PC++ | RF2=18/0x12
+TICK  129 - no jump | PC=10/0xA; N=0,Z=0,V=0,C=0
+TICK  130 @ 0x05ECA000 -  MOV MvLowRegIndToReg; PC++ | PC=11/0xB
+TICK  131 - ROutData <- memD[C] | ROutData=111/0x6F
+TICK  132 @ 0x6A820000 -  OUT Byte; PC++ | PC=12/0xC
+TICK  133 - port 1 <- ROutData(0x6F) char | [104 101 108 108 111 32 119 111]
+TICK  134 @ 0x46532000 -  SUB MathRIR; PC++ | PC=13/0xD
+TICK  135 - RF1<-memI[0xD]; PC++ | RF1=1/0x1
+TICK  136 - RC<-RC-RF1 | RC=4/0x4
+TICK  136 - RC<-RC-RF1 | RC=3/0x3 N=0,Z=0,V=0,C=1
+TICK  137 @ 0x424AA000 -  ADD MathRIR; PC++ | PC=15/0xF
+TICK  138 - RF1<-memI[0xF]; PC++ | RF1=1/0x1
+TICK  139 - ROutAddr<-ROutAddr+RF1 | ROutAddr=13/0xD N=0,Z=0,V=0,C=0
+TICK  140 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=17/0x11
+TICK  141 - PC<-memI[0x7]| PC=7/0x7
+TICK  142 @ 0x51C13A00 -  CMP RegReg; PC++ | PC=8/0x8
+TICK  143 - CMP RC, zero | N=0,Z=0,V=0,C=0; RC=3/0x3 zero=0/0x0
+TICK  144 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=9/0x9
+TICK  145 - RF2<-memI[0x9]; PC++ | RF2=18/0x12
+TICK  146 - no jump | PC=10/0xA; N=0,Z=0,V=0,C=0
+TICK  147 @ 0x05ECA000 -  MOV MvLowRegIndToReg; PC++ | PC=11/0xB
+TICK  148 - ROutData <- memD[D] | ROutData=114/0x72
+TICK  149 @ 0x6A820000 -  OUT Byte; PC++ | PC=12/0xC
+TICK  150 - port 1 <- ROutData(0x72) char | [104 101 108 108 111 32 119 111 114]
+TICK  151 @ 0x46532000 -  SUB MathRIR; PC++ | PC=13/0xD
+TICK  152 - RF1<-memI[0xD]; PC++ | RF1=1/0x1
+TICK  153 - RC<-RC-RF1 | RC=3/0x3
+TICK  153 - RC<-RC-RF1 | RC=2/0x2 N=0,Z=0,V=0,C=1
+TICK  154 @ 0x424AA000 -  ADD MathRIR; PC++ | PC=15/0xF
+TICK  155 - RF1<-memI[0xF]; PC++ | RF1=1/0x1
+TICK  156 - ROutAddr<-ROutAddr+RF1 | ROutAddr=14/0xE N=0,Z=0,V=0,C=0
+TICK  157 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=17/0x11
+TICK  158 - PC<-memI[0x7]| PC=7/0x7
+TICK  159 @ 0x51C13A00 -  CMP RegReg; PC++ | PC=8/0x8
+TICK  160 - CMP RC, zero | N=0,Z=0,V=0,C=0; RC=2/0x2 zero=0/0x0
+TICK  161 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=9/0x9
+TICK  162 - RF2<-memI[0x9]; PC++ | RF2=18/0x12
+TICK  163 - no jump | PC=10/0xA; N=0,Z=0,V=0,C=0
+TICK  164 @ 0x05ECA000 -  MOV MvLowRegIndToReg; PC++ | PC=11/0xB
+TICK  165 - ROutData <- memD[E] | ROutData=108/0x6C
+TICK  166 @ 0x6A820000 -  OUT Byte; PC++ | PC=12/0xC
+TICK  167 - port 1 <- ROutData(0x6C) char | [104 101 108 108 111 32 119 111 114 108]
+TICK  168 @ 0x46532000 -  SUB MathRIR; PC++ | PC=13/0xD
+TICK  169 - RF1<-memI[0xD]; PC++ | RF1=1/0x1
+TICK  170 - RC<-RC-RF1 | RC=2/0x2
+TICK  170 - RC<-RC-RF1 | RC=1/0x1 N=0,Z=0,V=0,C=1
+TICK  171 @ 0x424AA000 -  ADD MathRIR; PC++ | PC=15/0xF
+TICK  172 - RF1<-memI[0xF]; PC++ | RF1=1/0x1
+TICK  173 - ROutAddr<-ROutAddr+RF1 | ROutAddr=15/0xF N=0,Z=0,V=0,C=0
+TICK  174 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=17/0x11
+TICK  175 - PC<-memI[0x7]| PC=7/0x7
+TICK  176 @ 0x51C13A00 -  CMP RegReg; PC++ | PC=8/0x8
+TICK  177 - CMP RC, zero | N=0,Z=0,V=0,C=0; RC=1/0x1 zero=0/0x0
+TICK  178 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=9/0x9
+TICK  179 - RF2<-memI[0x9]; PC++ | RF2=18/0x12
+TICK  180 - no jump | PC=10/0xA; N=0,Z=0,V=0,C=0
+TICK  181 @ 0x05ECA000 -  MOV MvLowRegIndToReg; PC++ | PC=11/0xB
+TICK  182 - ROutData <- memD[F] | ROutData=100/0x64
+TICK  183 @ 0x6A820000 -  OUT Byte; PC++ | PC=12/0xC
+TICK  184 - port 1 <- ROutData(0x64) char | [104 101 108 108 111 32 119 111 114 108 100]
+TICK  185 @ 0x46532000 -  SUB MathRIR; PC++ | PC=13/0xD
+TICK  186 - RF1<-memI[0xD]; PC++ | RF1=1/0x1
+TICK  187 - RC<-RC-RF1 | RC=1/0x1
+TICK  187 - RC<-RC-RF1 | RC=0/0x0 N=0,Z=1,V=0,C=1
+TICK  188 @ 0x424AA000 -  ADD MathRIR; PC++ | PC=15/0xF
+TICK  189 - RF1<-memI[0xF]; PC++ | RF1=1/0x1
+TICK  190 - ROutAddr<-ROutAddr+RF1 | ROutAddr=16/0x10 N=0,Z=0,V=0,C=0
+TICK  191 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=17/0x11
+TICK  192 - PC<-memI[0x7]| PC=7/0x7
+TICK  193 @ 0x51C13A00 -  CMP RegReg; PC++ | PC=8/0x8
+TICK  194 - CMP RC, zero | N=0,Z=1,V=0,C=0; RC=0/0x0 zero=0/0x0
+TICK  195 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=9/0x9
+TICK  196 - RF2<-memI[0x9]; PC++ | RF2=18/0x12
+TICK  197 - PC<-RF2 | PC=18/0x12
+TICK  198 @ 0x1BE00000 -  HALT NoOperands; PC++ | PC=19/0x13
+TICK  199 - simultaion stopped

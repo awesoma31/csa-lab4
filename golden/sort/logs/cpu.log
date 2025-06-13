@@ -1,0 +1,3580 @@
+TICK    0 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK    1 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK    2 - RM1<-memD[6C] | RM1=1/0x1
+TICK    3 - RM1<-memD[6D] | RM1=1/0x1
+TICK    4 - RM1<-memD[6E] | RM1=1/0x1
+TICK    5 - RM1<-memD[6F] | RM1=   1/0x1
+TICK    7 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK    8 - SP=SP-4 | SP=404/0x194
+TICK    9 - RF1=SP | SP=404/0x194
+TICK   10 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK   11 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK   12 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK   13 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK   14 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK   15 - RM2<-#1; PC++ | SP=404/0x194
+TICK   16 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK   17 - RF1<-SP | RF1=404/0x194
+TICK   18 - RM1<-memD[194] | RM1=1/0x1
+TICK   19 - RM1<-memD[195] | RM1=1/0x1
+TICK   20 - RM1<-memD[196] | RM1=1/0x1
+TICK   21 - RM1<-memD[197] | RM1=   1/0x1
+TICK   22 - SP=SP+4 | SP=404/0x194
+TICK   23 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK   24 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK   25 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK   26 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK   27 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK   28 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK   29 - PC<-memI[0x2]| PC=2/0x2
+TICK   30 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK   31 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK   32 - RM1<-memD[6C] | RM1=1/0x1
+TICK   33 - RM1<-memD[6D] | RM1=1/0x1
+TICK   34 - RM1<-memD[6E] | RM1=1/0x1
+TICK   35 - RM1<-memD[6F] | RM1=   1/0x1
+TICK   37 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK   38 - SP=SP-4 | SP=404/0x194
+TICK   39 - RF1=SP | SP=404/0x194
+TICK   40 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK   41 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK   42 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK   43 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK   44 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK   45 - RM2<-#1; PC++ | SP=404/0x194
+TICK   46 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK   47 - RF1<-SP | RF1=404/0x194
+TICK   48 - RM1<-memD[194] | RM1=1/0x1
+TICK   49 - RM1<-memD[195] | RM1=1/0x1
+TICK   50 - RM1<-memD[196] | RM1=1/0x1
+TICK   51 - RM1<-memD[197] | RM1=   1/0x1
+TICK   52 - SP=SP+4 | SP=404/0x194
+TICK   53 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK   54 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK   55 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK   56 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK   57 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK   58 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK   59 - PC<-memI[0x2]| PC=2/0x2
+TICK   60 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK   61 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK   62 - RM1<-memD[6C] | RM1=1/0x1
+TICK   63 - RM1<-memD[6D] | RM1=1/0x1
+TICK   64 - RM1<-memD[6E] | RM1=1/0x1
+TICK   65 - RM1<-memD[6F] | RM1=   1/0x1
+TICK   67 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK   68 - SP=SP-4 | SP=404/0x194
+TICK   69 - RF1=SP | SP=404/0x194
+TICK   70 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK   71 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK   72 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK   73 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK   74 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK   75 - RM2<-#1; PC++ | SP=404/0x194
+TICK   76 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK   77 - RF1<-SP | RF1=404/0x194
+TICK   78 - RM1<-memD[194] | RM1=1/0x1
+TICK   79 - RM1<-memD[195] | RM1=1/0x1
+TICK   80 - RM1<-memD[196] | RM1=1/0x1
+TICK   81 - RM1<-memD[197] | RM1=   1/0x1
+TICK   82 - SP=SP+4 | SP=404/0x194
+------------Entering Interruption 0, value=4/0x4------------
+TICK   83 @ 0x62A00000 -  IN Digit; PC++ | PC=177/0xB1
+TICK   84 - RInData <- 0 digit (4/0x4) | RInData=4/0x4
+TICK   85 @ 0x04E10000 -  MOV MvRegMem; PC++ | PC=178/0xB2
+TICK   86 - RF1<-memI[0xB2]; PC++ 
+TICK   87 - memD[0x94]<-RInData | memD[0x94]=0x4
+TICK   88 - memD[0x95]<-RInData | memD[0x95]=0x0
+TICK   89 - memD[0x96]<-RInData | memD[0x96]=0x0
+TICK   90 - memD[0x97]<-RInData | memD[0x97]=0x0
+TICK   91 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=180/0xB4
+TICK   92 - RF1<-memI[180], PC++ | RF1=112/0x70
+TICK   93 - RM1<-memD[70] | RM1=0/0x0
+TICK   94 - RM1<-memD[71] | RM1=0/0x0
+TICK   95 - RM1<-memD[72] | RM1=0/0x0
+TICK   96 - RM1<-memD[73] | RM1=   0/0x0
+TICK   98 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=182/0xB6
+TICK   99 - SP=SP-4 | SP=404/0x194
+TICK  100 - RF1=SP | SP=404/0x194
+TICK  101 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  102 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  103 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  104 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  105 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=183/0xB7
+TICK  106 - RM2<-#0; PC++ | SP=404/0x194
+TICK  107 @ 0x0F820000 -  POP SingleReg; PC++ | PC=185/0xB9
+TICK  108 - RF1<-SP | RF1=404/0x194
+TICK  109 - RM1<-memD[194] | RM1=0/0x0
+TICK  110 - RM1<-memD[195] | RM1=0/0x0
+TICK  111 - RM1<-memD[196] | RM1=0/0x0
+TICK  112 - RM1<-memD[197] | RM1=   0/0x0
+TICK  113 - SP=SP+4 | SP=404/0x194
+TICK  114 @ 0x51C02400 -  CMP RegReg; PC++ | PC=186/0xBA
+TICK  115 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=0/0x0 RM2=0/0x0
+TICK  116 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=187/0xBB
+TICK  117 - RF2<-memI[0xBB]; PC++ | RF2=198/0xC6
+TICK  118 - JNE not taken | PC=188/0xBC; N=0,Z=1,V=0,C=0
+TICK  119 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=189/0xBD
+TICK  120 - RF1<-memI[189], PC++ | RF1=148/0x94
+TICK  121 - RA<-memD[94] | RA=4/0x4
+TICK  122 - RA<-memD[95] | RA=4/0x4
+TICK  123 - RA<-memD[96] | RA=4/0x4
+TICK  124 - RA<-memD[97] | RA=   4/0x4
+TICK  126 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=191/0xBF
+TICK  127 - RF1<-memI[0xBF]; PC++ 
+TICK  128 - memD[0x74]<-RA | memD[0x74]=0x4
+TICK  129 - memD[0x75]<-RA | memD[0x75]=0x0
+TICK  130 - memD[0x76]<-RA | memD[0x76]=0x0
+TICK  131 - memD[0x77]<-RA | memD[0x77]=0x0
+TICK  132 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=193/0xC1
+TICK  133 - RA<-#1; PC++ | SP=408/0x198
+TICK  134 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=195/0xC3
+TICK  135 - RF1<-memI[0xC3]; PC++ 
+TICK  136 - memD[0x70]<-RA | memD[0x70]=0x1
+TICK  137 - memD[0x71]<-RA | memD[0x71]=0x0
+TICK  138 - memD[0x72]<-RA | memD[0x72]=0x0
+TICK  139 - memD[0x73]<-RA | memD[0x73]=0x0
+TICK  140 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=197/0xC5
+TICK  141 - PC<-memI[0xEF]| PC=239/0xEF
+TICK  142 @ 0x93E00000 -  IRet NoOperands; PC++ | PC=240/0xF0
+TICK  143 - restore register values | PC=8/0x8
+------------Exiting interruption------------
+TICK  144 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  145 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  146 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  147 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  148 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  149 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  150 - PC<-memI[0x2]| PC=2/0x2
+------------Entering Interruption 0, value=2/0x2------------
+TICK  151 @ 0x62A00000 -  IN Digit; PC++ | PC=177/0xB1
+TICK  152 - RInData <- 0 digit (2/0x2) | RInData=2/0x2
+TICK  153 @ 0x04E10000 -  MOV MvRegMem; PC++ | PC=178/0xB2
+TICK  154 - RF1<-memI[0xB2]; PC++ 
+TICK  155 - memD[0x94]<-RInData | memD[0x94]=0x2
+TICK  156 - memD[0x95]<-RInData | memD[0x95]=0x0
+TICK  157 - memD[0x96]<-RInData | memD[0x96]=0x0
+TICK  158 - memD[0x97]<-RInData | memD[0x97]=0x0
+TICK  159 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=180/0xB4
+TICK  160 - RF1<-memI[180], PC++ | RF1=112/0x70
+TICK  161 - RM1<-memD[70] | RM1=1/0x1
+TICK  162 - RM1<-memD[71] | RM1=1/0x1
+TICK  163 - RM1<-memD[72] | RM1=1/0x1
+TICK  164 - RM1<-memD[73] | RM1=   1/0x1
+TICK  166 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=182/0xB6
+TICK  167 - SP=SP-4 | SP=404/0x194
+TICK  168 - RF1=SP | SP=404/0x194
+TICK  169 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  170 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  171 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  172 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  173 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=183/0xB7
+TICK  174 - RM2<-#0; PC++ | SP=404/0x194
+TICK  175 @ 0x0F820000 -  POP SingleReg; PC++ | PC=185/0xB9
+TICK  176 - RF1<-SP | RF1=404/0x194
+TICK  177 - RM1<-memD[194] | RM1=1/0x1
+TICK  178 - RM1<-memD[195] | RM1=1/0x1
+TICK  179 - RM1<-memD[196] | RM1=1/0x1
+TICK  180 - RM1<-memD[197] | RM1=   1/0x1
+TICK  181 - SP=SP+4 | SP=404/0x194
+TICK  182 @ 0x51C02400 -  CMP RegReg; PC++ | PC=186/0xBA
+TICK  183 - CMP RM1, RM2 | N=0,Z=0,V=0,C=0; RM1=1/0x1 RM2=0/0x0
+TICK  184 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=187/0xBB
+TICK  185 - RF2<-memI[0xBB]; PC++ | RF2=198/0xC6
+TICK  186 - JNE taken; PC<-RF2 | PC=198/0xC6
+TICK  187 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=199/0xC7
+TICK  188 - RF1<-memI[199], PC++ | RF1=148/0x94
+TICK  189 - RA<-memD[94] | RA=2/0x2
+TICK  190 - RA<-memD[95] | RA=2/0x2
+TICK  191 - RA<-memD[96] | RA=2/0x2
+TICK  192 - RA<-memD[97] | RA=   2/0x2
+TICK  194 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=201/0xC9
+TICK  195 - RF1<-memI[201], PC++ | RF1=148/0x94
+TICK  196 - RA<-memD[94] | RA=2/0x2
+TICK  197 - RA<-memD[95] | RA=2/0x2
+TICK  198 - RA<-memD[96] | RA=2/0x2
+TICK  199 - RA<-memD[97] | RA=   2/0x2
+TICK  201 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=203/0xCB
+TICK  202 - RF1<-memI[203], PC++ | RF1=104/0x68
+TICK  203 - RM1<-memD[68] | RM1=4/0x4
+TICK  204 - RM1<-memD[69] | RM1=4/0x4
+TICK  205 - RM1<-memD[6A] | RM1=4/0x4
+TICK  206 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  208 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=205/0xCD
+TICK  209 - RF1<-memI[205], PC++ | RF1=120/0x78
+TICK  210 - RM2<-memD[78] | RM2=0/0x0
+TICK  211 - RM2<-memD[79] | RM2=0/0x0
+TICK  212 - RM2<-memD[7A] | RM2=0/0x0
+TICK  213 - RM2<-memD[7B] | RM2=   0/0x0
+TICK  215 @ 0x42062400 -  ADD MathRRR; PC++ | PC=207/0xCF
+TICK  216 - RAddr<-RM1+RM2 | RAddr=4/0x4 N=0,Z=0,V=0,C=0
+TICK  216 - RAddr<-RM1 + RM2 | RAddr=4/0x4
+TICK  217 @ 0x04A60000 -  MOV MvLowRegToRegInd; PC++ | PC=208/0xD0
+TICK  218 - memD[0x4] <- RA(byte); mem[RAddr]<-RA(byte) = 0x02
+TICK  219 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=209/0xD1
+TICK  220 - RF1<-memI[209], PC++ | RF1=120/0x78
+TICK  221 - RM1<-memD[78] | RM1=0/0x0
+TICK  222 - RM1<-memD[79] | RM1=0/0x0
+TICK  223 - RM1<-memD[7A] | RM1=0/0x0
+TICK  224 - RM1<-memD[7B] | RM1=   0/0x0
+TICK  226 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=211/0xD3
+TICK  227 - SP=SP-4 | SP=404/0x194
+TICK  228 - RF1=SP | SP=404/0x194
+TICK  229 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  230 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  231 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  232 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  233 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=212/0xD4
+TICK  234 - RM2<-#1; PC++ | SP=404/0x194
+TICK  235 @ 0x0F820000 -  POP SingleReg; PC++ | PC=214/0xD6
+TICK  236 - RF1<-SP | RF1=404/0x194
+TICK  237 - RM1<-memD[194] | RM1=0/0x0
+TICK  238 - RM1<-memD[195] | RM1=0/0x0
+TICK  239 - RM1<-memD[196] | RM1=0/0x0
+TICK  240 - RM1<-memD[197] | RM1=   0/0x0
+TICK  241 - SP=SP+4 | SP=404/0x194
+TICK  242 @ 0x42002400 -  ADD MathRRR; PC++ | PC=215/0xD7
+TICK  243 - RA<-RM1+RM2 | RA=1/0x1 N=0,Z=0,V=0,C=0
+TICK  243 - RA<-RM1 + RM2 | RA=1/0x1
+TICK  244 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=216/0xD8
+TICK  245 - RF1<-memI[0xD8]; PC++ 
+TICK  246 - memD[0x78]<-RA | memD[0x78]=0x1
+TICK  247 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  248 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  249 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  250 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=218/0xDA
+TICK  251 - RF1<-memI[218], PC++ | RF1=116/0x74
+TICK  252 - RM1<-memD[74] | RM1=4/0x4
+TICK  253 - RM1<-memD[75] | RM1=4/0x4
+TICK  254 - RM1<-memD[76] | RM1=4/0x4
+TICK  255 - RM1<-memD[77] | RM1=   4/0x4
+TICK  257 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=220/0xDC
+TICK  258 - SP=SP-4 | SP=404/0x194
+TICK  259 - RF1=SP | SP=404/0x194
+TICK  260 - memD[0x194]<-RM1 | memD[0x194]=0x4
+TICK  261 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  262 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  263 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  264 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=221/0xDD
+TICK  265 - RM2<-#0; PC++ | SP=404/0x194
+TICK  266 @ 0x0F820000 -  POP SingleReg; PC++ | PC=223/0xDF
+TICK  267 - RF1<-SP | RF1=404/0x194
+TICK  268 - RM1<-memD[194] | RM1=4/0x4
+TICK  269 - RM1<-memD[195] | RM1=4/0x4
+TICK  270 - RM1<-memD[196] | RM1=4/0x4
+TICK  271 - RM1<-memD[197] | RM1=   4/0x4
+TICK  272 - SP=SP+4 | SP=404/0x194
+TICK  273 @ 0x51C02400 -  CMP RegReg; PC++ | PC=224/0xE0
+TICK  274 - CMP RM1, RM2 | N=0,Z=0,V=0,C=0; RM1=4/0x4 RM2=0/0x0
+TICK  275 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=225/0xE1
+TICK  276 - RF2<-memI[0xE1]; PC++ | RF2=239/0xEF
+TICK  277 - no jump | PC=226/0xE2; N=0,Z=0,V=0,C=0
+TICK  278 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=227/0xE3
+TICK  279 - RF1<-memI[227], PC++ | RF1=120/0x78
+TICK  280 - RM1<-memD[78] | RM1=1/0x1
+TICK  281 - RM1<-memD[79] | RM1=1/0x1
+TICK  282 - RM1<-memD[7A] | RM1=1/0x1
+TICK  283 - RM1<-memD[7B] | RM1=   1/0x1
+TICK  285 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=229/0xE5
+TICK  286 - SP=SP-4 | SP=404/0x194
+TICK  287 - RF1=SP | SP=404/0x194
+TICK  288 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  289 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  290 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  291 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  292 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=230/0xE6
+TICK  293 - RF1<-memI[230], PC++ | RF1=116/0x74
+TICK  294 - RM2<-memD[74] | RM2=4/0x4
+TICK  295 - RM2<-memD[75] | RM2=4/0x4
+TICK  296 - RM2<-memD[76] | RM2=4/0x4
+TICK  297 - RM2<-memD[77] | RM2=   4/0x4
+TICK  299 @ 0x0F820000 -  POP SingleReg; PC++ | PC=232/0xE8
+TICK  300 - RF1<-SP | RF1=404/0x194
+TICK  301 - RM1<-memD[194] | RM1=1/0x1
+TICK  302 - RM1<-memD[195] | RM1=1/0x1
+TICK  303 - RM1<-memD[196] | RM1=1/0x1
+TICK  304 - RM1<-memD[197] | RM1=   1/0x1
+TICK  305 - SP=SP+4 | SP=404/0x194
+TICK  306 @ 0x51C02400 -  CMP RegReg; PC++ | PC=233/0xE9
+TICK  307 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=1/0x1 RM2=4/0x4
+TICK  308 @ 0xCF000000 -  JL JAbsAddr; PC++ | PC=234/0xEA
+TICK  309 - RF2<-memI[0xEA]; PC++ | RF2=239/0xEF
+TICK  310 - JL taken → PC<-RF2 | PC=239/0xEF
+TICK  311 @ 0x93E00000 -  IRet NoOperands; PC++ | PC=240/0xF0
+TICK  312 - restore register values | PC=2/0x2
+------------Exiting interruption------------
+TICK  313 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  314 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  315 - RM1<-memD[6C] | RM1=1/0x1
+TICK  316 - RM1<-memD[6D] | RM1=1/0x1
+TICK  317 - RM1<-memD[6E] | RM1=1/0x1
+TICK  318 - RM1<-memD[6F] | RM1=   1/0x1
+TICK  320 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  321 - SP=SP-4 | SP=404/0x194
+TICK  322 - RF1=SP | SP=404/0x194
+TICK  323 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  324 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  325 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  326 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  327 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  328 - RM2<-#1; PC++ | SP=404/0x194
+TICK  329 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  330 - RF1<-SP | RF1=404/0x194
+TICK  331 - RM1<-memD[194] | RM1=1/0x1
+TICK  332 - RM1<-memD[195] | RM1=1/0x1
+TICK  333 - RM1<-memD[196] | RM1=1/0x1
+TICK  334 - RM1<-memD[197] | RM1=   1/0x1
+TICK  335 - SP=SP+4 | SP=404/0x194
+TICK  336 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  337 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  338 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  339 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  340 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  341 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  342 - PC<-memI[0x2]| PC=2/0x2
+TICK  343 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  344 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  345 - RM1<-memD[6C] | RM1=1/0x1
+TICK  346 - RM1<-memD[6D] | RM1=1/0x1
+TICK  347 - RM1<-memD[6E] | RM1=1/0x1
+TICK  348 - RM1<-memD[6F] | RM1=   1/0x1
+TICK  350 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  351 - SP=SP-4 | SP=404/0x194
+TICK  352 - RF1=SP | SP=404/0x194
+TICK  353 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  354 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  355 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  356 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  357 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  358 - RM2<-#1; PC++ | SP=404/0x194
+TICK  359 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  360 - RF1<-SP | RF1=404/0x194
+TICK  361 - RM1<-memD[194] | RM1=1/0x1
+TICK  362 - RM1<-memD[195] | RM1=1/0x1
+TICK  363 - RM1<-memD[196] | RM1=1/0x1
+TICK  364 - RM1<-memD[197] | RM1=   1/0x1
+TICK  365 - SP=SP+4 | SP=404/0x194
+TICK  366 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  367 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  368 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  369 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  370 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  371 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  372 - PC<-memI[0x2]| PC=2/0x2
+TICK  373 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  374 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  375 - RM1<-memD[6C] | RM1=1/0x1
+TICK  376 - RM1<-memD[6D] | RM1=1/0x1
+TICK  377 - RM1<-memD[6E] | RM1=1/0x1
+TICK  378 - RM1<-memD[6F] | RM1=   1/0x1
+TICK  380 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  381 - SP=SP-4 | SP=404/0x194
+TICK  382 - RF1=SP | SP=404/0x194
+TICK  383 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  384 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  385 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  386 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  387 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  388 - RM2<-#1; PC++ | SP=404/0x194
+TICK  389 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  390 - RF1<-SP | RF1=404/0x194
+TICK  391 - RM1<-memD[194] | RM1=1/0x1
+TICK  392 - RM1<-memD[195] | RM1=1/0x1
+TICK  393 - RM1<-memD[196] | RM1=1/0x1
+TICK  394 - RM1<-memD[197] | RM1=   1/0x1
+TICK  395 - SP=SP+4 | SP=404/0x194
+TICK  396 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  397 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  398 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  399 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  400 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+------------Entering Interruption 0, value=1/0x1------------
+TICK  401 @ 0x62A00000 -  IN Digit; PC++ | PC=177/0xB1
+TICK  402 - RInData <- 0 digit (1/0x1) | RInData=1/0x1
+TICK  403 @ 0x04E10000 -  MOV MvRegMem; PC++ | PC=178/0xB2
+TICK  404 - RF1<-memI[0xB2]; PC++ 
+TICK  405 - memD[0x94]<-RInData | memD[0x94]=0x1
+TICK  406 - memD[0x95]<-RInData | memD[0x95]=0x0
+TICK  407 - memD[0x96]<-RInData | memD[0x96]=0x0
+TICK  408 - memD[0x97]<-RInData | memD[0x97]=0x0
+TICK  409 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=180/0xB4
+TICK  410 - RF1<-memI[180], PC++ | RF1=112/0x70
+TICK  411 - RM1<-memD[70] | RM1=1/0x1
+TICK  412 - RM1<-memD[71] | RM1=1/0x1
+TICK  413 - RM1<-memD[72] | RM1=1/0x1
+TICK  414 - RM1<-memD[73] | RM1=   1/0x1
+TICK  416 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=182/0xB6
+TICK  417 - SP=SP-4 | SP=404/0x194
+TICK  418 - RF1=SP | SP=404/0x194
+TICK  419 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  420 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  421 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  422 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  423 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=183/0xB7
+TICK  424 - RM2<-#0; PC++ | SP=404/0x194
+TICK  425 @ 0x0F820000 -  POP SingleReg; PC++ | PC=185/0xB9
+TICK  426 - RF1<-SP | RF1=404/0x194
+TICK  427 - RM1<-memD[194] | RM1=1/0x1
+TICK  428 - RM1<-memD[195] | RM1=1/0x1
+TICK  429 - RM1<-memD[196] | RM1=1/0x1
+TICK  430 - RM1<-memD[197] | RM1=   1/0x1
+TICK  431 - SP=SP+4 | SP=404/0x194
+TICK  432 @ 0x51C02400 -  CMP RegReg; PC++ | PC=186/0xBA
+TICK  433 - CMP RM1, RM2 | N=0,Z=0,V=0,C=0; RM1=1/0x1 RM2=0/0x0
+TICK  434 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=187/0xBB
+TICK  435 - RF2<-memI[0xBB]; PC++ | RF2=198/0xC6
+TICK  436 - JNE taken; PC<-RF2 | PC=198/0xC6
+TICK  437 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=199/0xC7
+TICK  438 - RF1<-memI[199], PC++ | RF1=148/0x94
+TICK  439 - RA<-memD[94] | RA=1/0x1
+TICK  440 - RA<-memD[95] | RA=1/0x1
+TICK  441 - RA<-memD[96] | RA=1/0x1
+TICK  442 - RA<-memD[97] | RA=   1/0x1
+TICK  444 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=201/0xC9
+TICK  445 - RF1<-memI[201], PC++ | RF1=148/0x94
+TICK  446 - RA<-memD[94] | RA=1/0x1
+TICK  447 - RA<-memD[95] | RA=1/0x1
+TICK  448 - RA<-memD[96] | RA=1/0x1
+TICK  449 - RA<-memD[97] | RA=   1/0x1
+TICK  451 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=203/0xCB
+TICK  452 - RF1<-memI[203], PC++ | RF1=104/0x68
+TICK  453 - RM1<-memD[68] | RM1=4/0x4
+TICK  454 - RM1<-memD[69] | RM1=4/0x4
+TICK  455 - RM1<-memD[6A] | RM1=4/0x4
+TICK  456 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  458 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=205/0xCD
+TICK  459 - RF1<-memI[205], PC++ | RF1=120/0x78
+TICK  460 - RM2<-memD[78] | RM2=1/0x1
+TICK  461 - RM2<-memD[79] | RM2=1/0x1
+TICK  462 - RM2<-memD[7A] | RM2=1/0x1
+TICK  463 - RM2<-memD[7B] | RM2=   1/0x1
+TICK  465 @ 0x42062400 -  ADD MathRRR; PC++ | PC=207/0xCF
+TICK  466 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  466 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  467 @ 0x04A60000 -  MOV MvLowRegToRegInd; PC++ | PC=208/0xD0
+TICK  468 - memD[0x5] <- RA(byte); mem[RAddr]<-RA(byte) = 0x01
+TICK  469 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=209/0xD1
+TICK  470 - RF1<-memI[209], PC++ | RF1=120/0x78
+TICK  471 - RM1<-memD[78] | RM1=1/0x1
+TICK  472 - RM1<-memD[79] | RM1=1/0x1
+TICK  473 - RM1<-memD[7A] | RM1=1/0x1
+TICK  474 - RM1<-memD[7B] | RM1=   1/0x1
+TICK  476 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=211/0xD3
+TICK  477 - SP=SP-4 | SP=404/0x194
+TICK  478 - RF1=SP | SP=404/0x194
+TICK  479 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  480 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  481 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  482 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  483 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=212/0xD4
+TICK  484 - RM2<-#1; PC++ | SP=404/0x194
+TICK  485 @ 0x0F820000 -  POP SingleReg; PC++ | PC=214/0xD6
+TICK  486 - RF1<-SP | RF1=404/0x194
+TICK  487 - RM1<-memD[194] | RM1=1/0x1
+TICK  488 - RM1<-memD[195] | RM1=1/0x1
+TICK  489 - RM1<-memD[196] | RM1=1/0x1
+TICK  490 - RM1<-memD[197] | RM1=   1/0x1
+TICK  491 - SP=SP+4 | SP=404/0x194
+TICK  492 @ 0x42002400 -  ADD MathRRR; PC++ | PC=215/0xD7
+TICK  493 - RA<-RM1+RM2 | RA=2/0x2 N=0,Z=0,V=0,C=0
+TICK  493 - RA<-RM1 + RM2 | RA=2/0x2
+TICK  494 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=216/0xD8
+TICK  495 - RF1<-memI[0xD8]; PC++ 
+TICK  496 - memD[0x78]<-RA | memD[0x78]=0x2
+TICK  497 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  498 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  499 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  500 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=218/0xDA
+TICK  501 - RF1<-memI[218], PC++ | RF1=116/0x74
+TICK  502 - RM1<-memD[74] | RM1=4/0x4
+TICK  503 - RM1<-memD[75] | RM1=4/0x4
+TICK  504 - RM1<-memD[76] | RM1=4/0x4
+TICK  505 - RM1<-memD[77] | RM1=   4/0x4
+TICK  507 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=220/0xDC
+TICK  508 - SP=SP-4 | SP=404/0x194
+TICK  509 - RF1=SP | SP=404/0x194
+TICK  510 - memD[0x194]<-RM1 | memD[0x194]=0x4
+TICK  511 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  512 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  513 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  514 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=221/0xDD
+TICK  515 - RM2<-#0; PC++ | SP=404/0x194
+TICK  516 @ 0x0F820000 -  POP SingleReg; PC++ | PC=223/0xDF
+TICK  517 - RF1<-SP | RF1=404/0x194
+TICK  518 - RM1<-memD[194] | RM1=4/0x4
+TICK  519 - RM1<-memD[195] | RM1=4/0x4
+TICK  520 - RM1<-memD[196] | RM1=4/0x4
+TICK  521 - RM1<-memD[197] | RM1=   4/0x4
+TICK  522 - SP=SP+4 | SP=404/0x194
+TICK  523 @ 0x51C02400 -  CMP RegReg; PC++ | PC=224/0xE0
+TICK  524 - CMP RM1, RM2 | N=0,Z=0,V=0,C=0; RM1=4/0x4 RM2=0/0x0
+TICK  525 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=225/0xE1
+TICK  526 - RF2<-memI[0xE1]; PC++ | RF2=239/0xEF
+TICK  527 - no jump | PC=226/0xE2; N=0,Z=0,V=0,C=0
+TICK  528 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=227/0xE3
+TICK  529 - RF1<-memI[227], PC++ | RF1=120/0x78
+TICK  530 - RM1<-memD[78] | RM1=2/0x2
+TICK  531 - RM1<-memD[79] | RM1=2/0x2
+TICK  532 - RM1<-memD[7A] | RM1=2/0x2
+TICK  533 - RM1<-memD[7B] | RM1=   2/0x2
+TICK  535 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=229/0xE5
+TICK  536 - SP=SP-4 | SP=404/0x194
+TICK  537 - RF1=SP | SP=404/0x194
+TICK  538 - memD[0x194]<-RM1 | memD[0x194]=0x2
+TICK  539 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  540 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  541 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  542 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=230/0xE6
+TICK  543 - RF1<-memI[230], PC++ | RF1=116/0x74
+TICK  544 - RM2<-memD[74] | RM2=4/0x4
+TICK  545 - RM2<-memD[75] | RM2=4/0x4
+TICK  546 - RM2<-memD[76] | RM2=4/0x4
+TICK  547 - RM2<-memD[77] | RM2=   4/0x4
+TICK  549 @ 0x0F820000 -  POP SingleReg; PC++ | PC=232/0xE8
+TICK  550 - RF1<-SP | RF1=404/0x194
+TICK  551 - RM1<-memD[194] | RM1=2/0x2
+TICK  552 - RM1<-memD[195] | RM1=2/0x2
+TICK  553 - RM1<-memD[196] | RM1=2/0x2
+TICK  554 - RM1<-memD[197] | RM1=   2/0x2
+TICK  555 - SP=SP+4 | SP=404/0x194
+TICK  556 @ 0x51C02400 -  CMP RegReg; PC++ | PC=233/0xE9
+TICK  557 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=2/0x2 RM2=4/0x4
+TICK  558 @ 0xCF000000 -  JL JAbsAddr; PC++ | PC=234/0xEA
+TICK  559 - RF2<-memI[0xEA]; PC++ | RF2=239/0xEF
+TICK  560 - JL taken → PC<-RF2 | PC=239/0xEF
+TICK  561 @ 0x93E00000 -  IRet NoOperands; PC++ | PC=240/0xF0
+TICK  562 - restore register values | PC=11/0xB
+------------Exiting interruption------------
+TICK  563 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  564 - PC<-memI[0x2]| PC=2/0x2
+TICK  565 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  566 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  567 - RM1<-memD[6C] | RM1=1/0x1
+TICK  568 - RM1<-memD[6D] | RM1=1/0x1
+TICK  569 - RM1<-memD[6E] | RM1=1/0x1
+TICK  570 - RM1<-memD[6F] | RM1=   1/0x1
+TICK  572 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  573 - SP=SP-4 | SP=404/0x194
+TICK  574 - RF1=SP | SP=404/0x194
+TICK  575 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  576 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  577 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  578 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  579 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  580 - RM2<-#1; PC++ | SP=404/0x194
+TICK  581 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  582 - RF1<-SP | RF1=404/0x194
+TICK  583 - RM1<-memD[194] | RM1=1/0x1
+TICK  584 - RM1<-memD[195] | RM1=1/0x1
+TICK  585 - RM1<-memD[196] | RM1=1/0x1
+TICK  586 - RM1<-memD[197] | RM1=   1/0x1
+TICK  587 - SP=SP+4 | SP=404/0x194
+TICK  588 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  589 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  590 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  591 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  592 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  593 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  594 - PC<-memI[0x2]| PC=2/0x2
+TICK  595 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  596 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  597 - RM1<-memD[6C] | RM1=1/0x1
+TICK  598 - RM1<-memD[6D] | RM1=1/0x1
+TICK  599 - RM1<-memD[6E] | RM1=1/0x1
+TICK  600 - RM1<-memD[6F] | RM1=   1/0x1
+TICK  602 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  603 - SP=SP-4 | SP=404/0x194
+TICK  604 - RF1=SP | SP=404/0x194
+TICK  605 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  606 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  607 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  608 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  609 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  610 - RM2<-#1; PC++ | SP=404/0x194
+TICK  611 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  612 - RF1<-SP | RF1=404/0x194
+TICK  613 - RM1<-memD[194] | RM1=1/0x1
+TICK  614 - RM1<-memD[195] | RM1=1/0x1
+TICK  615 - RM1<-memD[196] | RM1=1/0x1
+TICK  616 - RM1<-memD[197] | RM1=   1/0x1
+TICK  617 - SP=SP+4 | SP=404/0x194
+TICK  618 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  619 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  620 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  621 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  622 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  623 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  624 - PC<-memI[0x2]| PC=2/0x2
+TICK  625 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  626 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  627 - RM1<-memD[6C] | RM1=1/0x1
+TICK  628 - RM1<-memD[6D] | RM1=1/0x1
+TICK  629 - RM1<-memD[6E] | RM1=1/0x1
+TICK  630 - RM1<-memD[6F] | RM1=   1/0x1
+TICK  632 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  633 - SP=SP-4 | SP=404/0x194
+TICK  634 - RF1=SP | SP=404/0x194
+TICK  635 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  636 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  637 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  638 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  639 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  640 - RM2<-#1; PC++ | SP=404/0x194
+TICK  641 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  642 - RF1<-SP | RF1=404/0x194
+TICK  643 - RM1<-memD[194] | RM1=1/0x1
+TICK  644 - RM1<-memD[195] | RM1=1/0x1
+TICK  645 - RM1<-memD[196] | RM1=1/0x1
+TICK  646 - RM1<-memD[197] | RM1=   1/0x1
+TICK  647 - SP=SP+4 | SP=404/0x194
+TICK  648 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  649 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  650 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  651 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  652 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  653 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  654 - PC<-memI[0x2]| PC=2/0x2
+TICK  655 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  656 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  657 - RM1<-memD[6C] | RM1=1/0x1
+TICK  658 - RM1<-memD[6D] | RM1=1/0x1
+TICK  659 - RM1<-memD[6E] | RM1=1/0x1
+TICK  660 - RM1<-memD[6F] | RM1=   1/0x1
+TICK  662 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  663 - SP=SP-4 | SP=404/0x194
+TICK  664 - RF1=SP | SP=404/0x194
+TICK  665 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  666 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  667 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  668 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  669 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  670 - RM2<-#1; PC++ | SP=404/0x194
+TICK  671 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  672 - RF1<-SP | RF1=404/0x194
+TICK  673 - RM1<-memD[194] | RM1=1/0x1
+TICK  674 - RM1<-memD[195] | RM1=1/0x1
+TICK  675 - RM1<-memD[196] | RM1=1/0x1
+TICK  676 - RM1<-memD[197] | RM1=   1/0x1
+TICK  677 - SP=SP+4 | SP=404/0x194
+TICK  678 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  679 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  680 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  681 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  682 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  683 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  684 - PC<-memI[0x2]| PC=2/0x2
+TICK  685 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  686 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  687 - RM1<-memD[6C] | RM1=1/0x1
+TICK  688 - RM1<-memD[6D] | RM1=1/0x1
+TICK  689 - RM1<-memD[6E] | RM1=1/0x1
+TICK  690 - RM1<-memD[6F] | RM1=   1/0x1
+TICK  692 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  693 - SP=SP-4 | SP=404/0x194
+TICK  694 - RF1=SP | SP=404/0x194
+TICK  695 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  696 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  697 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  698 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  699 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  700 - RM2<-#1; PC++ | SP=404/0x194
+------------Entering Interruption 0, value=3/0x3------------
+TICK  701 @ 0x62A00000 -  IN Digit; PC++ | PC=177/0xB1
+TICK  702 - RInData <- 0 digit (3/0x3) | RInData=3/0x3
+TICK  703 @ 0x04E10000 -  MOV MvRegMem; PC++ | PC=178/0xB2
+TICK  704 - RF1<-memI[0xB2]; PC++ 
+TICK  705 - memD[0x94]<-RInData | memD[0x94]=0x3
+TICK  706 - memD[0x95]<-RInData | memD[0x95]=0x0
+TICK  707 - memD[0x96]<-RInData | memD[0x96]=0x0
+TICK  708 - memD[0x97]<-RInData | memD[0x97]=0x0
+TICK  709 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=180/0xB4
+TICK  710 - RF1<-memI[180], PC++ | RF1=112/0x70
+TICK  711 - RM1<-memD[70] | RM1=1/0x1
+TICK  712 - RM1<-memD[71] | RM1=1/0x1
+TICK  713 - RM1<-memD[72] | RM1=1/0x1
+TICK  714 - RM1<-memD[73] | RM1=   1/0x1
+TICK  716 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=182/0xB6
+TICK  717 - SP=SP-4 | SP=400/0x190
+TICK  718 - RF1=SP | SP=400/0x190
+TICK  719 - memD[0x190]<-RM1 | memD[0x190]=0x1
+TICK  720 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  721 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  722 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  723 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=183/0xB7
+TICK  724 - RM2<-#0; PC++ | SP=400/0x190
+TICK  725 @ 0x0F820000 -  POP SingleReg; PC++ | PC=185/0xB9
+TICK  726 - RF1<-SP | RF1=400/0x190
+TICK  727 - RM1<-memD[190] | RM1=1/0x1
+TICK  728 - RM1<-memD[191] | RM1=1/0x1
+TICK  729 - RM1<-memD[192] | RM1=1/0x1
+TICK  730 - RM1<-memD[193] | RM1=   1/0x1
+TICK  731 - SP=SP+4 | SP=400/0x190
+TICK  732 @ 0x51C02400 -  CMP RegReg; PC++ | PC=186/0xBA
+TICK  733 - CMP RM1, RM2 | N=0,Z=0,V=0,C=0; RM1=1/0x1 RM2=0/0x0
+TICK  734 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=187/0xBB
+TICK  735 - RF2<-memI[0xBB]; PC++ | RF2=198/0xC6
+TICK  736 - JNE taken; PC<-RF2 | PC=198/0xC6
+TICK  737 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=199/0xC7
+TICK  738 - RF1<-memI[199], PC++ | RF1=148/0x94
+TICK  739 - RA<-memD[94] | RA=3/0x3
+TICK  740 - RA<-memD[95] | RA=3/0x3
+TICK  741 - RA<-memD[96] | RA=3/0x3
+TICK  742 - RA<-memD[97] | RA=   3/0x3
+TICK  744 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=201/0xC9
+TICK  745 - RF1<-memI[201], PC++ | RF1=148/0x94
+TICK  746 - RA<-memD[94] | RA=3/0x3
+TICK  747 - RA<-memD[95] | RA=3/0x3
+TICK  748 - RA<-memD[96] | RA=3/0x3
+TICK  749 - RA<-memD[97] | RA=   3/0x3
+TICK  751 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=203/0xCB
+TICK  752 - RF1<-memI[203], PC++ | RF1=104/0x68
+TICK  753 - RM1<-memD[68] | RM1=4/0x4
+TICK  754 - RM1<-memD[69] | RM1=4/0x4
+TICK  755 - RM1<-memD[6A] | RM1=4/0x4
+TICK  756 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  758 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=205/0xCD
+TICK  759 - RF1<-memI[205], PC++ | RF1=120/0x78
+TICK  760 - RM2<-memD[78] | RM2=2/0x2
+TICK  761 - RM2<-memD[79] | RM2=2/0x2
+TICK  762 - RM2<-memD[7A] | RM2=2/0x2
+TICK  763 - RM2<-memD[7B] | RM2=   2/0x2
+TICK  765 @ 0x42062400 -  ADD MathRRR; PC++ | PC=207/0xCF
+TICK  766 - RAddr<-RM1+RM2 | RAddr=6/0x6 N=0,Z=0,V=0,C=0
+TICK  766 - RAddr<-RM1 + RM2 | RAddr=6/0x6
+TICK  767 @ 0x04A60000 -  MOV MvLowRegToRegInd; PC++ | PC=208/0xD0
+TICK  768 - memD[0x6] <- RA(byte); mem[RAddr]<-RA(byte) = 0x03
+TICK  769 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=209/0xD1
+TICK  770 - RF1<-memI[209], PC++ | RF1=120/0x78
+TICK  771 - RM1<-memD[78] | RM1=2/0x2
+TICK  772 - RM1<-memD[79] | RM1=2/0x2
+TICK  773 - RM1<-memD[7A] | RM1=2/0x2
+TICK  774 - RM1<-memD[7B] | RM1=   2/0x2
+TICK  776 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=211/0xD3
+TICK  777 - SP=SP-4 | SP=400/0x190
+TICK  778 - RF1=SP | SP=400/0x190
+TICK  779 - memD[0x190]<-RM1 | memD[0x190]=0x2
+TICK  780 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  781 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  782 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  783 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=212/0xD4
+TICK  784 - RM2<-#1; PC++ | SP=400/0x190
+TICK  785 @ 0x0F820000 -  POP SingleReg; PC++ | PC=214/0xD6
+TICK  786 - RF1<-SP | RF1=400/0x190
+TICK  787 - RM1<-memD[190] | RM1=2/0x2
+TICK  788 - RM1<-memD[191] | RM1=2/0x2
+TICK  789 - RM1<-memD[192] | RM1=2/0x2
+TICK  790 - RM1<-memD[193] | RM1=   2/0x2
+TICK  791 - SP=SP+4 | SP=400/0x190
+TICK  792 @ 0x42002400 -  ADD MathRRR; PC++ | PC=215/0xD7
+TICK  793 - RA<-RM1+RM2 | RA=3/0x3 N=0,Z=0,V=0,C=0
+TICK  793 - RA<-RM1 + RM2 | RA=3/0x3
+TICK  794 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=216/0xD8
+TICK  795 - RF1<-memI[0xD8]; PC++ 
+TICK  796 - memD[0x78]<-RA | memD[0x78]=0x3
+TICK  797 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  798 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  799 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  800 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=218/0xDA
+TICK  801 - RF1<-memI[218], PC++ | RF1=116/0x74
+TICK  802 - RM1<-memD[74] | RM1=4/0x4
+TICK  803 - RM1<-memD[75] | RM1=4/0x4
+TICK  804 - RM1<-memD[76] | RM1=4/0x4
+TICK  805 - RM1<-memD[77] | RM1=   4/0x4
+TICK  807 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=220/0xDC
+TICK  808 - SP=SP-4 | SP=400/0x190
+TICK  809 - RF1=SP | SP=400/0x190
+TICK  810 - memD[0x190]<-RM1 | memD[0x190]=0x4
+TICK  811 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  812 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  813 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  814 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=221/0xDD
+TICK  815 - RM2<-#0; PC++ | SP=400/0x190
+TICK  816 @ 0x0F820000 -  POP SingleReg; PC++ | PC=223/0xDF
+TICK  817 - RF1<-SP | RF1=400/0x190
+TICK  818 - RM1<-memD[190] | RM1=4/0x4
+TICK  819 - RM1<-memD[191] | RM1=4/0x4
+TICK  820 - RM1<-memD[192] | RM1=4/0x4
+TICK  821 - RM1<-memD[193] | RM1=   4/0x4
+TICK  822 - SP=SP+4 | SP=400/0x190
+TICK  823 @ 0x51C02400 -  CMP RegReg; PC++ | PC=224/0xE0
+TICK  824 - CMP RM1, RM2 | N=0,Z=0,V=0,C=0; RM1=4/0x4 RM2=0/0x0
+TICK  825 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=225/0xE1
+TICK  826 - RF2<-memI[0xE1]; PC++ | RF2=239/0xEF
+TICK  827 - no jump | PC=226/0xE2; N=0,Z=0,V=0,C=0
+TICK  828 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=227/0xE3
+TICK  829 - RF1<-memI[227], PC++ | RF1=120/0x78
+TICK  830 - RM1<-memD[78] | RM1=3/0x3
+TICK  831 - RM1<-memD[79] | RM1=3/0x3
+TICK  832 - RM1<-memD[7A] | RM1=3/0x3
+TICK  833 - RM1<-memD[7B] | RM1=   3/0x3
+TICK  835 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=229/0xE5
+TICK  836 - SP=SP-4 | SP=400/0x190
+TICK  837 - RF1=SP | SP=400/0x190
+TICK  838 - memD[0x190]<-RM1 | memD[0x190]=0x3
+TICK  839 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  840 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  841 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  842 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=230/0xE6
+TICK  843 - RF1<-memI[230], PC++ | RF1=116/0x74
+TICK  844 - RM2<-memD[74] | RM2=4/0x4
+TICK  845 - RM2<-memD[75] | RM2=4/0x4
+TICK  846 - RM2<-memD[76] | RM2=4/0x4
+TICK  847 - RM2<-memD[77] | RM2=   4/0x4
+TICK  849 @ 0x0F820000 -  POP SingleReg; PC++ | PC=232/0xE8
+TICK  850 - RF1<-SP | RF1=400/0x190
+TICK  851 - RM1<-memD[190] | RM1=3/0x3
+TICK  852 - RM1<-memD[191] | RM1=3/0x3
+TICK  853 - RM1<-memD[192] | RM1=3/0x3
+TICK  854 - RM1<-memD[193] | RM1=   3/0x3
+TICK  855 - SP=SP+4 | SP=400/0x190
+TICK  856 @ 0x51C02400 -  CMP RegReg; PC++ | PC=233/0xE9
+TICK  857 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=3/0x3 RM2=4/0x4
+TICK  858 @ 0xCF000000 -  JL JAbsAddr; PC++ | PC=234/0xEA
+TICK  859 - RF2<-memI[0xEA]; PC++ | RF2=239/0xEF
+TICK  860 - JL taken → PC<-RF2 | PC=239/0xEF
+TICK  861 @ 0x93E00000 -  IRet NoOperands; PC++ | PC=240/0xF0
+TICK  862 - restore register values | PC=7/0x7
+------------Exiting interruption------------
+TICK  863 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  864 - RF1<-SP | RF1=404/0x194
+TICK  865 - RM1<-memD[194] | RM1=1/0x1
+TICK  866 - RM1<-memD[195] | RM1=1/0x1
+TICK  867 - RM1<-memD[196] | RM1=1/0x1
+TICK  868 - RM1<-memD[197] | RM1=   1/0x1
+TICK  869 - SP=SP+4 | SP=404/0x194
+TICK  870 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  871 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  872 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  873 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  874 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  875 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  876 - PC<-memI[0x2]| PC=2/0x2
+TICK  877 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  878 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  879 - RM1<-memD[6C] | RM1=1/0x1
+TICK  880 - RM1<-memD[6D] | RM1=1/0x1
+TICK  881 - RM1<-memD[6E] | RM1=1/0x1
+TICK  882 - RM1<-memD[6F] | RM1=   1/0x1
+TICK  884 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  885 - SP=SP-4 | SP=404/0x194
+TICK  886 - RF1=SP | SP=404/0x194
+TICK  887 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  888 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  889 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  890 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  891 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  892 - RM2<-#1; PC++ | SP=404/0x194
+TICK  893 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  894 - RF1<-SP | RF1=404/0x194
+TICK  895 - RM1<-memD[194] | RM1=1/0x1
+TICK  896 - RM1<-memD[195] | RM1=1/0x1
+TICK  897 - RM1<-memD[196] | RM1=1/0x1
+TICK  898 - RM1<-memD[197] | RM1=   1/0x1
+TICK  899 - SP=SP+4 | SP=404/0x194
+TICK  900 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  901 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  902 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  903 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  904 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  905 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  906 - PC<-memI[0x2]| PC=2/0x2
+TICK  907 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  908 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  909 - RM1<-memD[6C] | RM1=1/0x1
+TICK  910 - RM1<-memD[6D] | RM1=1/0x1
+TICK  911 - RM1<-memD[6E] | RM1=1/0x1
+TICK  912 - RM1<-memD[6F] | RM1=   1/0x1
+TICK  914 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  915 - SP=SP-4 | SP=404/0x194
+TICK  916 - RF1=SP | SP=404/0x194
+TICK  917 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  918 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  919 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  920 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  921 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  922 - RM2<-#1; PC++ | SP=404/0x194
+TICK  923 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  924 - RF1<-SP | RF1=404/0x194
+TICK  925 - RM1<-memD[194] | RM1=1/0x1
+TICK  926 - RM1<-memD[195] | RM1=1/0x1
+TICK  927 - RM1<-memD[196] | RM1=1/0x1
+TICK  928 - RM1<-memD[197] | RM1=   1/0x1
+TICK  929 - SP=SP+4 | SP=404/0x194
+TICK  930 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  931 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  932 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  933 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  934 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  935 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  936 - PC<-memI[0x2]| PC=2/0x2
+TICK  937 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  938 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  939 - RM1<-memD[6C] | RM1=1/0x1
+TICK  940 - RM1<-memD[6D] | RM1=1/0x1
+TICK  941 - RM1<-memD[6E] | RM1=1/0x1
+TICK  942 - RM1<-memD[6F] | RM1=   1/0x1
+TICK  944 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  945 - SP=SP-4 | SP=404/0x194
+TICK  946 - RF1=SP | SP=404/0x194
+TICK  947 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  948 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  949 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  950 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  951 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  952 - RM2<-#1; PC++ | SP=404/0x194
+TICK  953 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  954 - RF1<-SP | RF1=404/0x194
+TICK  955 - RM1<-memD[194] | RM1=1/0x1
+TICK  956 - RM1<-memD[195] | RM1=1/0x1
+TICK  957 - RM1<-memD[196] | RM1=1/0x1
+TICK  958 - RM1<-memD[197] | RM1=   1/0x1
+TICK  959 - SP=SP+4 | SP=404/0x194
+TICK  960 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  961 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  962 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  963 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  964 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  965 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  966 - PC<-memI[0x2]| PC=2/0x2
+TICK  967 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  968 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  969 - RM1<-memD[6C] | RM1=1/0x1
+TICK  970 - RM1<-memD[6D] | RM1=1/0x1
+TICK  971 - RM1<-memD[6E] | RM1=1/0x1
+TICK  972 - RM1<-memD[6F] | RM1=   1/0x1
+TICK  974 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  975 - SP=SP-4 | SP=404/0x194
+TICK  976 - RF1=SP | SP=404/0x194
+TICK  977 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  978 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  979 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  980 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  981 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  982 - RM2<-#1; PC++ | SP=404/0x194
+TICK  983 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  984 - RF1<-SP | RF1=404/0x194
+TICK  985 - RM1<-memD[194] | RM1=1/0x1
+TICK  986 - RM1<-memD[195] | RM1=1/0x1
+TICK  987 - RM1<-memD[196] | RM1=1/0x1
+TICK  988 - RM1<-memD[197] | RM1=   1/0x1
+TICK  989 - SP=SP+4 | SP=404/0x194
+TICK  990 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  991 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  992 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  993 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  994 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  995 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  996 - PC<-memI[0x2]| PC=2/0x2
+TICK  997 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  998 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  999 - RM1<-memD[6C] | RM1=1/0x1
+TICK  1000 - RM1<-memD[6D] | RM1=1/0x1
+TICK  1001 - RM1<-memD[6E] | RM1=1/0x1
+TICK  1002 - RM1<-memD[6F] | RM1=   1/0x1
+------------Entering Interruption 0, value=0/0x0------------
+TICK  1004 @ 0x62A00000 -  IN Digit; PC++ | PC=177/0xB1
+TICK  1005 - RInData <- 0 digit (0/0x0) | RInData=0/0x0
+TICK  1006 @ 0x04E10000 -  MOV MvRegMem; PC++ | PC=178/0xB2
+TICK  1007 - RF1<-memI[0xB2]; PC++ 
+TICK  1008 - memD[0x94]<-RInData | memD[0x94]=0x0
+TICK  1009 - memD[0x95]<-RInData | memD[0x95]=0x0
+TICK  1010 - memD[0x96]<-RInData | memD[0x96]=0x0
+TICK  1011 - memD[0x97]<-RInData | memD[0x97]=0x0
+TICK  1012 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=180/0xB4
+TICK  1013 - RF1<-memI[180], PC++ | RF1=112/0x70
+TICK  1014 - RM1<-memD[70] | RM1=1/0x1
+TICK  1015 - RM1<-memD[71] | RM1=1/0x1
+TICK  1016 - RM1<-memD[72] | RM1=1/0x1
+TICK  1017 - RM1<-memD[73] | RM1=   1/0x1
+TICK  1019 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=182/0xB6
+TICK  1020 - SP=SP-4 | SP=404/0x194
+TICK  1021 - RF1=SP | SP=404/0x194
+TICK  1022 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  1023 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1024 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1025 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1026 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=183/0xB7
+TICK  1027 - RM2<-#0; PC++ | SP=404/0x194
+TICK  1028 @ 0x0F820000 -  POP SingleReg; PC++ | PC=185/0xB9
+TICK  1029 - RF1<-SP | RF1=404/0x194
+TICK  1030 - RM1<-memD[194] | RM1=1/0x1
+TICK  1031 - RM1<-memD[195] | RM1=1/0x1
+TICK  1032 - RM1<-memD[196] | RM1=1/0x1
+TICK  1033 - RM1<-memD[197] | RM1=   1/0x1
+TICK  1034 - SP=SP+4 | SP=404/0x194
+TICK  1035 @ 0x51C02400 -  CMP RegReg; PC++ | PC=186/0xBA
+TICK  1036 - CMP RM1, RM2 | N=0,Z=0,V=0,C=0; RM1=1/0x1 RM2=0/0x0
+TICK  1037 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=187/0xBB
+TICK  1038 - RF2<-memI[0xBB]; PC++ | RF2=198/0xC6
+TICK  1039 - JNE taken; PC<-RF2 | PC=198/0xC6
+TICK  1040 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=199/0xC7
+TICK  1041 - RF1<-memI[199], PC++ | RF1=148/0x94
+TICK  1042 - RA<-memD[94] | RA=0/0x0
+TICK  1043 - RA<-memD[95] | RA=0/0x0
+TICK  1044 - RA<-memD[96] | RA=0/0x0
+TICK  1045 - RA<-memD[97] | RA=   0/0x0
+TICK  1047 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=201/0xC9
+TICK  1048 - RF1<-memI[201], PC++ | RF1=148/0x94
+TICK  1049 - RA<-memD[94] | RA=0/0x0
+TICK  1050 - RA<-memD[95] | RA=0/0x0
+TICK  1051 - RA<-memD[96] | RA=0/0x0
+TICK  1052 - RA<-memD[97] | RA=   0/0x0
+TICK  1054 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=203/0xCB
+TICK  1055 - RF1<-memI[203], PC++ | RF1=104/0x68
+TICK  1056 - RM1<-memD[68] | RM1=4/0x4
+TICK  1057 - RM1<-memD[69] | RM1=4/0x4
+TICK  1058 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1059 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1061 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=205/0xCD
+TICK  1062 - RF1<-memI[205], PC++ | RF1=120/0x78
+TICK  1063 - RM2<-memD[78] | RM2=3/0x3
+TICK  1064 - RM2<-memD[79] | RM2=3/0x3
+TICK  1065 - RM2<-memD[7A] | RM2=3/0x3
+TICK  1066 - RM2<-memD[7B] | RM2=   3/0x3
+TICK  1068 @ 0x42062400 -  ADD MathRRR; PC++ | PC=207/0xCF
+TICK  1069 - RAddr<-RM1+RM2 | RAddr=7/0x7 N=0,Z=0,V=0,C=0
+TICK  1069 - RAddr<-RM1 + RM2 | RAddr=7/0x7
+TICK  1070 @ 0x04A60000 -  MOV MvLowRegToRegInd; PC++ | PC=208/0xD0
+TICK  1071 - memD[0x7] <- RA(byte); mem[RAddr]<-RA(byte) = 0x00
+TICK  1072 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=209/0xD1
+TICK  1073 - RF1<-memI[209], PC++ | RF1=120/0x78
+TICK  1074 - RM1<-memD[78] | RM1=3/0x3
+TICK  1075 - RM1<-memD[79] | RM1=3/0x3
+TICK  1076 - RM1<-memD[7A] | RM1=3/0x3
+TICK  1077 - RM1<-memD[7B] | RM1=   3/0x3
+TICK  1079 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=211/0xD3
+TICK  1080 - SP=SP-4 | SP=404/0x194
+TICK  1081 - RF1=SP | SP=404/0x194
+TICK  1082 - memD[0x194]<-RM1 | memD[0x194]=0x3
+TICK  1083 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1084 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1085 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1086 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=212/0xD4
+TICK  1087 - RM2<-#1; PC++ | SP=404/0x194
+TICK  1088 @ 0x0F820000 -  POP SingleReg; PC++ | PC=214/0xD6
+TICK  1089 - RF1<-SP | RF1=404/0x194
+TICK  1090 - RM1<-memD[194] | RM1=3/0x3
+TICK  1091 - RM1<-memD[195] | RM1=3/0x3
+TICK  1092 - RM1<-memD[196] | RM1=3/0x3
+TICK  1093 - RM1<-memD[197] | RM1=   3/0x3
+TICK  1094 - SP=SP+4 | SP=404/0x194
+TICK  1095 @ 0x42002400 -  ADD MathRRR; PC++ | PC=215/0xD7
+TICK  1096 - RA<-RM1+RM2 | RA=4/0x4 N=0,Z=0,V=0,C=0
+TICK  1096 - RA<-RM1 + RM2 | RA=4/0x4
+TICK  1097 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=216/0xD8
+TICK  1098 - RF1<-memI[0xD8]; PC++ 
+TICK  1099 - memD[0x78]<-RA | memD[0x78]=0x4
+TICK  1100 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  1101 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  1102 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  1103 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=218/0xDA
+TICK  1104 - RF1<-memI[218], PC++ | RF1=116/0x74
+TICK  1105 - RM1<-memD[74] | RM1=4/0x4
+TICK  1106 - RM1<-memD[75] | RM1=4/0x4
+TICK  1107 - RM1<-memD[76] | RM1=4/0x4
+TICK  1108 - RM1<-memD[77] | RM1=   4/0x4
+TICK  1110 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=220/0xDC
+TICK  1111 - SP=SP-4 | SP=404/0x194
+TICK  1112 - RF1=SP | SP=404/0x194
+TICK  1113 - memD[0x194]<-RM1 | memD[0x194]=0x4
+TICK  1114 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1115 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1116 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1117 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=221/0xDD
+TICK  1118 - RM2<-#0; PC++ | SP=404/0x194
+TICK  1119 @ 0x0F820000 -  POP SingleReg; PC++ | PC=223/0xDF
+TICK  1120 - RF1<-SP | RF1=404/0x194
+TICK  1121 - RM1<-memD[194] | RM1=4/0x4
+TICK  1122 - RM1<-memD[195] | RM1=4/0x4
+TICK  1123 - RM1<-memD[196] | RM1=4/0x4
+TICK  1124 - RM1<-memD[197] | RM1=   4/0x4
+TICK  1125 - SP=SP+4 | SP=404/0x194
+TICK  1126 @ 0x51C02400 -  CMP RegReg; PC++ | PC=224/0xE0
+TICK  1127 - CMP RM1, RM2 | N=0,Z=0,V=0,C=0; RM1=4/0x4 RM2=0/0x0
+TICK  1128 @ 0xC3000000 -  JE JAbsAddr; PC++ | PC=225/0xE1
+TICK  1129 - RF2<-memI[0xE1]; PC++ | RF2=239/0xEF
+TICK  1130 - no jump | PC=226/0xE2; N=0,Z=0,V=0,C=0
+TICK  1131 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=227/0xE3
+TICK  1132 - RF1<-memI[227], PC++ | RF1=120/0x78
+TICK  1133 - RM1<-memD[78] | RM1=4/0x4
+TICK  1134 - RM1<-memD[79] | RM1=4/0x4
+TICK  1135 - RM1<-memD[7A] | RM1=4/0x4
+TICK  1136 - RM1<-memD[7B] | RM1=   4/0x4
+TICK  1138 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=229/0xE5
+TICK  1139 - SP=SP-4 | SP=404/0x194
+TICK  1140 - RF1=SP | SP=404/0x194
+TICK  1141 - memD[0x194]<-RM1 | memD[0x194]=0x4
+TICK  1142 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1143 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1144 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1145 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=230/0xE6
+TICK  1146 - RF1<-memI[230], PC++ | RF1=116/0x74
+TICK  1147 - RM2<-memD[74] | RM2=4/0x4
+TICK  1148 - RM2<-memD[75] | RM2=4/0x4
+TICK  1149 - RM2<-memD[76] | RM2=4/0x4
+TICK  1150 - RM2<-memD[77] | RM2=   4/0x4
+TICK  1152 @ 0x0F820000 -  POP SingleReg; PC++ | PC=232/0xE8
+TICK  1153 - RF1<-SP | RF1=404/0x194
+TICK  1154 - RM1<-memD[194] | RM1=4/0x4
+TICK  1155 - RM1<-memD[195] | RM1=4/0x4
+TICK  1156 - RM1<-memD[196] | RM1=4/0x4
+TICK  1157 - RM1<-memD[197] | RM1=   4/0x4
+TICK  1158 - SP=SP+4 | SP=404/0x194
+TICK  1159 @ 0x51C02400 -  CMP RegReg; PC++ | PC=233/0xE9
+TICK  1160 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=4/0x4 RM2=4/0x4
+TICK  1161 @ 0xCF000000 -  JL JAbsAddr; PC++ | PC=234/0xEA
+TICK  1162 - RF2<-memI[0xEA]; PC++ | RF2=239/0xEF
+TICK  1163 - JL not taken | PC=235/0xEB N=0,Z=1,V=0,C=0
+TICK  1164 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=236/0xEC
+TICK  1165 - RA<-#0; PC++ | SP=408/0x198
+TICK  1166 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=238/0xEE
+TICK  1167 - RF1<-memI[0xEE]; PC++ 
+TICK  1168 - memD[0x6C]<-RA | memD[0x6C]=0x0
+TICK  1169 - memD[0x6D]<-RA | memD[0x6D]=0x0
+TICK  1170 - memD[0x6E]<-RA | memD[0x6E]=0x0
+TICK  1171 - memD[0x6F]<-RA | memD[0x6F]=0x0
+TICK  1172 @ 0x93E00000 -  IRet NoOperands; PC++ | PC=240/0xF0
+TICK  1173 - restore register values | PC=4/0x4
+------------Exiting interruption------------
+TICK  1174 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  1175 - SP=SP-4 | SP=404/0x194
+TICK  1176 - RF1=SP | SP=404/0x194
+TICK  1177 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  1178 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1179 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1180 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1181 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  1182 - RM2<-#1; PC++ | SP=404/0x194
+TICK  1183 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  1184 - RF1<-SP | RF1=404/0x194
+TICK  1185 - RM1<-memD[194] | RM1=1/0x1
+TICK  1186 - RM1<-memD[195] | RM1=1/0x1
+TICK  1187 - RM1<-memD[196] | RM1=1/0x1
+TICK  1188 - RM1<-memD[197] | RM1=   1/0x1
+TICK  1189 - SP=SP+4 | SP=404/0x194
+TICK  1190 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  1191 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  1192 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  1193 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  1194 - JNE not taken | PC=11/0xB; N=0,Z=1,V=0,C=0
+TICK  1195 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=12/0xC
+TICK  1196 - PC<-memI[0x2]| PC=2/0x2
+TICK  1197 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=3/0x3
+TICK  1198 - RF1<-memI[3], PC++ | RF1=108/0x6C
+TICK  1199 - RM1<-memD[6C] | RM1=0/0x0
+TICK  1200 - RM1<-memD[6D] | RM1=0/0x0
+TICK  1201 - RM1<-memD[6E] | RM1=0/0x0
+TICK  1202 - RM1<-memD[6F] | RM1=   0/0x0
+TICK  1204 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=5/0x5
+TICK  1205 - SP=SP-4 | SP=404/0x194
+TICK  1206 - RF1=SP | SP=404/0x194
+TICK  1207 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  1208 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1209 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1210 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1211 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=6/0x6
+TICK  1212 - RM2<-#1; PC++ | SP=404/0x194
+TICK  1213 @ 0x0F820000 -  POP SingleReg; PC++ | PC=8/0x8
+TICK  1214 - RF1<-SP | RF1=404/0x194
+TICK  1215 - RM1<-memD[194] | RM1=0/0x0
+TICK  1216 - RM1<-memD[195] | RM1=0/0x0
+TICK  1217 - RM1<-memD[196] | RM1=0/0x0
+TICK  1218 - RM1<-memD[197] | RM1=   0/0x0
+TICK  1219 - SP=SP+4 | SP=404/0x194
+TICK  1220 @ 0x51C02400 -  CMP RegReg; PC++ | PC=9/0x9
+TICK  1221 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=0/0x0 RM2=1/0x1
+TICK  1222 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=10/0xA
+TICK  1223 - RF2<-memI[0xA]; PC++ | RF2=13/0xD
+TICK  1224 - JNE taken; PC<-RF2 | PC=13/0xD
+TICK  1225 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=14/0xE
+TICK  1226 - RF1<-memI[14], PC++ | RF1=116/0x74
+TICK  1227 - RA<-memD[74] | RA=4/0x4
+TICK  1228 - RA<-memD[75] | RA=4/0x4
+TICK  1229 - RA<-memD[76] | RA=4/0x4
+TICK  1230 - RA<-memD[77] | RA=   4/0x4
+TICK  1232 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=16/0x10
+TICK  1233 - RF1<-memI[0x10]; PC++ 
+TICK  1234 - memD[0x84]<-RA | memD[0x84]=0x4
+TICK  1235 - memD[0x85]<-RA | memD[0x85]=0x0
+TICK  1236 - memD[0x86]<-RA | memD[0x86]=0x0
+TICK  1237 - memD[0x87]<-RA | memD[0x87]=0x0
+TICK  1238 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=18/0x12
+TICK  1239 - RF1<-memI[18], PC++ | RF1=124/0x7C
+TICK  1240 - RM1<-memD[7C] | RM1=1/0x1
+TICK  1241 - RM1<-memD[7D] | RM1=1/0x1
+TICK  1242 - RM1<-memD[7E] | RM1=1/0x1
+TICK  1243 - RM1<-memD[7F] | RM1=   1/0x1
+TICK  1245 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=20/0x14
+TICK  1246 - SP=SP-4 | SP=404/0x194
+TICK  1247 - RF1=SP | SP=404/0x194
+TICK  1248 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  1249 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1250 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1251 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1252 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=21/0x15
+TICK  1253 - RM2<-#1; PC++ | SP=404/0x194
+TICK  1254 @ 0x0F820000 -  POP SingleReg; PC++ | PC=23/0x17
+TICK  1255 - RF1<-SP | RF1=404/0x194
+TICK  1256 - RM1<-memD[194] | RM1=1/0x1
+TICK  1257 - RM1<-memD[195] | RM1=1/0x1
+TICK  1258 - RM1<-memD[196] | RM1=1/0x1
+TICK  1259 - RM1<-memD[197] | RM1=   1/0x1
+TICK  1260 - SP=SP+4 | SP=404/0x194
+TICK  1261 @ 0x51C02400 -  CMP RegReg; PC++ | PC=24/0x18
+TICK  1262 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  1263 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=25/0x19
+TICK  1264 - RF2<-memI[0x19]; PC++ | RF2=136/0x88
+TICK  1265 - JNE not taken | PC=26/0x1A; N=0,Z=1,V=0,C=0
+TICK  1266 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=27/0x1B
+TICK  1267 - RA<-#0; PC++ | SP=408/0x198
+TICK  1268 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=29/0x1D
+TICK  1269 - RF1<-memI[0x1D]; PC++ 
+TICK  1270 - memD[0x7C]<-RA | memD[0x7C]=0x0
+TICK  1271 - memD[0x7D]<-RA | memD[0x7D]=0x0
+TICK  1272 - memD[0x7E]<-RA | memD[0x7E]=0x0
+TICK  1273 - memD[0x7F]<-RA | memD[0x7F]=0x0
+TICK  1274 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=31/0x1F
+TICK  1275 - RA<-#0; PC++ | SP=408/0x198
+TICK  1276 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=33/0x21
+TICK  1277 - RF1<-memI[0x21]; PC++ 
+TICK  1278 - memD[0x78]<-RA | memD[0x78]=0x0
+TICK  1279 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  1280 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  1281 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  1282 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=35/0x23
+TICK  1283 - RF1<-memI[35], PC++ | RF1=120/0x78
+TICK  1284 - RM1<-memD[78] | RM1=0/0x0
+TICK  1285 - RM1<-memD[79] | RM1=0/0x0
+TICK  1286 - RM1<-memD[7A] | RM1=0/0x0
+TICK  1287 - RM1<-memD[7B] | RM1=   0/0x0
+TICK  1289 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=37/0x25
+TICK  1290 - SP=SP-4 | SP=404/0x194
+TICK  1291 - RF1=SP | SP=404/0x194
+TICK  1292 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  1293 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1294 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1295 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1296 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=38/0x26
+TICK  1297 - RF1<-memI[38], PC++ | RF1=132/0x84
+TICK  1298 - RM1<-memD[84] | RM1=4/0x4
+TICK  1299 - RM1<-memD[85] | RM1=4/0x4
+TICK  1300 - RM1<-memD[86] | RM1=4/0x4
+TICK  1301 - RM1<-memD[87] | RM1=   4/0x4
+TICK  1303 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=40/0x28
+TICK  1304 - SP=SP-4 | SP=400/0x190
+TICK  1305 - RF1=SP | SP=400/0x190
+TICK  1306 - memD[0x190]<-RM1 | memD[0x190]=0x4
+TICK  1307 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  1308 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  1309 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  1310 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=41/0x29
+TICK  1311 - RM2<-#1; PC++ | SP=400/0x190
+TICK  1312 @ 0x0F820000 -  POP SingleReg; PC++ | PC=43/0x2B
+TICK  1313 - RF1<-SP | RF1=400/0x190
+TICK  1314 - RM1<-memD[190] | RM1=4/0x4
+TICK  1315 - RM1<-memD[191] | RM1=4/0x4
+TICK  1316 - RM1<-memD[192] | RM1=4/0x4
+TICK  1317 - RM1<-memD[193] | RM1=   4/0x4
+TICK  1318 - SP=SP+4 | SP=400/0x190
+TICK  1319 @ 0x46042400 -  SUB MathRRR; PC++ | PC=44/0x2C
+TICK  1320 - RM2<-RM1-RM2 | RM2=3/0x3 N=0,Z=0,V=0,C=1
+TICK  1321 @ 0x0F820000 -  POP SingleReg; PC++ | PC=45/0x2D
+TICK  1322 - RF1<-SP | RF1=404/0x194
+TICK  1323 - RM1<-memD[194] | RM1=0/0x0
+TICK  1324 - RM1<-memD[195] | RM1=0/0x0
+TICK  1325 - RM1<-memD[196] | RM1=0/0x0
+TICK  1326 - RM1<-memD[197] | RM1=   0/0x0
+TICK  1327 - SP=SP+4 | SP=404/0x194
+TICK  1328 @ 0x51C02400 -  CMP RegReg; PC++ | PC=46/0x2E
+TICK  1329 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=0/0x0 RM2=3/0x3
+TICK  1330 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=47/0x2F
+TICK  1331 - RF2<-memI[0x2F]; PC++ | RF2=125/0x7D
+TICK  1332 - JGE not taken | PC=48/0x30 N=1,Z=0,V=0,C=1
+TICK  1333 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=49/0x31
+TICK  1334 - RF1<-memI[49], PC++ | RF1=120/0x78
+TICK  1335 - RM1<-memD[78] | RM1=0/0x0
+TICK  1336 - RM1<-memD[79] | RM1=0/0x0
+TICK  1337 - RM1<-memD[7A] | RM1=0/0x0
+TICK  1338 - RM1<-memD[7B] | RM1=   0/0x0
+TICK  1340 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=51/0x33
+TICK  1341 - SP=SP-4 | SP=404/0x194
+TICK  1342 - RF1=SP | SP=404/0x194
+TICK  1343 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  1344 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1345 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1346 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1347 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=52/0x34
+TICK  1348 - RM2<-#1; PC++ | SP=404/0x194
+TICK  1349 @ 0x0F820000 -  POP SingleReg; PC++ | PC=54/0x36
+TICK  1350 - RF1<-SP | RF1=404/0x194
+TICK  1351 - RM1<-memD[194] | RM1=0/0x0
+TICK  1352 - RM1<-memD[195] | RM1=0/0x0
+TICK  1353 - RM1<-memD[196] | RM1=0/0x0
+TICK  1354 - RM1<-memD[197] | RM1=   0/0x0
+TICK  1355 - SP=SP+4 | SP=404/0x194
+TICK  1356 @ 0x42002400 -  ADD MathRRR; PC++ | PC=55/0x37
+TICK  1357 - RA<-RM1+RM2 | RA=1/0x1 N=0,Z=0,V=0,C=0
+TICK  1357 - RA<-RM1 + RM2 | RA=1/0x1
+TICK  1358 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=56/0x38
+TICK  1359 - RF1<-memI[0x38]; PC++ 
+TICK  1360 - memD[0x80]<-RA | memD[0x80]=0x1
+TICK  1361 - memD[0x81]<-RA | memD[0x81]=0x0
+TICK  1362 - memD[0x82]<-RA | memD[0x82]=0x0
+TICK  1363 - memD[0x83]<-RA | memD[0x83]=0x0
+TICK  1364 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=58/0x3A
+TICK  1365 - RF1<-memI[58], PC++ | RF1=104/0x68
+TICK  1366 - RM1<-memD[68] | RM1=4/0x4
+TICK  1367 - RM1<-memD[69] | RM1=4/0x4
+TICK  1368 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1369 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1371 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=60/0x3C
+TICK  1372 - RF1<-memI[60], PC++ | RF1=120/0x78
+TICK  1373 - RM2<-memD[78] | RM2=0/0x0
+TICK  1374 - RM2<-memD[79] | RM2=0/0x0
+TICK  1375 - RM2<-memD[7A] | RM2=0/0x0
+TICK  1376 - RM2<-memD[7B] | RM2=   0/0x0
+TICK  1378 @ 0x42062400 -  ADD MathRRR; PC++ | PC=62/0x3E
+TICK  1379 - RAddr<-RM1+RM2 | RAddr=4/0x4 N=0,Z=0,V=0,C=0
+TICK  1379 - RAddr<-RM1 + RM2 | RAddr=4/0x4
+TICK  1380 @ 0x05E26000 -  MOV MvLowRegIndToReg; PC++ | PC=63/0x3F
+TICK  1381 - RM1 <- memD[4] | RM1=2/0x2
+TICK  1382 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=64/0x40
+TICK  1383 - SP=SP-4 | SP=404/0x194
+TICK  1384 - RF1=SP | SP=404/0x194
+TICK  1385 - memD[0x194]<-RM1 | memD[0x194]=0x2
+TICK  1386 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1387 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1388 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1389 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=65/0x41
+TICK  1390 - RF1<-memI[65], PC++ | RF1=104/0x68
+TICK  1391 - RM1<-memD[68] | RM1=4/0x4
+TICK  1392 - RM1<-memD[69] | RM1=4/0x4
+TICK  1393 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1394 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1396 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=67/0x43
+TICK  1397 - RF1<-memI[67], PC++ | RF1=128/0x80
+TICK  1398 - RM2<-memD[80] | RM2=1/0x1
+TICK  1399 - RM2<-memD[81] | RM2=1/0x1
+TICK  1400 - RM2<-memD[82] | RM2=1/0x1
+TICK  1401 - RM2<-memD[83] | RM2=   1/0x1
+TICK  1403 @ 0x42062400 -  ADD MathRRR; PC++ | PC=69/0x45
+TICK  1404 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  1404 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  1405 @ 0x05E46000 -  MOV MvLowRegIndToReg; PC++ | PC=70/0x46
+TICK  1406 - RM2 <- memD[5] | RM2=1/0x1
+TICK  1407 @ 0x0F820000 -  POP SingleReg; PC++ | PC=71/0x47
+TICK  1408 - RF1<-SP | RF1=404/0x194
+TICK  1409 - RM1<-memD[194] | RM1=2/0x2
+TICK  1410 - RM1<-memD[195] | RM1=2/0x2
+TICK  1411 - RM1<-memD[196] | RM1=2/0x2
+TICK  1412 - RM1<-memD[197] | RM1=   2/0x2
+TICK  1413 - SP=SP+4 | SP=404/0x194
+TICK  1414 @ 0x51C02400 -  CMP RegReg; PC++ | PC=72/0x48
+TICK  1415 - CMP RM1, RM2 | N=0,Z=0,V=0,C=0; RM1=2/0x2 RM2=1/0x1
+TICK  1416 @ 0xD7000000 -  JLE JAbsAddr; PC++ | PC=73/0x49
+TICK  1417 - RF2<-memI[0x49]; PC++ | RF2=114/0x72
+TICK  1418 - JLE not taken | PC=74/0x4A N=0,Z=0,V=0,C=0
+TICK  1419 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=75/0x4B
+TICK  1420 - RF1<-memI[75], PC++ | RF1=104/0x68
+TICK  1421 - RM1<-memD[68] | RM1=4/0x4
+TICK  1422 - RM1<-memD[69] | RM1=4/0x4
+TICK  1423 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1424 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1426 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=77/0x4D
+TICK  1427 - RF1<-memI[77], PC++ | RF1=120/0x78
+TICK  1428 - RM2<-memD[78] | RM2=0/0x0
+TICK  1429 - RM2<-memD[79] | RM2=0/0x0
+TICK  1430 - RM2<-memD[7A] | RM2=0/0x0
+TICK  1431 - RM2<-memD[7B] | RM2=   0/0x0
+TICK  1433 @ 0x42062400 -  ADD MathRRR; PC++ | PC=79/0x4F
+TICK  1434 - RAddr<-RM1+RM2 | RAddr=4/0x4 N=0,Z=0,V=0,C=0
+TICK  1434 - RAddr<-RM1 + RM2 | RAddr=4/0x4
+TICK  1435 @ 0x05F86000 -  MOV MvLowRegIndToReg; PC++ | PC=80/0x50
+TICK  1436 - RT2 <- memD[4] | RT2=2/0x2
+TICK  1437 @ 0x04418000 -  MOV MvRegLowMem; PC++ | PC=81/0x51
+TICK  1438 - RF1 <- memI[0x51]; PC++ | RF1=136/0x88
+TICK  1439 - memD[0x88] <- RT2(byte) = 0x02
+TICK  1440 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=83/0x53
+TICK  1441 - RF1<-memI[83], PC++ | RF1=104/0x68
+TICK  1442 - RM1<-memD[68] | RM1=4/0x4
+TICK  1443 - RM1<-memD[69] | RM1=4/0x4
+TICK  1444 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1445 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1447 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=85/0x55
+TICK  1448 - RF1<-memI[85], PC++ | RF1=128/0x80
+TICK  1449 - RM2<-memD[80] | RM2=1/0x1
+TICK  1450 - RM2<-memD[81] | RM2=1/0x1
+TICK  1451 - RM2<-memD[82] | RM2=1/0x1
+TICK  1452 - RM2<-memD[83] | RM2=   1/0x1
+TICK  1454 @ 0x42062400 -  ADD MathRRR; PC++ | PC=87/0x57
+TICK  1455 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  1455 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  1456 @ 0x05E06000 -  MOV MvLowRegIndToReg; PC++ | PC=88/0x58
+TICK  1457 - RA <- memD[5] | RA=1/0x1
+TICK  1458 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=89/0x59
+TICK  1459 - RF1<-memI[89], PC++ | RF1=104/0x68
+TICK  1460 - RM1<-memD[68] | RM1=4/0x4
+TICK  1461 - RM1<-memD[69] | RM1=4/0x4
+TICK  1462 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1463 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1465 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=91/0x5B
+TICK  1466 - RF1<-memI[91], PC++ | RF1=128/0x80
+TICK  1467 - RM2<-memD[80] | RM2=1/0x1
+TICK  1468 - RM2<-memD[81] | RM2=1/0x1
+TICK  1469 - RM2<-memD[82] | RM2=1/0x1
+TICK  1470 - RM2<-memD[83] | RM2=   1/0x1
+TICK  1472 @ 0x42062400 -  ADD MathRRR; PC++ | PC=93/0x5D
+TICK  1473 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  1473 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  1474 @ 0x05E06000 -  MOV MvLowRegIndToReg; PC++ | PC=94/0x5E
+TICK  1475 - RA <- memD[5] | RA=1/0x1
+TICK  1476 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=95/0x5F
+TICK  1477 - RF1<-memI[95], PC++ | RF1=104/0x68
+TICK  1478 - RM1<-memD[68] | RM1=4/0x4
+TICK  1479 - RM1<-memD[69] | RM1=4/0x4
+TICK  1480 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1481 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1483 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=97/0x61
+TICK  1484 - RF1<-memI[97], PC++ | RF1=120/0x78
+TICK  1485 - RM2<-memD[78] | RM2=0/0x0
+TICK  1486 - RM2<-memD[79] | RM2=0/0x0
+TICK  1487 - RM2<-memD[7A] | RM2=0/0x0
+TICK  1488 - RM2<-memD[7B] | RM2=   0/0x0
+TICK  1490 @ 0x42062400 -  ADD MathRRR; PC++ | PC=99/0x63
+TICK  1491 - RAddr<-RM1+RM2 | RAddr=4/0x4 N=0,Z=0,V=0,C=0
+TICK  1491 - RAddr<-RM1 + RM2 | RAddr=4/0x4
+TICK  1492 @ 0x04A60000 -  MOV MvLowRegToRegInd; PC++ | PC=100/0x64
+TICK  1493 - memD[0x4] <- RA(byte); mem[RAddr]<-RA(byte) = 0x01
+TICK  1494 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=101/0x65
+TICK  1495 - RF1<-memI[101], PC++ | RF1=136/0x88
+TICK  1496 - RA<-memD[88] | RA=2/0x2
+TICK  1497 - RA<-memD[89] | RA=2/0x2
+TICK  1498 - RA<-memD[8A] | RA=2/0x2
+TICK  1499 - RA<-memD[8B] | RA=   2/0x2
+TICK  1501 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=103/0x67
+TICK  1502 - RF1<-memI[103], PC++ | RF1=136/0x88
+TICK  1503 - RA<-memD[88] | RA=2/0x2
+TICK  1504 - RA<-memD[89] | RA=2/0x2
+TICK  1505 - RA<-memD[8A] | RA=2/0x2
+TICK  1506 - RA<-memD[8B] | RA=   2/0x2
+TICK  1508 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=105/0x69
+TICK  1509 - RF1<-memI[105], PC++ | RF1=104/0x68
+TICK  1510 - RM1<-memD[68] | RM1=4/0x4
+TICK  1511 - RM1<-memD[69] | RM1=4/0x4
+TICK  1512 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1513 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1515 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=107/0x6B
+TICK  1516 - RF1<-memI[107], PC++ | RF1=128/0x80
+TICK  1517 - RM2<-memD[80] | RM2=1/0x1
+TICK  1518 - RM2<-memD[81] | RM2=1/0x1
+TICK  1519 - RM2<-memD[82] | RM2=1/0x1
+TICK  1520 - RM2<-memD[83] | RM2=   1/0x1
+TICK  1522 @ 0x42062400 -  ADD MathRRR; PC++ | PC=109/0x6D
+TICK  1523 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  1523 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  1524 @ 0x04A60000 -  MOV MvLowRegToRegInd; PC++ | PC=110/0x6E
+TICK  1525 - memD[0x5] <- RA(byte); mem[RAddr]<-RA(byte) = 0x02
+TICK  1526 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=111/0x6F
+TICK  1527 - RA<-#1; PC++ | SP=408/0x198
+TICK  1528 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=113/0x71
+TICK  1529 - RF1<-memI[0x71]; PC++ 
+TICK  1530 - memD[0x7C]<-RA | memD[0x7C]=0x1
+TICK  1531 - memD[0x7D]<-RA | memD[0x7D]=0x0
+TICK  1532 - memD[0x7E]<-RA | memD[0x7E]=0x0
+TICK  1533 - memD[0x7F]<-RA | memD[0x7F]=0x0
+TICK  1534 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=115/0x73
+TICK  1535 - RF1<-memI[115], PC++ | RF1=120/0x78
+TICK  1536 - RM1<-memD[78] | RM1=0/0x0
+TICK  1537 - RM1<-memD[79] | RM1=0/0x0
+TICK  1538 - RM1<-memD[7A] | RM1=0/0x0
+TICK  1539 - RM1<-memD[7B] | RM1=   0/0x0
+TICK  1541 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=117/0x75
+TICK  1542 - SP=SP-4 | SP=404/0x194
+TICK  1543 - RF1=SP | SP=404/0x194
+TICK  1544 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  1545 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1546 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1547 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1548 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=118/0x76
+TICK  1549 - RM2<-#1; PC++ | SP=404/0x194
+TICK  1550 @ 0x0F820000 -  POP SingleReg; PC++ | PC=120/0x78
+TICK  1551 - RF1<-SP | RF1=404/0x194
+TICK  1552 - RM1<-memD[194] | RM1=0/0x0
+TICK  1553 - RM1<-memD[195] | RM1=0/0x0
+TICK  1554 - RM1<-memD[196] | RM1=0/0x0
+TICK  1555 - RM1<-memD[197] | RM1=   0/0x0
+TICK  1556 - SP=SP+4 | SP=404/0x194
+TICK  1557 @ 0x42002400 -  ADD MathRRR; PC++ | PC=121/0x79
+TICK  1558 - RA<-RM1+RM2 | RA=1/0x1 N=0,Z=0,V=0,C=0
+TICK  1558 - RA<-RM1 + RM2 | RA=1/0x1
+TICK  1559 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=122/0x7A
+TICK  1560 - RF1<-memI[0x7A]; PC++ 
+TICK  1561 - memD[0x78]<-RA | memD[0x78]=0x1
+TICK  1562 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  1563 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  1564 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  1565 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=124/0x7C
+TICK  1566 - PC<-memI[0x22]| PC=34/0x22
+TICK  1567 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=35/0x23
+TICK  1568 - RF1<-memI[35], PC++ | RF1=120/0x78
+TICK  1569 - RM1<-memD[78] | RM1=1/0x1
+TICK  1570 - RM1<-memD[79] | RM1=1/0x1
+TICK  1571 - RM1<-memD[7A] | RM1=1/0x1
+TICK  1572 - RM1<-memD[7B] | RM1=   1/0x1
+TICK  1574 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=37/0x25
+TICK  1575 - SP=SP-4 | SP=404/0x194
+TICK  1576 - RF1=SP | SP=404/0x194
+TICK  1577 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  1578 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1579 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1580 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1581 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=38/0x26
+TICK  1582 - RF1<-memI[38], PC++ | RF1=132/0x84
+TICK  1583 - RM1<-memD[84] | RM1=4/0x4
+TICK  1584 - RM1<-memD[85] | RM1=4/0x4
+TICK  1585 - RM1<-memD[86] | RM1=4/0x4
+TICK  1586 - RM1<-memD[87] | RM1=   4/0x4
+TICK  1588 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=40/0x28
+TICK  1589 - SP=SP-4 | SP=400/0x190
+TICK  1590 - RF1=SP | SP=400/0x190
+TICK  1591 - memD[0x190]<-RM1 | memD[0x190]=0x4
+TICK  1592 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  1593 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  1594 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  1595 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=41/0x29
+TICK  1596 - RM2<-#1; PC++ | SP=400/0x190
+TICK  1597 @ 0x0F820000 -  POP SingleReg; PC++ | PC=43/0x2B
+TICK  1598 - RF1<-SP | RF1=400/0x190
+TICK  1599 - RM1<-memD[190] | RM1=4/0x4
+TICK  1600 - RM1<-memD[191] | RM1=4/0x4
+TICK  1601 - RM1<-memD[192] | RM1=4/0x4
+TICK  1602 - RM1<-memD[193] | RM1=   4/0x4
+TICK  1603 - SP=SP+4 | SP=400/0x190
+TICK  1604 @ 0x46042400 -  SUB MathRRR; PC++ | PC=44/0x2C
+TICK  1605 - RM2<-RM1-RM2 | RM2=3/0x3 N=0,Z=0,V=0,C=1
+TICK  1606 @ 0x0F820000 -  POP SingleReg; PC++ | PC=45/0x2D
+TICK  1607 - RF1<-SP | RF1=404/0x194
+TICK  1608 - RM1<-memD[194] | RM1=1/0x1
+TICK  1609 - RM1<-memD[195] | RM1=1/0x1
+TICK  1610 - RM1<-memD[196] | RM1=1/0x1
+TICK  1611 - RM1<-memD[197] | RM1=   1/0x1
+TICK  1612 - SP=SP+4 | SP=404/0x194
+TICK  1613 @ 0x51C02400 -  CMP RegReg; PC++ | PC=46/0x2E
+TICK  1614 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=1/0x1 RM2=3/0x3
+TICK  1615 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=47/0x2F
+TICK  1616 - RF2<-memI[0x2F]; PC++ | RF2=125/0x7D
+TICK  1617 - JGE not taken | PC=48/0x30 N=1,Z=0,V=0,C=1
+TICK  1618 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=49/0x31
+TICK  1619 - RF1<-memI[49], PC++ | RF1=120/0x78
+TICK  1620 - RM1<-memD[78] | RM1=1/0x1
+TICK  1621 - RM1<-memD[79] | RM1=1/0x1
+TICK  1622 - RM1<-memD[7A] | RM1=1/0x1
+TICK  1623 - RM1<-memD[7B] | RM1=   1/0x1
+TICK  1625 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=51/0x33
+TICK  1626 - SP=SP-4 | SP=404/0x194
+TICK  1627 - RF1=SP | SP=404/0x194
+TICK  1628 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  1629 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1630 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1631 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1632 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=52/0x34
+TICK  1633 - RM2<-#1; PC++ | SP=404/0x194
+TICK  1634 @ 0x0F820000 -  POP SingleReg; PC++ | PC=54/0x36
+TICK  1635 - RF1<-SP | RF1=404/0x194
+TICK  1636 - RM1<-memD[194] | RM1=1/0x1
+TICK  1637 - RM1<-memD[195] | RM1=1/0x1
+TICK  1638 - RM1<-memD[196] | RM1=1/0x1
+TICK  1639 - RM1<-memD[197] | RM1=   1/0x1
+TICK  1640 - SP=SP+4 | SP=404/0x194
+TICK  1641 @ 0x42002400 -  ADD MathRRR; PC++ | PC=55/0x37
+TICK  1642 - RA<-RM1+RM2 | RA=2/0x2 N=0,Z=0,V=0,C=0
+TICK  1642 - RA<-RM1 + RM2 | RA=2/0x2
+TICK  1643 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=56/0x38
+TICK  1644 - RF1<-memI[0x38]; PC++ 
+TICK  1645 - memD[0x80]<-RA | memD[0x80]=0x2
+TICK  1646 - memD[0x81]<-RA | memD[0x81]=0x0
+TICK  1647 - memD[0x82]<-RA | memD[0x82]=0x0
+TICK  1648 - memD[0x83]<-RA | memD[0x83]=0x0
+TICK  1649 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=58/0x3A
+TICK  1650 - RF1<-memI[58], PC++ | RF1=104/0x68
+TICK  1651 - RM1<-memD[68] | RM1=4/0x4
+TICK  1652 - RM1<-memD[69] | RM1=4/0x4
+TICK  1653 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1654 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1656 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=60/0x3C
+TICK  1657 - RF1<-memI[60], PC++ | RF1=120/0x78
+TICK  1658 - RM2<-memD[78] | RM2=1/0x1
+TICK  1659 - RM2<-memD[79] | RM2=1/0x1
+TICK  1660 - RM2<-memD[7A] | RM2=1/0x1
+TICK  1661 - RM2<-memD[7B] | RM2=   1/0x1
+TICK  1663 @ 0x42062400 -  ADD MathRRR; PC++ | PC=62/0x3E
+TICK  1664 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  1664 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  1665 @ 0x05E26000 -  MOV MvLowRegIndToReg; PC++ | PC=63/0x3F
+TICK  1666 - RM1 <- memD[5] | RM1=2/0x2
+TICK  1667 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=64/0x40
+TICK  1668 - SP=SP-4 | SP=404/0x194
+TICK  1669 - RF1=SP | SP=404/0x194
+TICK  1670 - memD[0x194]<-RM1 | memD[0x194]=0x2
+TICK  1671 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1672 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1673 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1674 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=65/0x41
+TICK  1675 - RF1<-memI[65], PC++ | RF1=104/0x68
+TICK  1676 - RM1<-memD[68] | RM1=4/0x4
+TICK  1677 - RM1<-memD[69] | RM1=4/0x4
+TICK  1678 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1679 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1681 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=67/0x43
+TICK  1682 - RF1<-memI[67], PC++ | RF1=128/0x80
+TICK  1683 - RM2<-memD[80] | RM2=2/0x2
+TICK  1684 - RM2<-memD[81] | RM2=2/0x2
+TICK  1685 - RM2<-memD[82] | RM2=2/0x2
+TICK  1686 - RM2<-memD[83] | RM2=   2/0x2
+TICK  1688 @ 0x42062400 -  ADD MathRRR; PC++ | PC=69/0x45
+TICK  1689 - RAddr<-RM1+RM2 | RAddr=6/0x6 N=0,Z=0,V=0,C=0
+TICK  1689 - RAddr<-RM1 + RM2 | RAddr=6/0x6
+TICK  1690 @ 0x05E46000 -  MOV MvLowRegIndToReg; PC++ | PC=70/0x46
+TICK  1691 - RM2 <- memD[6] | RM2=3/0x3
+TICK  1692 @ 0x0F820000 -  POP SingleReg; PC++ | PC=71/0x47
+TICK  1693 - RF1<-SP | RF1=404/0x194
+TICK  1694 - RM1<-memD[194] | RM1=2/0x2
+TICK  1695 - RM1<-memD[195] | RM1=2/0x2
+TICK  1696 - RM1<-memD[196] | RM1=2/0x2
+TICK  1697 - RM1<-memD[197] | RM1=   2/0x2
+TICK  1698 - SP=SP+4 | SP=404/0x194
+TICK  1699 @ 0x51C02400 -  CMP RegReg; PC++ | PC=72/0x48
+TICK  1700 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=2/0x2 RM2=3/0x3
+TICK  1701 @ 0xD7000000 -  JLE JAbsAddr; PC++ | PC=73/0x49
+TICK  1702 - RF2<-memI[0x49]; PC++ | RF2=114/0x72
+TICK  1703 - JLE taken → PC<-RF2 | PC=114/0x72
+TICK  1704 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=115/0x73
+TICK  1705 - RF1<-memI[115], PC++ | RF1=120/0x78
+TICK  1706 - RM1<-memD[78] | RM1=1/0x1
+TICK  1707 - RM1<-memD[79] | RM1=1/0x1
+TICK  1708 - RM1<-memD[7A] | RM1=1/0x1
+TICK  1709 - RM1<-memD[7B] | RM1=   1/0x1
+TICK  1711 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=117/0x75
+TICK  1712 - SP=SP-4 | SP=404/0x194
+TICK  1713 - RF1=SP | SP=404/0x194
+TICK  1714 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  1715 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1716 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1717 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1718 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=118/0x76
+TICK  1719 - RM2<-#1; PC++ | SP=404/0x194
+TICK  1720 @ 0x0F820000 -  POP SingleReg; PC++ | PC=120/0x78
+TICK  1721 - RF1<-SP | RF1=404/0x194
+TICK  1722 - RM1<-memD[194] | RM1=1/0x1
+TICK  1723 - RM1<-memD[195] | RM1=1/0x1
+TICK  1724 - RM1<-memD[196] | RM1=1/0x1
+TICK  1725 - RM1<-memD[197] | RM1=   1/0x1
+TICK  1726 - SP=SP+4 | SP=404/0x194
+TICK  1727 @ 0x42002400 -  ADD MathRRR; PC++ | PC=121/0x79
+TICK  1728 - RA<-RM1+RM2 | RA=2/0x2 N=0,Z=0,V=0,C=0
+TICK  1728 - RA<-RM1 + RM2 | RA=2/0x2
+TICK  1729 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=122/0x7A
+TICK  1730 - RF1<-memI[0x7A]; PC++ 
+TICK  1731 - memD[0x78]<-RA | memD[0x78]=0x2
+TICK  1732 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  1733 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  1734 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  1735 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=124/0x7C
+TICK  1736 - PC<-memI[0x22]| PC=34/0x22
+TICK  1737 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=35/0x23
+TICK  1738 - RF1<-memI[35], PC++ | RF1=120/0x78
+TICK  1739 - RM1<-memD[78] | RM1=2/0x2
+TICK  1740 - RM1<-memD[79] | RM1=2/0x2
+TICK  1741 - RM1<-memD[7A] | RM1=2/0x2
+TICK  1742 - RM1<-memD[7B] | RM1=   2/0x2
+TICK  1744 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=37/0x25
+TICK  1745 - SP=SP-4 | SP=404/0x194
+TICK  1746 - RF1=SP | SP=404/0x194
+TICK  1747 - memD[0x194]<-RM1 | memD[0x194]=0x2
+TICK  1748 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1749 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1750 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1751 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=38/0x26
+TICK  1752 - RF1<-memI[38], PC++ | RF1=132/0x84
+TICK  1753 - RM1<-memD[84] | RM1=4/0x4
+TICK  1754 - RM1<-memD[85] | RM1=4/0x4
+TICK  1755 - RM1<-memD[86] | RM1=4/0x4
+TICK  1756 - RM1<-memD[87] | RM1=   4/0x4
+TICK  1758 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=40/0x28
+TICK  1759 - SP=SP-4 | SP=400/0x190
+TICK  1760 - RF1=SP | SP=400/0x190
+TICK  1761 - memD[0x190]<-RM1 | memD[0x190]=0x4
+TICK  1762 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  1763 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  1764 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  1765 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=41/0x29
+TICK  1766 - RM2<-#1; PC++ | SP=400/0x190
+TICK  1767 @ 0x0F820000 -  POP SingleReg; PC++ | PC=43/0x2B
+TICK  1768 - RF1<-SP | RF1=400/0x190
+TICK  1769 - RM1<-memD[190] | RM1=4/0x4
+TICK  1770 - RM1<-memD[191] | RM1=4/0x4
+TICK  1771 - RM1<-memD[192] | RM1=4/0x4
+TICK  1772 - RM1<-memD[193] | RM1=   4/0x4
+TICK  1773 - SP=SP+4 | SP=400/0x190
+TICK  1774 @ 0x46042400 -  SUB MathRRR; PC++ | PC=44/0x2C
+TICK  1775 - RM2<-RM1-RM2 | RM2=3/0x3 N=0,Z=0,V=0,C=1
+TICK  1776 @ 0x0F820000 -  POP SingleReg; PC++ | PC=45/0x2D
+TICK  1777 - RF1<-SP | RF1=404/0x194
+TICK  1778 - RM1<-memD[194] | RM1=2/0x2
+TICK  1779 - RM1<-memD[195] | RM1=2/0x2
+TICK  1780 - RM1<-memD[196] | RM1=2/0x2
+TICK  1781 - RM1<-memD[197] | RM1=   2/0x2
+TICK  1782 - SP=SP+4 | SP=404/0x194
+TICK  1783 @ 0x51C02400 -  CMP RegReg; PC++ | PC=46/0x2E
+TICK  1784 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=2/0x2 RM2=3/0x3
+TICK  1785 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=47/0x2F
+TICK  1786 - RF2<-memI[0x2F]; PC++ | RF2=125/0x7D
+TICK  1787 - JGE not taken | PC=48/0x30 N=1,Z=0,V=0,C=1
+TICK  1788 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=49/0x31
+TICK  1789 - RF1<-memI[49], PC++ | RF1=120/0x78
+TICK  1790 - RM1<-memD[78] | RM1=2/0x2
+TICK  1791 - RM1<-memD[79] | RM1=2/0x2
+TICK  1792 - RM1<-memD[7A] | RM1=2/0x2
+TICK  1793 - RM1<-memD[7B] | RM1=   2/0x2
+TICK  1795 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=51/0x33
+TICK  1796 - SP=SP-4 | SP=404/0x194
+TICK  1797 - RF1=SP | SP=404/0x194
+TICK  1798 - memD[0x194]<-RM1 | memD[0x194]=0x2
+TICK  1799 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1800 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1801 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1802 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=52/0x34
+TICK  1803 - RM2<-#1; PC++ | SP=404/0x194
+TICK  1804 @ 0x0F820000 -  POP SingleReg; PC++ | PC=54/0x36
+TICK  1805 - RF1<-SP | RF1=404/0x194
+TICK  1806 - RM1<-memD[194] | RM1=2/0x2
+TICK  1807 - RM1<-memD[195] | RM1=2/0x2
+TICK  1808 - RM1<-memD[196] | RM1=2/0x2
+TICK  1809 - RM1<-memD[197] | RM1=   2/0x2
+TICK  1810 - SP=SP+4 | SP=404/0x194
+TICK  1811 @ 0x42002400 -  ADD MathRRR; PC++ | PC=55/0x37
+TICK  1812 - RA<-RM1+RM2 | RA=3/0x3 N=0,Z=0,V=0,C=0
+TICK  1812 - RA<-RM1 + RM2 | RA=3/0x3
+TICK  1813 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=56/0x38
+TICK  1814 - RF1<-memI[0x38]; PC++ 
+TICK  1815 - memD[0x80]<-RA | memD[0x80]=0x3
+TICK  1816 - memD[0x81]<-RA | memD[0x81]=0x0
+TICK  1817 - memD[0x82]<-RA | memD[0x82]=0x0
+TICK  1818 - memD[0x83]<-RA | memD[0x83]=0x0
+TICK  1819 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=58/0x3A
+TICK  1820 - RF1<-memI[58], PC++ | RF1=104/0x68
+TICK  1821 - RM1<-memD[68] | RM1=4/0x4
+TICK  1822 - RM1<-memD[69] | RM1=4/0x4
+TICK  1823 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1824 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1826 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=60/0x3C
+TICK  1827 - RF1<-memI[60], PC++ | RF1=120/0x78
+TICK  1828 - RM2<-memD[78] | RM2=2/0x2
+TICK  1829 - RM2<-memD[79] | RM2=2/0x2
+TICK  1830 - RM2<-memD[7A] | RM2=2/0x2
+TICK  1831 - RM2<-memD[7B] | RM2=   2/0x2
+TICK  1833 @ 0x42062400 -  ADD MathRRR; PC++ | PC=62/0x3E
+TICK  1834 - RAddr<-RM1+RM2 | RAddr=6/0x6 N=0,Z=0,V=0,C=0
+TICK  1834 - RAddr<-RM1 + RM2 | RAddr=6/0x6
+TICK  1835 @ 0x05E26000 -  MOV MvLowRegIndToReg; PC++ | PC=63/0x3F
+TICK  1836 - RM1 <- memD[6] | RM1=3/0x3
+TICK  1837 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=64/0x40
+TICK  1838 - SP=SP-4 | SP=404/0x194
+TICK  1839 - RF1=SP | SP=404/0x194
+TICK  1840 - memD[0x194]<-RM1 | memD[0x194]=0x3
+TICK  1841 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  1842 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  1843 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  1844 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=65/0x41
+TICK  1845 - RF1<-memI[65], PC++ | RF1=104/0x68
+TICK  1846 - RM1<-memD[68] | RM1=4/0x4
+TICK  1847 - RM1<-memD[69] | RM1=4/0x4
+TICK  1848 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1849 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1851 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=67/0x43
+TICK  1852 - RF1<-memI[67], PC++ | RF1=128/0x80
+TICK  1853 - RM2<-memD[80] | RM2=3/0x3
+TICK  1854 - RM2<-memD[81] | RM2=3/0x3
+TICK  1855 - RM2<-memD[82] | RM2=3/0x3
+TICK  1856 - RM2<-memD[83] | RM2=   3/0x3
+TICK  1858 @ 0x42062400 -  ADD MathRRR; PC++ | PC=69/0x45
+TICK  1859 - RAddr<-RM1+RM2 | RAddr=7/0x7 N=0,Z=0,V=0,C=0
+TICK  1859 - RAddr<-RM1 + RM2 | RAddr=7/0x7
+TICK  1860 @ 0x05E46000 -  MOV MvLowRegIndToReg; PC++ | PC=70/0x46
+TICK  1861 - RM2 <- memD[7] | RM2=0/0x0
+TICK  1862 @ 0x0F820000 -  POP SingleReg; PC++ | PC=71/0x47
+TICK  1863 - RF1<-SP | RF1=404/0x194
+TICK  1864 - RM1<-memD[194] | RM1=3/0x3
+TICK  1865 - RM1<-memD[195] | RM1=3/0x3
+TICK  1866 - RM1<-memD[196] | RM1=3/0x3
+TICK  1867 - RM1<-memD[197] | RM1=   3/0x3
+TICK  1868 - SP=SP+4 | SP=404/0x194
+TICK  1869 @ 0x51C02400 -  CMP RegReg; PC++ | PC=72/0x48
+TICK  1870 - CMP RM1, RM2 | N=0,Z=0,V=0,C=0; RM1=3/0x3 RM2=0/0x0
+TICK  1871 @ 0xD7000000 -  JLE JAbsAddr; PC++ | PC=73/0x49
+TICK  1872 - RF2<-memI[0x49]; PC++ | RF2=114/0x72
+TICK  1873 - JLE not taken | PC=74/0x4A N=0,Z=0,V=0,C=0
+TICK  1874 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=75/0x4B
+TICK  1875 - RF1<-memI[75], PC++ | RF1=104/0x68
+TICK  1876 - RM1<-memD[68] | RM1=4/0x4
+TICK  1877 - RM1<-memD[69] | RM1=4/0x4
+TICK  1878 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1879 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1881 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=77/0x4D
+TICK  1882 - RF1<-memI[77], PC++ | RF1=120/0x78
+TICK  1883 - RM2<-memD[78] | RM2=2/0x2
+TICK  1884 - RM2<-memD[79] | RM2=2/0x2
+TICK  1885 - RM2<-memD[7A] | RM2=2/0x2
+TICK  1886 - RM2<-memD[7B] | RM2=   2/0x2
+TICK  1888 @ 0x42062400 -  ADD MathRRR; PC++ | PC=79/0x4F
+TICK  1889 - RAddr<-RM1+RM2 | RAddr=6/0x6 N=0,Z=0,V=0,C=0
+TICK  1889 - RAddr<-RM1 + RM2 | RAddr=6/0x6
+TICK  1890 @ 0x05F86000 -  MOV MvLowRegIndToReg; PC++ | PC=80/0x50
+TICK  1891 - RT2 <- memD[6] | RT2=3/0x3
+TICK  1892 @ 0x04418000 -  MOV MvRegLowMem; PC++ | PC=81/0x51
+TICK  1893 - RF1 <- memI[0x51]; PC++ | RF1=136/0x88
+TICK  1894 - memD[0x88] <- RT2(byte) = 0x03
+TICK  1895 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=83/0x53
+TICK  1896 - RF1<-memI[83], PC++ | RF1=104/0x68
+TICK  1897 - RM1<-memD[68] | RM1=4/0x4
+TICK  1898 - RM1<-memD[69] | RM1=4/0x4
+TICK  1899 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1900 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1902 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=85/0x55
+TICK  1903 - RF1<-memI[85], PC++ | RF1=128/0x80
+TICK  1904 - RM2<-memD[80] | RM2=3/0x3
+TICK  1905 - RM2<-memD[81] | RM2=3/0x3
+TICK  1906 - RM2<-memD[82] | RM2=3/0x3
+TICK  1907 - RM2<-memD[83] | RM2=   3/0x3
+TICK  1909 @ 0x42062400 -  ADD MathRRR; PC++ | PC=87/0x57
+TICK  1910 - RAddr<-RM1+RM2 | RAddr=7/0x7 N=0,Z=0,V=0,C=0
+TICK  1910 - RAddr<-RM1 + RM2 | RAddr=7/0x7
+TICK  1911 @ 0x05E06000 -  MOV MvLowRegIndToReg; PC++ | PC=88/0x58
+TICK  1912 - RA <- memD[7] | RA=0/0x0
+TICK  1913 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=89/0x59
+TICK  1914 - RF1<-memI[89], PC++ | RF1=104/0x68
+TICK  1915 - RM1<-memD[68] | RM1=4/0x4
+TICK  1916 - RM1<-memD[69] | RM1=4/0x4
+TICK  1917 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1918 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1920 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=91/0x5B
+TICK  1921 - RF1<-memI[91], PC++ | RF1=128/0x80
+TICK  1922 - RM2<-memD[80] | RM2=3/0x3
+TICK  1923 - RM2<-memD[81] | RM2=3/0x3
+TICK  1924 - RM2<-memD[82] | RM2=3/0x3
+TICK  1925 - RM2<-memD[83] | RM2=   3/0x3
+TICK  1927 @ 0x42062400 -  ADD MathRRR; PC++ | PC=93/0x5D
+TICK  1928 - RAddr<-RM1+RM2 | RAddr=7/0x7 N=0,Z=0,V=0,C=0
+TICK  1928 - RAddr<-RM1 + RM2 | RAddr=7/0x7
+TICK  1929 @ 0x05E06000 -  MOV MvLowRegIndToReg; PC++ | PC=94/0x5E
+TICK  1930 - RA <- memD[7] | RA=0/0x0
+TICK  1931 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=95/0x5F
+TICK  1932 - RF1<-memI[95], PC++ | RF1=104/0x68
+TICK  1933 - RM1<-memD[68] | RM1=4/0x4
+TICK  1934 - RM1<-memD[69] | RM1=4/0x4
+TICK  1935 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1936 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1938 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=97/0x61
+TICK  1939 - RF1<-memI[97], PC++ | RF1=120/0x78
+TICK  1940 - RM2<-memD[78] | RM2=2/0x2
+TICK  1941 - RM2<-memD[79] | RM2=2/0x2
+TICK  1942 - RM2<-memD[7A] | RM2=2/0x2
+TICK  1943 - RM2<-memD[7B] | RM2=   2/0x2
+TICK  1945 @ 0x42062400 -  ADD MathRRR; PC++ | PC=99/0x63
+TICK  1946 - RAddr<-RM1+RM2 | RAddr=6/0x6 N=0,Z=0,V=0,C=0
+TICK  1946 - RAddr<-RM1 + RM2 | RAddr=6/0x6
+TICK  1947 @ 0x04A60000 -  MOV MvLowRegToRegInd; PC++ | PC=100/0x64
+TICK  1948 - memD[0x6] <- RA(byte); mem[RAddr]<-RA(byte) = 0x00
+TICK  1949 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=101/0x65
+TICK  1950 - RF1<-memI[101], PC++ | RF1=136/0x88
+TICK  1951 - RA<-memD[88] | RA=3/0x3
+TICK  1952 - RA<-memD[89] | RA=3/0x3
+TICK  1953 - RA<-memD[8A] | RA=3/0x3
+TICK  1954 - RA<-memD[8B] | RA=   3/0x3
+TICK  1956 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=103/0x67
+TICK  1957 - RF1<-memI[103], PC++ | RF1=136/0x88
+TICK  1958 - RA<-memD[88] | RA=3/0x3
+TICK  1959 - RA<-memD[89] | RA=3/0x3
+TICK  1960 - RA<-memD[8A] | RA=3/0x3
+TICK  1961 - RA<-memD[8B] | RA=   3/0x3
+TICK  1963 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=105/0x69
+TICK  1964 - RF1<-memI[105], PC++ | RF1=104/0x68
+TICK  1965 - RM1<-memD[68] | RM1=4/0x4
+TICK  1966 - RM1<-memD[69] | RM1=4/0x4
+TICK  1967 - RM1<-memD[6A] | RM1=4/0x4
+TICK  1968 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  1970 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=107/0x6B
+TICK  1971 - RF1<-memI[107], PC++ | RF1=128/0x80
+TICK  1972 - RM2<-memD[80] | RM2=3/0x3
+TICK  1973 - RM2<-memD[81] | RM2=3/0x3
+TICK  1974 - RM2<-memD[82] | RM2=3/0x3
+TICK  1975 - RM2<-memD[83] | RM2=   3/0x3
+TICK  1977 @ 0x42062400 -  ADD MathRRR; PC++ | PC=109/0x6D
+TICK  1978 - RAddr<-RM1+RM2 | RAddr=7/0x7 N=0,Z=0,V=0,C=0
+TICK  1978 - RAddr<-RM1 + RM2 | RAddr=7/0x7
+TICK  1979 @ 0x04A60000 -  MOV MvLowRegToRegInd; PC++ | PC=110/0x6E
+TICK  1980 - memD[0x7] <- RA(byte); mem[RAddr]<-RA(byte) = 0x03
+TICK  1981 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=111/0x6F
+TICK  1982 - RA<-#1; PC++ | SP=408/0x198
+TICK  1983 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=113/0x71
+TICK  1984 - RF1<-memI[0x71]; PC++ 
+TICK  1985 - memD[0x7C]<-RA | memD[0x7C]=0x1
+TICK  1986 - memD[0x7D]<-RA | memD[0x7D]=0x0
+TICK  1987 - memD[0x7E]<-RA | memD[0x7E]=0x0
+TICK  1988 - memD[0x7F]<-RA | memD[0x7F]=0x0
+TICK  1989 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=115/0x73
+TICK  1990 - RF1<-memI[115], PC++ | RF1=120/0x78
+TICK  1991 - RM1<-memD[78] | RM1=2/0x2
+TICK  1992 - RM1<-memD[79] | RM1=2/0x2
+TICK  1993 - RM1<-memD[7A] | RM1=2/0x2
+TICK  1994 - RM1<-memD[7B] | RM1=   2/0x2
+TICK  1996 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=117/0x75
+TICK  1997 - SP=SP-4 | SP=404/0x194
+TICK  1998 - RF1=SP | SP=404/0x194
+TICK  1999 - memD[0x194]<-RM1 | memD[0x194]=0x2
+TICK  2000 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2001 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2002 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2003 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=118/0x76
+TICK  2004 - RM2<-#1; PC++ | SP=404/0x194
+TICK  2005 @ 0x0F820000 -  POP SingleReg; PC++ | PC=120/0x78
+TICK  2006 - RF1<-SP | RF1=404/0x194
+TICK  2007 - RM1<-memD[194] | RM1=2/0x2
+TICK  2008 - RM1<-memD[195] | RM1=2/0x2
+TICK  2009 - RM1<-memD[196] | RM1=2/0x2
+TICK  2010 - RM1<-memD[197] | RM1=   2/0x2
+TICK  2011 - SP=SP+4 | SP=404/0x194
+TICK  2012 @ 0x42002400 -  ADD MathRRR; PC++ | PC=121/0x79
+TICK  2013 - RA<-RM1+RM2 | RA=3/0x3 N=0,Z=0,V=0,C=0
+TICK  2013 - RA<-RM1 + RM2 | RA=3/0x3
+TICK  2014 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=122/0x7A
+TICK  2015 - RF1<-memI[0x7A]; PC++ 
+TICK  2016 - memD[0x78]<-RA | memD[0x78]=0x3
+TICK  2017 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  2018 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  2019 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  2020 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=124/0x7C
+TICK  2021 - PC<-memI[0x22]| PC=34/0x22
+TICK  2022 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=35/0x23
+TICK  2023 - RF1<-memI[35], PC++ | RF1=120/0x78
+TICK  2024 - RM1<-memD[78] | RM1=3/0x3
+TICK  2025 - RM1<-memD[79] | RM1=3/0x3
+TICK  2026 - RM1<-memD[7A] | RM1=3/0x3
+TICK  2027 - RM1<-memD[7B] | RM1=   3/0x3
+TICK  2029 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=37/0x25
+TICK  2030 - SP=SP-4 | SP=404/0x194
+TICK  2031 - RF1=SP | SP=404/0x194
+TICK  2032 - memD[0x194]<-RM1 | memD[0x194]=0x3
+TICK  2033 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2034 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2035 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2036 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=38/0x26
+TICK  2037 - RF1<-memI[38], PC++ | RF1=132/0x84
+TICK  2038 - RM1<-memD[84] | RM1=4/0x4
+TICK  2039 - RM1<-memD[85] | RM1=4/0x4
+TICK  2040 - RM1<-memD[86] | RM1=4/0x4
+TICK  2041 - RM1<-memD[87] | RM1=   4/0x4
+TICK  2043 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=40/0x28
+TICK  2044 - SP=SP-4 | SP=400/0x190
+TICK  2045 - RF1=SP | SP=400/0x190
+TICK  2046 - memD[0x190]<-RM1 | memD[0x190]=0x4
+TICK  2047 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  2048 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  2049 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  2050 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=41/0x29
+TICK  2051 - RM2<-#1; PC++ | SP=400/0x190
+TICK  2052 @ 0x0F820000 -  POP SingleReg; PC++ | PC=43/0x2B
+TICK  2053 - RF1<-SP | RF1=400/0x190
+TICK  2054 - RM1<-memD[190] | RM1=4/0x4
+TICK  2055 - RM1<-memD[191] | RM1=4/0x4
+TICK  2056 - RM1<-memD[192] | RM1=4/0x4
+TICK  2057 - RM1<-memD[193] | RM1=   4/0x4
+TICK  2058 - SP=SP+4 | SP=400/0x190
+TICK  2059 @ 0x46042400 -  SUB MathRRR; PC++ | PC=44/0x2C
+TICK  2060 - RM2<-RM1-RM2 | RM2=3/0x3 N=0,Z=0,V=0,C=1
+TICK  2061 @ 0x0F820000 -  POP SingleReg; PC++ | PC=45/0x2D
+TICK  2062 - RF1<-SP | RF1=404/0x194
+TICK  2063 - RM1<-memD[194] | RM1=3/0x3
+TICK  2064 - RM1<-memD[195] | RM1=3/0x3
+TICK  2065 - RM1<-memD[196] | RM1=3/0x3
+TICK  2066 - RM1<-memD[197] | RM1=   3/0x3
+TICK  2067 - SP=SP+4 | SP=404/0x194
+TICK  2068 @ 0x51C02400 -  CMP RegReg; PC++ | PC=46/0x2E
+TICK  2069 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=3/0x3 RM2=3/0x3
+TICK  2070 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=47/0x2F
+TICK  2071 - RF2<-memI[0x2F]; PC++ | RF2=125/0x7D
+TICK  2072 - JGE taken → PC<-RF2 | PC=125/0x7D
+TICK  2073 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=126/0x7E
+TICK  2074 - RF1<-memI[126], PC++ | RF1=132/0x84
+TICK  2075 - RM1<-memD[84] | RM1=4/0x4
+TICK  2076 - RM1<-memD[85] | RM1=4/0x4
+TICK  2077 - RM1<-memD[86] | RM1=4/0x4
+TICK  2078 - RM1<-memD[87] | RM1=   4/0x4
+TICK  2080 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=128/0x80
+TICK  2081 - SP=SP-4 | SP=404/0x194
+TICK  2082 - RF1=SP | SP=404/0x194
+TICK  2083 - memD[0x194]<-RM1 | memD[0x194]=0x4
+TICK  2084 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2085 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2086 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2087 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=129/0x81
+TICK  2088 - RM2<-#1; PC++ | SP=404/0x194
+TICK  2089 @ 0x0F820000 -  POP SingleReg; PC++ | PC=131/0x83
+TICK  2090 - RF1<-SP | RF1=404/0x194
+TICK  2091 - RM1<-memD[194] | RM1=4/0x4
+TICK  2092 - RM1<-memD[195] | RM1=4/0x4
+TICK  2093 - RM1<-memD[196] | RM1=4/0x4
+TICK  2094 - RM1<-memD[197] | RM1=   4/0x4
+TICK  2095 - SP=SP+4 | SP=404/0x194
+TICK  2096 @ 0x46002400 -  SUB MathRRR; PC++ | PC=132/0x84
+TICK  2097 - RA<-RM1-RM2 | RA=3/0x3 N=0,Z=0,V=0,C=1
+TICK  2098 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=133/0x85
+TICK  2099 - RF1<-memI[0x85]; PC++ 
+TICK  2100 - memD[0x84]<-RA | memD[0x84]=0x3
+TICK  2101 - memD[0x85]<-RA | memD[0x85]=0x0
+TICK  2102 - memD[0x86]<-RA | memD[0x86]=0x0
+TICK  2103 - memD[0x87]<-RA | memD[0x87]=0x0
+TICK  2104 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=135/0x87
+TICK  2105 - PC<-memI[0x11]| PC=17/0x11
+TICK  2106 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=18/0x12
+TICK  2107 - RF1<-memI[18], PC++ | RF1=124/0x7C
+TICK  2108 - RM1<-memD[7C] | RM1=1/0x1
+TICK  2109 - RM1<-memD[7D] | RM1=1/0x1
+TICK  2110 - RM1<-memD[7E] | RM1=1/0x1
+TICK  2111 - RM1<-memD[7F] | RM1=   1/0x1
+TICK  2113 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=20/0x14
+TICK  2114 - SP=SP-4 | SP=404/0x194
+TICK  2115 - RF1=SP | SP=404/0x194
+TICK  2116 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  2117 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2118 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2119 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2120 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=21/0x15
+TICK  2121 - RM2<-#1; PC++ | SP=404/0x194
+TICK  2122 @ 0x0F820000 -  POP SingleReg; PC++ | PC=23/0x17
+TICK  2123 - RF1<-SP | RF1=404/0x194
+TICK  2124 - RM1<-memD[194] | RM1=1/0x1
+TICK  2125 - RM1<-memD[195] | RM1=1/0x1
+TICK  2126 - RM1<-memD[196] | RM1=1/0x1
+TICK  2127 - RM1<-memD[197] | RM1=   1/0x1
+TICK  2128 - SP=SP+4 | SP=404/0x194
+TICK  2129 @ 0x51C02400 -  CMP RegReg; PC++ | PC=24/0x18
+TICK  2130 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  2131 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=25/0x19
+TICK  2132 - RF2<-memI[0x19]; PC++ | RF2=136/0x88
+TICK  2133 - JNE not taken | PC=26/0x1A; N=0,Z=1,V=0,C=0
+TICK  2134 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=27/0x1B
+TICK  2135 - RA<-#0; PC++ | SP=408/0x198
+TICK  2136 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=29/0x1D
+TICK  2137 - RF1<-memI[0x1D]; PC++ 
+TICK  2138 - memD[0x7C]<-RA | memD[0x7C]=0x0
+TICK  2139 - memD[0x7D]<-RA | memD[0x7D]=0x0
+TICK  2140 - memD[0x7E]<-RA | memD[0x7E]=0x0
+TICK  2141 - memD[0x7F]<-RA | memD[0x7F]=0x0
+TICK  2142 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=31/0x1F
+TICK  2143 - RA<-#0; PC++ | SP=408/0x198
+TICK  2144 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=33/0x21
+TICK  2145 - RF1<-memI[0x21]; PC++ 
+TICK  2146 - memD[0x78]<-RA | memD[0x78]=0x0
+TICK  2147 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  2148 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  2149 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  2150 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=35/0x23
+TICK  2151 - RF1<-memI[35], PC++ | RF1=120/0x78
+TICK  2152 - RM1<-memD[78] | RM1=0/0x0
+TICK  2153 - RM1<-memD[79] | RM1=0/0x0
+TICK  2154 - RM1<-memD[7A] | RM1=0/0x0
+TICK  2155 - RM1<-memD[7B] | RM1=   0/0x0
+TICK  2157 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=37/0x25
+TICK  2158 - SP=SP-4 | SP=404/0x194
+TICK  2159 - RF1=SP | SP=404/0x194
+TICK  2160 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  2161 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2162 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2163 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2164 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=38/0x26
+TICK  2165 - RF1<-memI[38], PC++ | RF1=132/0x84
+TICK  2166 - RM1<-memD[84] | RM1=3/0x3
+TICK  2167 - RM1<-memD[85] | RM1=3/0x3
+TICK  2168 - RM1<-memD[86] | RM1=3/0x3
+TICK  2169 - RM1<-memD[87] | RM1=   3/0x3
+TICK  2171 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=40/0x28
+TICK  2172 - SP=SP-4 | SP=400/0x190
+TICK  2173 - RF1=SP | SP=400/0x190
+TICK  2174 - memD[0x190]<-RM1 | memD[0x190]=0x3
+TICK  2175 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  2176 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  2177 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  2178 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=41/0x29
+TICK  2179 - RM2<-#1; PC++ | SP=400/0x190
+TICK  2180 @ 0x0F820000 -  POP SingleReg; PC++ | PC=43/0x2B
+TICK  2181 - RF1<-SP | RF1=400/0x190
+TICK  2182 - RM1<-memD[190] | RM1=3/0x3
+TICK  2183 - RM1<-memD[191] | RM1=3/0x3
+TICK  2184 - RM1<-memD[192] | RM1=3/0x3
+TICK  2185 - RM1<-memD[193] | RM1=   3/0x3
+TICK  2186 - SP=SP+4 | SP=400/0x190
+TICK  2187 @ 0x46042400 -  SUB MathRRR; PC++ | PC=44/0x2C
+TICK  2188 - RM2<-RM1-RM2 | RM2=2/0x2 N=0,Z=0,V=0,C=1
+TICK  2189 @ 0x0F820000 -  POP SingleReg; PC++ | PC=45/0x2D
+TICK  2190 - RF1<-SP | RF1=404/0x194
+TICK  2191 - RM1<-memD[194] | RM1=0/0x0
+TICK  2192 - RM1<-memD[195] | RM1=0/0x0
+TICK  2193 - RM1<-memD[196] | RM1=0/0x0
+TICK  2194 - RM1<-memD[197] | RM1=   0/0x0
+TICK  2195 - SP=SP+4 | SP=404/0x194
+TICK  2196 @ 0x51C02400 -  CMP RegReg; PC++ | PC=46/0x2E
+TICK  2197 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=0/0x0 RM2=2/0x2
+TICK  2198 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=47/0x2F
+TICK  2199 - RF2<-memI[0x2F]; PC++ | RF2=125/0x7D
+TICK  2200 - JGE not taken | PC=48/0x30 N=1,Z=0,V=0,C=1
+TICK  2201 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=49/0x31
+TICK  2202 - RF1<-memI[49], PC++ | RF1=120/0x78
+TICK  2203 - RM1<-memD[78] | RM1=0/0x0
+TICK  2204 - RM1<-memD[79] | RM1=0/0x0
+TICK  2205 - RM1<-memD[7A] | RM1=0/0x0
+TICK  2206 - RM1<-memD[7B] | RM1=   0/0x0
+TICK  2208 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=51/0x33
+TICK  2209 - SP=SP-4 | SP=404/0x194
+TICK  2210 - RF1=SP | SP=404/0x194
+TICK  2211 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  2212 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2213 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2214 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2215 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=52/0x34
+TICK  2216 - RM2<-#1; PC++ | SP=404/0x194
+TICK  2217 @ 0x0F820000 -  POP SingleReg; PC++ | PC=54/0x36
+TICK  2218 - RF1<-SP | RF1=404/0x194
+TICK  2219 - RM1<-memD[194] | RM1=0/0x0
+TICK  2220 - RM1<-memD[195] | RM1=0/0x0
+TICK  2221 - RM1<-memD[196] | RM1=0/0x0
+TICK  2222 - RM1<-memD[197] | RM1=   0/0x0
+TICK  2223 - SP=SP+4 | SP=404/0x194
+TICK  2224 @ 0x42002400 -  ADD MathRRR; PC++ | PC=55/0x37
+TICK  2225 - RA<-RM1+RM2 | RA=1/0x1 N=0,Z=0,V=0,C=0
+TICK  2225 - RA<-RM1 + RM2 | RA=1/0x1
+TICK  2226 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=56/0x38
+TICK  2227 - RF1<-memI[0x38]; PC++ 
+TICK  2228 - memD[0x80]<-RA | memD[0x80]=0x1
+TICK  2229 - memD[0x81]<-RA | memD[0x81]=0x0
+TICK  2230 - memD[0x82]<-RA | memD[0x82]=0x0
+TICK  2231 - memD[0x83]<-RA | memD[0x83]=0x0
+TICK  2232 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=58/0x3A
+TICK  2233 - RF1<-memI[58], PC++ | RF1=104/0x68
+TICK  2234 - RM1<-memD[68] | RM1=4/0x4
+TICK  2235 - RM1<-memD[69] | RM1=4/0x4
+TICK  2236 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2237 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2239 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=60/0x3C
+TICK  2240 - RF1<-memI[60], PC++ | RF1=120/0x78
+TICK  2241 - RM2<-memD[78] | RM2=0/0x0
+TICK  2242 - RM2<-memD[79] | RM2=0/0x0
+TICK  2243 - RM2<-memD[7A] | RM2=0/0x0
+TICK  2244 - RM2<-memD[7B] | RM2=   0/0x0
+TICK  2246 @ 0x42062400 -  ADD MathRRR; PC++ | PC=62/0x3E
+TICK  2247 - RAddr<-RM1+RM2 | RAddr=4/0x4 N=0,Z=0,V=0,C=0
+TICK  2247 - RAddr<-RM1 + RM2 | RAddr=4/0x4
+TICK  2248 @ 0x05E26000 -  MOV MvLowRegIndToReg; PC++ | PC=63/0x3F
+TICK  2249 - RM1 <- memD[4] | RM1=1/0x1
+TICK  2250 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=64/0x40
+TICK  2251 - SP=SP-4 | SP=404/0x194
+TICK  2252 - RF1=SP | SP=404/0x194
+TICK  2253 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  2254 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2255 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2256 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2257 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=65/0x41
+TICK  2258 - RF1<-memI[65], PC++ | RF1=104/0x68
+TICK  2259 - RM1<-memD[68] | RM1=4/0x4
+TICK  2260 - RM1<-memD[69] | RM1=4/0x4
+TICK  2261 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2262 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2264 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=67/0x43
+TICK  2265 - RF1<-memI[67], PC++ | RF1=128/0x80
+TICK  2266 - RM2<-memD[80] | RM2=1/0x1
+TICK  2267 - RM2<-memD[81] | RM2=1/0x1
+TICK  2268 - RM2<-memD[82] | RM2=1/0x1
+TICK  2269 - RM2<-memD[83] | RM2=   1/0x1
+TICK  2271 @ 0x42062400 -  ADD MathRRR; PC++ | PC=69/0x45
+TICK  2272 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  2272 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  2273 @ 0x05E46000 -  MOV MvLowRegIndToReg; PC++ | PC=70/0x46
+TICK  2274 - RM2 <- memD[5] | RM2=2/0x2
+TICK  2275 @ 0x0F820000 -  POP SingleReg; PC++ | PC=71/0x47
+TICK  2276 - RF1<-SP | RF1=404/0x194
+TICK  2277 - RM1<-memD[194] | RM1=1/0x1
+TICK  2278 - RM1<-memD[195] | RM1=1/0x1
+TICK  2279 - RM1<-memD[196] | RM1=1/0x1
+TICK  2280 - RM1<-memD[197] | RM1=   1/0x1
+TICK  2281 - SP=SP+4 | SP=404/0x194
+TICK  2282 @ 0x51C02400 -  CMP RegReg; PC++ | PC=72/0x48
+TICK  2283 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=1/0x1 RM2=2/0x2
+TICK  2284 @ 0xD7000000 -  JLE JAbsAddr; PC++ | PC=73/0x49
+TICK  2285 - RF2<-memI[0x49]; PC++ | RF2=114/0x72
+TICK  2286 - JLE taken → PC<-RF2 | PC=114/0x72
+TICK  2287 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=115/0x73
+TICK  2288 - RF1<-memI[115], PC++ | RF1=120/0x78
+TICK  2289 - RM1<-memD[78] | RM1=0/0x0
+TICK  2290 - RM1<-memD[79] | RM1=0/0x0
+TICK  2291 - RM1<-memD[7A] | RM1=0/0x0
+TICK  2292 - RM1<-memD[7B] | RM1=   0/0x0
+TICK  2294 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=117/0x75
+TICK  2295 - SP=SP-4 | SP=404/0x194
+TICK  2296 - RF1=SP | SP=404/0x194
+TICK  2297 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  2298 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2299 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2300 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2301 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=118/0x76
+TICK  2302 - RM2<-#1; PC++ | SP=404/0x194
+TICK  2303 @ 0x0F820000 -  POP SingleReg; PC++ | PC=120/0x78
+TICK  2304 - RF1<-SP | RF1=404/0x194
+TICK  2305 - RM1<-memD[194] | RM1=0/0x0
+TICK  2306 - RM1<-memD[195] | RM1=0/0x0
+TICK  2307 - RM1<-memD[196] | RM1=0/0x0
+TICK  2308 - RM1<-memD[197] | RM1=   0/0x0
+TICK  2309 - SP=SP+4 | SP=404/0x194
+TICK  2310 @ 0x42002400 -  ADD MathRRR; PC++ | PC=121/0x79
+TICK  2311 - RA<-RM1+RM2 | RA=1/0x1 N=0,Z=0,V=0,C=0
+TICK  2311 - RA<-RM1 + RM2 | RA=1/0x1
+TICK  2312 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=122/0x7A
+TICK  2313 - RF1<-memI[0x7A]; PC++ 
+TICK  2314 - memD[0x78]<-RA | memD[0x78]=0x1
+TICK  2315 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  2316 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  2317 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  2318 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=124/0x7C
+TICK  2319 - PC<-memI[0x22]| PC=34/0x22
+TICK  2320 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=35/0x23
+TICK  2321 - RF1<-memI[35], PC++ | RF1=120/0x78
+TICK  2322 - RM1<-memD[78] | RM1=1/0x1
+TICK  2323 - RM1<-memD[79] | RM1=1/0x1
+TICK  2324 - RM1<-memD[7A] | RM1=1/0x1
+TICK  2325 - RM1<-memD[7B] | RM1=   1/0x1
+TICK  2327 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=37/0x25
+TICK  2328 - SP=SP-4 | SP=404/0x194
+TICK  2329 - RF1=SP | SP=404/0x194
+TICK  2330 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  2331 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2332 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2333 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2334 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=38/0x26
+TICK  2335 - RF1<-memI[38], PC++ | RF1=132/0x84
+TICK  2336 - RM1<-memD[84] | RM1=3/0x3
+TICK  2337 - RM1<-memD[85] | RM1=3/0x3
+TICK  2338 - RM1<-memD[86] | RM1=3/0x3
+TICK  2339 - RM1<-memD[87] | RM1=   3/0x3
+TICK  2341 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=40/0x28
+TICK  2342 - SP=SP-4 | SP=400/0x190
+TICK  2343 - RF1=SP | SP=400/0x190
+TICK  2344 - memD[0x190]<-RM1 | memD[0x190]=0x3
+TICK  2345 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  2346 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  2347 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  2348 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=41/0x29
+TICK  2349 - RM2<-#1; PC++ | SP=400/0x190
+TICK  2350 @ 0x0F820000 -  POP SingleReg; PC++ | PC=43/0x2B
+TICK  2351 - RF1<-SP | RF1=400/0x190
+TICK  2352 - RM1<-memD[190] | RM1=3/0x3
+TICK  2353 - RM1<-memD[191] | RM1=3/0x3
+TICK  2354 - RM1<-memD[192] | RM1=3/0x3
+TICK  2355 - RM1<-memD[193] | RM1=   3/0x3
+TICK  2356 - SP=SP+4 | SP=400/0x190
+TICK  2357 @ 0x46042400 -  SUB MathRRR; PC++ | PC=44/0x2C
+TICK  2358 - RM2<-RM1-RM2 | RM2=2/0x2 N=0,Z=0,V=0,C=1
+TICK  2359 @ 0x0F820000 -  POP SingleReg; PC++ | PC=45/0x2D
+TICK  2360 - RF1<-SP | RF1=404/0x194
+TICK  2361 - RM1<-memD[194] | RM1=1/0x1
+TICK  2362 - RM1<-memD[195] | RM1=1/0x1
+TICK  2363 - RM1<-memD[196] | RM1=1/0x1
+TICK  2364 - RM1<-memD[197] | RM1=   1/0x1
+TICK  2365 - SP=SP+4 | SP=404/0x194
+TICK  2366 @ 0x51C02400 -  CMP RegReg; PC++ | PC=46/0x2E
+TICK  2367 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=1/0x1 RM2=2/0x2
+TICK  2368 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=47/0x2F
+TICK  2369 - RF2<-memI[0x2F]; PC++ | RF2=125/0x7D
+TICK  2370 - JGE not taken | PC=48/0x30 N=1,Z=0,V=0,C=1
+TICK  2371 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=49/0x31
+TICK  2372 - RF1<-memI[49], PC++ | RF1=120/0x78
+TICK  2373 - RM1<-memD[78] | RM1=1/0x1
+TICK  2374 - RM1<-memD[79] | RM1=1/0x1
+TICK  2375 - RM1<-memD[7A] | RM1=1/0x1
+TICK  2376 - RM1<-memD[7B] | RM1=   1/0x1
+TICK  2378 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=51/0x33
+TICK  2379 - SP=SP-4 | SP=404/0x194
+TICK  2380 - RF1=SP | SP=404/0x194
+TICK  2381 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  2382 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2383 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2384 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2385 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=52/0x34
+TICK  2386 - RM2<-#1; PC++ | SP=404/0x194
+TICK  2387 @ 0x0F820000 -  POP SingleReg; PC++ | PC=54/0x36
+TICK  2388 - RF1<-SP | RF1=404/0x194
+TICK  2389 - RM1<-memD[194] | RM1=1/0x1
+TICK  2390 - RM1<-memD[195] | RM1=1/0x1
+TICK  2391 - RM1<-memD[196] | RM1=1/0x1
+TICK  2392 - RM1<-memD[197] | RM1=   1/0x1
+TICK  2393 - SP=SP+4 | SP=404/0x194
+TICK  2394 @ 0x42002400 -  ADD MathRRR; PC++ | PC=55/0x37
+TICK  2395 - RA<-RM1+RM2 | RA=2/0x2 N=0,Z=0,V=0,C=0
+TICK  2395 - RA<-RM1 + RM2 | RA=2/0x2
+TICK  2396 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=56/0x38
+TICK  2397 - RF1<-memI[0x38]; PC++ 
+TICK  2398 - memD[0x80]<-RA | memD[0x80]=0x2
+TICK  2399 - memD[0x81]<-RA | memD[0x81]=0x0
+TICK  2400 - memD[0x82]<-RA | memD[0x82]=0x0
+TICK  2401 - memD[0x83]<-RA | memD[0x83]=0x0
+TICK  2402 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=58/0x3A
+TICK  2403 - RF1<-memI[58], PC++ | RF1=104/0x68
+TICK  2404 - RM1<-memD[68] | RM1=4/0x4
+TICK  2405 - RM1<-memD[69] | RM1=4/0x4
+TICK  2406 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2407 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2409 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=60/0x3C
+TICK  2410 - RF1<-memI[60], PC++ | RF1=120/0x78
+TICK  2411 - RM2<-memD[78] | RM2=1/0x1
+TICK  2412 - RM2<-memD[79] | RM2=1/0x1
+TICK  2413 - RM2<-memD[7A] | RM2=1/0x1
+TICK  2414 - RM2<-memD[7B] | RM2=   1/0x1
+TICK  2416 @ 0x42062400 -  ADD MathRRR; PC++ | PC=62/0x3E
+TICK  2417 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  2417 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  2418 @ 0x05E26000 -  MOV MvLowRegIndToReg; PC++ | PC=63/0x3F
+TICK  2419 - RM1 <- memD[5] | RM1=2/0x2
+TICK  2420 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=64/0x40
+TICK  2421 - SP=SP-4 | SP=404/0x194
+TICK  2422 - RF1=SP | SP=404/0x194
+TICK  2423 - memD[0x194]<-RM1 | memD[0x194]=0x2
+TICK  2424 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2425 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2426 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2427 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=65/0x41
+TICK  2428 - RF1<-memI[65], PC++ | RF1=104/0x68
+TICK  2429 - RM1<-memD[68] | RM1=4/0x4
+TICK  2430 - RM1<-memD[69] | RM1=4/0x4
+TICK  2431 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2432 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2434 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=67/0x43
+TICK  2435 - RF1<-memI[67], PC++ | RF1=128/0x80
+TICK  2436 - RM2<-memD[80] | RM2=2/0x2
+TICK  2437 - RM2<-memD[81] | RM2=2/0x2
+TICK  2438 - RM2<-memD[82] | RM2=2/0x2
+TICK  2439 - RM2<-memD[83] | RM2=   2/0x2
+TICK  2441 @ 0x42062400 -  ADD MathRRR; PC++ | PC=69/0x45
+TICK  2442 - RAddr<-RM1+RM2 | RAddr=6/0x6 N=0,Z=0,V=0,C=0
+TICK  2442 - RAddr<-RM1 + RM2 | RAddr=6/0x6
+TICK  2443 @ 0x05E46000 -  MOV MvLowRegIndToReg; PC++ | PC=70/0x46
+TICK  2444 - RM2 <- memD[6] | RM2=0/0x0
+TICK  2445 @ 0x0F820000 -  POP SingleReg; PC++ | PC=71/0x47
+TICK  2446 - RF1<-SP | RF1=404/0x194
+TICK  2447 - RM1<-memD[194] | RM1=2/0x2
+TICK  2448 - RM1<-memD[195] | RM1=2/0x2
+TICK  2449 - RM1<-memD[196] | RM1=2/0x2
+TICK  2450 - RM1<-memD[197] | RM1=   2/0x2
+TICK  2451 - SP=SP+4 | SP=404/0x194
+TICK  2452 @ 0x51C02400 -  CMP RegReg; PC++ | PC=72/0x48
+TICK  2453 - CMP RM1, RM2 | N=0,Z=0,V=0,C=0; RM1=2/0x2 RM2=0/0x0
+TICK  2454 @ 0xD7000000 -  JLE JAbsAddr; PC++ | PC=73/0x49
+TICK  2455 - RF2<-memI[0x49]; PC++ | RF2=114/0x72
+TICK  2456 - JLE not taken | PC=74/0x4A N=0,Z=0,V=0,C=0
+TICK  2457 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=75/0x4B
+TICK  2458 - RF1<-memI[75], PC++ | RF1=104/0x68
+TICK  2459 - RM1<-memD[68] | RM1=4/0x4
+TICK  2460 - RM1<-memD[69] | RM1=4/0x4
+TICK  2461 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2462 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2464 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=77/0x4D
+TICK  2465 - RF1<-memI[77], PC++ | RF1=120/0x78
+TICK  2466 - RM2<-memD[78] | RM2=1/0x1
+TICK  2467 - RM2<-memD[79] | RM2=1/0x1
+TICK  2468 - RM2<-memD[7A] | RM2=1/0x1
+TICK  2469 - RM2<-memD[7B] | RM2=   1/0x1
+TICK  2471 @ 0x42062400 -  ADD MathRRR; PC++ | PC=79/0x4F
+TICK  2472 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  2472 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  2473 @ 0x05F86000 -  MOV MvLowRegIndToReg; PC++ | PC=80/0x50
+TICK  2474 - RT2 <- memD[5] | RT2=2/0x2
+TICK  2475 @ 0x04418000 -  MOV MvRegLowMem; PC++ | PC=81/0x51
+TICK  2476 - RF1 <- memI[0x51]; PC++ | RF1=136/0x88
+TICK  2477 - memD[0x88] <- RT2(byte) = 0x02
+TICK  2478 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=83/0x53
+TICK  2479 - RF1<-memI[83], PC++ | RF1=104/0x68
+TICK  2480 - RM1<-memD[68] | RM1=4/0x4
+TICK  2481 - RM1<-memD[69] | RM1=4/0x4
+TICK  2482 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2483 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2485 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=85/0x55
+TICK  2486 - RF1<-memI[85], PC++ | RF1=128/0x80
+TICK  2487 - RM2<-memD[80] | RM2=2/0x2
+TICK  2488 - RM2<-memD[81] | RM2=2/0x2
+TICK  2489 - RM2<-memD[82] | RM2=2/0x2
+TICK  2490 - RM2<-memD[83] | RM2=   2/0x2
+TICK  2492 @ 0x42062400 -  ADD MathRRR; PC++ | PC=87/0x57
+TICK  2493 - RAddr<-RM1+RM2 | RAddr=6/0x6 N=0,Z=0,V=0,C=0
+TICK  2493 - RAddr<-RM1 + RM2 | RAddr=6/0x6
+TICK  2494 @ 0x05E06000 -  MOV MvLowRegIndToReg; PC++ | PC=88/0x58
+TICK  2495 - RA <- memD[6] | RA=0/0x0
+TICK  2496 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=89/0x59
+TICK  2497 - RF1<-memI[89], PC++ | RF1=104/0x68
+TICK  2498 - RM1<-memD[68] | RM1=4/0x4
+TICK  2499 - RM1<-memD[69] | RM1=4/0x4
+TICK  2500 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2501 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2503 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=91/0x5B
+TICK  2504 - RF1<-memI[91], PC++ | RF1=128/0x80
+TICK  2505 - RM2<-memD[80] | RM2=2/0x2
+TICK  2506 - RM2<-memD[81] | RM2=2/0x2
+TICK  2507 - RM2<-memD[82] | RM2=2/0x2
+TICK  2508 - RM2<-memD[83] | RM2=   2/0x2
+TICK  2510 @ 0x42062400 -  ADD MathRRR; PC++ | PC=93/0x5D
+TICK  2511 - RAddr<-RM1+RM2 | RAddr=6/0x6 N=0,Z=0,V=0,C=0
+TICK  2511 - RAddr<-RM1 + RM2 | RAddr=6/0x6
+TICK  2512 @ 0x05E06000 -  MOV MvLowRegIndToReg; PC++ | PC=94/0x5E
+TICK  2513 - RA <- memD[6] | RA=0/0x0
+TICK  2514 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=95/0x5F
+TICK  2515 - RF1<-memI[95], PC++ | RF1=104/0x68
+TICK  2516 - RM1<-memD[68] | RM1=4/0x4
+TICK  2517 - RM1<-memD[69] | RM1=4/0x4
+TICK  2518 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2519 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2521 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=97/0x61
+TICK  2522 - RF1<-memI[97], PC++ | RF1=120/0x78
+TICK  2523 - RM2<-memD[78] | RM2=1/0x1
+TICK  2524 - RM2<-memD[79] | RM2=1/0x1
+TICK  2525 - RM2<-memD[7A] | RM2=1/0x1
+TICK  2526 - RM2<-memD[7B] | RM2=   1/0x1
+TICK  2528 @ 0x42062400 -  ADD MathRRR; PC++ | PC=99/0x63
+TICK  2529 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  2529 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  2530 @ 0x04A60000 -  MOV MvLowRegToRegInd; PC++ | PC=100/0x64
+TICK  2531 - memD[0x5] <- RA(byte); mem[RAddr]<-RA(byte) = 0x00
+TICK  2532 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=101/0x65
+TICK  2533 - RF1<-memI[101], PC++ | RF1=136/0x88
+TICK  2534 - RA<-memD[88] | RA=2/0x2
+TICK  2535 - RA<-memD[89] | RA=2/0x2
+TICK  2536 - RA<-memD[8A] | RA=2/0x2
+TICK  2537 - RA<-memD[8B] | RA=   2/0x2
+TICK  2539 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=103/0x67
+TICK  2540 - RF1<-memI[103], PC++ | RF1=136/0x88
+TICK  2541 - RA<-memD[88] | RA=2/0x2
+TICK  2542 - RA<-memD[89] | RA=2/0x2
+TICK  2543 - RA<-memD[8A] | RA=2/0x2
+TICK  2544 - RA<-memD[8B] | RA=   2/0x2
+TICK  2546 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=105/0x69
+TICK  2547 - RF1<-memI[105], PC++ | RF1=104/0x68
+TICK  2548 - RM1<-memD[68] | RM1=4/0x4
+TICK  2549 - RM1<-memD[69] | RM1=4/0x4
+TICK  2550 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2551 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2553 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=107/0x6B
+TICK  2554 - RF1<-memI[107], PC++ | RF1=128/0x80
+TICK  2555 - RM2<-memD[80] | RM2=2/0x2
+TICK  2556 - RM2<-memD[81] | RM2=2/0x2
+TICK  2557 - RM2<-memD[82] | RM2=2/0x2
+TICK  2558 - RM2<-memD[83] | RM2=   2/0x2
+TICK  2560 @ 0x42062400 -  ADD MathRRR; PC++ | PC=109/0x6D
+TICK  2561 - RAddr<-RM1+RM2 | RAddr=6/0x6 N=0,Z=0,V=0,C=0
+TICK  2561 - RAddr<-RM1 + RM2 | RAddr=6/0x6
+TICK  2562 @ 0x04A60000 -  MOV MvLowRegToRegInd; PC++ | PC=110/0x6E
+TICK  2563 - memD[0x6] <- RA(byte); mem[RAddr]<-RA(byte) = 0x02
+TICK  2564 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=111/0x6F
+TICK  2565 - RA<-#1; PC++ | SP=408/0x198
+TICK  2566 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=113/0x71
+TICK  2567 - RF1<-memI[0x71]; PC++ 
+TICK  2568 - memD[0x7C]<-RA | memD[0x7C]=0x1
+TICK  2569 - memD[0x7D]<-RA | memD[0x7D]=0x0
+TICK  2570 - memD[0x7E]<-RA | memD[0x7E]=0x0
+TICK  2571 - memD[0x7F]<-RA | memD[0x7F]=0x0
+TICK  2572 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=115/0x73
+TICK  2573 - RF1<-memI[115], PC++ | RF1=120/0x78
+TICK  2574 - RM1<-memD[78] | RM1=1/0x1
+TICK  2575 - RM1<-memD[79] | RM1=1/0x1
+TICK  2576 - RM1<-memD[7A] | RM1=1/0x1
+TICK  2577 - RM1<-memD[7B] | RM1=   1/0x1
+TICK  2579 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=117/0x75
+TICK  2580 - SP=SP-4 | SP=404/0x194
+TICK  2581 - RF1=SP | SP=404/0x194
+TICK  2582 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  2583 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2584 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2585 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2586 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=118/0x76
+TICK  2587 - RM2<-#1; PC++ | SP=404/0x194
+TICK  2588 @ 0x0F820000 -  POP SingleReg; PC++ | PC=120/0x78
+TICK  2589 - RF1<-SP | RF1=404/0x194
+TICK  2590 - RM1<-memD[194] | RM1=1/0x1
+TICK  2591 - RM1<-memD[195] | RM1=1/0x1
+TICK  2592 - RM1<-memD[196] | RM1=1/0x1
+TICK  2593 - RM1<-memD[197] | RM1=   1/0x1
+TICK  2594 - SP=SP+4 | SP=404/0x194
+TICK  2595 @ 0x42002400 -  ADD MathRRR; PC++ | PC=121/0x79
+TICK  2596 - RA<-RM1+RM2 | RA=2/0x2 N=0,Z=0,V=0,C=0
+TICK  2596 - RA<-RM1 + RM2 | RA=2/0x2
+TICK  2597 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=122/0x7A
+TICK  2598 - RF1<-memI[0x7A]; PC++ 
+TICK  2599 - memD[0x78]<-RA | memD[0x78]=0x2
+TICK  2600 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  2601 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  2602 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  2603 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=124/0x7C
+TICK  2604 - PC<-memI[0x22]| PC=34/0x22
+TICK  2605 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=35/0x23
+TICK  2606 - RF1<-memI[35], PC++ | RF1=120/0x78
+TICK  2607 - RM1<-memD[78] | RM1=2/0x2
+TICK  2608 - RM1<-memD[79] | RM1=2/0x2
+TICK  2609 - RM1<-memD[7A] | RM1=2/0x2
+TICK  2610 - RM1<-memD[7B] | RM1=   2/0x2
+TICK  2612 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=37/0x25
+TICK  2613 - SP=SP-4 | SP=404/0x194
+TICK  2614 - RF1=SP | SP=404/0x194
+TICK  2615 - memD[0x194]<-RM1 | memD[0x194]=0x2
+TICK  2616 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2617 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2618 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2619 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=38/0x26
+TICK  2620 - RF1<-memI[38], PC++ | RF1=132/0x84
+TICK  2621 - RM1<-memD[84] | RM1=3/0x3
+TICK  2622 - RM1<-memD[85] | RM1=3/0x3
+TICK  2623 - RM1<-memD[86] | RM1=3/0x3
+TICK  2624 - RM1<-memD[87] | RM1=   3/0x3
+TICK  2626 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=40/0x28
+TICK  2627 - SP=SP-4 | SP=400/0x190
+TICK  2628 - RF1=SP | SP=400/0x190
+TICK  2629 - memD[0x190]<-RM1 | memD[0x190]=0x3
+TICK  2630 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  2631 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  2632 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  2633 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=41/0x29
+TICK  2634 - RM2<-#1; PC++ | SP=400/0x190
+TICK  2635 @ 0x0F820000 -  POP SingleReg; PC++ | PC=43/0x2B
+TICK  2636 - RF1<-SP | RF1=400/0x190
+TICK  2637 - RM1<-memD[190] | RM1=3/0x3
+TICK  2638 - RM1<-memD[191] | RM1=3/0x3
+TICK  2639 - RM1<-memD[192] | RM1=3/0x3
+TICK  2640 - RM1<-memD[193] | RM1=   3/0x3
+TICK  2641 - SP=SP+4 | SP=400/0x190
+TICK  2642 @ 0x46042400 -  SUB MathRRR; PC++ | PC=44/0x2C
+TICK  2643 - RM2<-RM1-RM2 | RM2=2/0x2 N=0,Z=0,V=0,C=1
+TICK  2644 @ 0x0F820000 -  POP SingleReg; PC++ | PC=45/0x2D
+TICK  2645 - RF1<-SP | RF1=404/0x194
+TICK  2646 - RM1<-memD[194] | RM1=2/0x2
+TICK  2647 - RM1<-memD[195] | RM1=2/0x2
+TICK  2648 - RM1<-memD[196] | RM1=2/0x2
+TICK  2649 - RM1<-memD[197] | RM1=   2/0x2
+TICK  2650 - SP=SP+4 | SP=404/0x194
+TICK  2651 @ 0x51C02400 -  CMP RegReg; PC++ | PC=46/0x2E
+TICK  2652 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=2/0x2 RM2=2/0x2
+TICK  2653 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=47/0x2F
+TICK  2654 - RF2<-memI[0x2F]; PC++ | RF2=125/0x7D
+TICK  2655 - JGE taken → PC<-RF2 | PC=125/0x7D
+TICK  2656 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=126/0x7E
+TICK  2657 - RF1<-memI[126], PC++ | RF1=132/0x84
+TICK  2658 - RM1<-memD[84] | RM1=3/0x3
+TICK  2659 - RM1<-memD[85] | RM1=3/0x3
+TICK  2660 - RM1<-memD[86] | RM1=3/0x3
+TICK  2661 - RM1<-memD[87] | RM1=   3/0x3
+TICK  2663 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=128/0x80
+TICK  2664 - SP=SP-4 | SP=404/0x194
+TICK  2665 - RF1=SP | SP=404/0x194
+TICK  2666 - memD[0x194]<-RM1 | memD[0x194]=0x3
+TICK  2667 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2668 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2669 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2670 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=129/0x81
+TICK  2671 - RM2<-#1; PC++ | SP=404/0x194
+TICK  2672 @ 0x0F820000 -  POP SingleReg; PC++ | PC=131/0x83
+TICK  2673 - RF1<-SP | RF1=404/0x194
+TICK  2674 - RM1<-memD[194] | RM1=3/0x3
+TICK  2675 - RM1<-memD[195] | RM1=3/0x3
+TICK  2676 - RM1<-memD[196] | RM1=3/0x3
+TICK  2677 - RM1<-memD[197] | RM1=   3/0x3
+TICK  2678 - SP=SP+4 | SP=404/0x194
+TICK  2679 @ 0x46002400 -  SUB MathRRR; PC++ | PC=132/0x84
+TICK  2680 - RA<-RM1-RM2 | RA=2/0x2 N=0,Z=0,V=0,C=1
+TICK  2681 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=133/0x85
+TICK  2682 - RF1<-memI[0x85]; PC++ 
+TICK  2683 - memD[0x84]<-RA | memD[0x84]=0x2
+TICK  2684 - memD[0x85]<-RA | memD[0x85]=0x0
+TICK  2685 - memD[0x86]<-RA | memD[0x86]=0x0
+TICK  2686 - memD[0x87]<-RA | memD[0x87]=0x0
+TICK  2687 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=135/0x87
+TICK  2688 - PC<-memI[0x11]| PC=17/0x11
+TICK  2689 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=18/0x12
+TICK  2690 - RF1<-memI[18], PC++ | RF1=124/0x7C
+TICK  2691 - RM1<-memD[7C] | RM1=1/0x1
+TICK  2692 - RM1<-memD[7D] | RM1=1/0x1
+TICK  2693 - RM1<-memD[7E] | RM1=1/0x1
+TICK  2694 - RM1<-memD[7F] | RM1=   1/0x1
+TICK  2696 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=20/0x14
+TICK  2697 - SP=SP-4 | SP=404/0x194
+TICK  2698 - RF1=SP | SP=404/0x194
+TICK  2699 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  2700 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2701 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2702 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2703 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=21/0x15
+TICK  2704 - RM2<-#1; PC++ | SP=404/0x194
+TICK  2705 @ 0x0F820000 -  POP SingleReg; PC++ | PC=23/0x17
+TICK  2706 - RF1<-SP | RF1=404/0x194
+TICK  2707 - RM1<-memD[194] | RM1=1/0x1
+TICK  2708 - RM1<-memD[195] | RM1=1/0x1
+TICK  2709 - RM1<-memD[196] | RM1=1/0x1
+TICK  2710 - RM1<-memD[197] | RM1=   1/0x1
+TICK  2711 - SP=SP+4 | SP=404/0x194
+TICK  2712 @ 0x51C02400 -  CMP RegReg; PC++ | PC=24/0x18
+TICK  2713 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  2714 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=25/0x19
+TICK  2715 - RF2<-memI[0x19]; PC++ | RF2=136/0x88
+TICK  2716 - JNE not taken | PC=26/0x1A; N=0,Z=1,V=0,C=0
+TICK  2717 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=27/0x1B
+TICK  2718 - RA<-#0; PC++ | SP=408/0x198
+TICK  2719 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=29/0x1D
+TICK  2720 - RF1<-memI[0x1D]; PC++ 
+TICK  2721 - memD[0x7C]<-RA | memD[0x7C]=0x0
+TICK  2722 - memD[0x7D]<-RA | memD[0x7D]=0x0
+TICK  2723 - memD[0x7E]<-RA | memD[0x7E]=0x0
+TICK  2724 - memD[0x7F]<-RA | memD[0x7F]=0x0
+TICK  2725 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=31/0x1F
+TICK  2726 - RA<-#0; PC++ | SP=408/0x198
+TICK  2727 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=33/0x21
+TICK  2728 - RF1<-memI[0x21]; PC++ 
+TICK  2729 - memD[0x78]<-RA | memD[0x78]=0x0
+TICK  2730 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  2731 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  2732 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  2733 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=35/0x23
+TICK  2734 - RF1<-memI[35], PC++ | RF1=120/0x78
+TICK  2735 - RM1<-memD[78] | RM1=0/0x0
+TICK  2736 - RM1<-memD[79] | RM1=0/0x0
+TICK  2737 - RM1<-memD[7A] | RM1=0/0x0
+TICK  2738 - RM1<-memD[7B] | RM1=   0/0x0
+TICK  2740 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=37/0x25
+TICK  2741 - SP=SP-4 | SP=404/0x194
+TICK  2742 - RF1=SP | SP=404/0x194
+TICK  2743 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  2744 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2745 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2746 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2747 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=38/0x26
+TICK  2748 - RF1<-memI[38], PC++ | RF1=132/0x84
+TICK  2749 - RM1<-memD[84] | RM1=2/0x2
+TICK  2750 - RM1<-memD[85] | RM1=2/0x2
+TICK  2751 - RM1<-memD[86] | RM1=2/0x2
+TICK  2752 - RM1<-memD[87] | RM1=   2/0x2
+TICK  2754 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=40/0x28
+TICK  2755 - SP=SP-4 | SP=400/0x190
+TICK  2756 - RF1=SP | SP=400/0x190
+TICK  2757 - memD[0x190]<-RM1 | memD[0x190]=0x2
+TICK  2758 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  2759 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  2760 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  2761 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=41/0x29
+TICK  2762 - RM2<-#1; PC++ | SP=400/0x190
+TICK  2763 @ 0x0F820000 -  POP SingleReg; PC++ | PC=43/0x2B
+TICK  2764 - RF1<-SP | RF1=400/0x190
+TICK  2765 - RM1<-memD[190] | RM1=2/0x2
+TICK  2766 - RM1<-memD[191] | RM1=2/0x2
+TICK  2767 - RM1<-memD[192] | RM1=2/0x2
+TICK  2768 - RM1<-memD[193] | RM1=   2/0x2
+TICK  2769 - SP=SP+4 | SP=400/0x190
+TICK  2770 @ 0x46042400 -  SUB MathRRR; PC++ | PC=44/0x2C
+TICK  2771 - RM2<-RM1-RM2 | RM2=1/0x1 N=0,Z=0,V=0,C=1
+TICK  2772 @ 0x0F820000 -  POP SingleReg; PC++ | PC=45/0x2D
+TICK  2773 - RF1<-SP | RF1=404/0x194
+TICK  2774 - RM1<-memD[194] | RM1=0/0x0
+TICK  2775 - RM1<-memD[195] | RM1=0/0x0
+TICK  2776 - RM1<-memD[196] | RM1=0/0x0
+TICK  2777 - RM1<-memD[197] | RM1=   0/0x0
+TICK  2778 - SP=SP+4 | SP=404/0x194
+TICK  2779 @ 0x51C02400 -  CMP RegReg; PC++ | PC=46/0x2E
+TICK  2780 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=0/0x0 RM2=1/0x1
+TICK  2781 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=47/0x2F
+TICK  2782 - RF2<-memI[0x2F]; PC++ | RF2=125/0x7D
+TICK  2783 - JGE not taken | PC=48/0x30 N=1,Z=0,V=0,C=1
+TICK  2784 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=49/0x31
+TICK  2785 - RF1<-memI[49], PC++ | RF1=120/0x78
+TICK  2786 - RM1<-memD[78] | RM1=0/0x0
+TICK  2787 - RM1<-memD[79] | RM1=0/0x0
+TICK  2788 - RM1<-memD[7A] | RM1=0/0x0
+TICK  2789 - RM1<-memD[7B] | RM1=   0/0x0
+TICK  2791 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=51/0x33
+TICK  2792 - SP=SP-4 | SP=404/0x194
+TICK  2793 - RF1=SP | SP=404/0x194
+TICK  2794 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  2795 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2796 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2797 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2798 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=52/0x34
+TICK  2799 - RM2<-#1; PC++ | SP=404/0x194
+TICK  2800 @ 0x0F820000 -  POP SingleReg; PC++ | PC=54/0x36
+TICK  2801 - RF1<-SP | RF1=404/0x194
+TICK  2802 - RM1<-memD[194] | RM1=0/0x0
+TICK  2803 - RM1<-memD[195] | RM1=0/0x0
+TICK  2804 - RM1<-memD[196] | RM1=0/0x0
+TICK  2805 - RM1<-memD[197] | RM1=   0/0x0
+TICK  2806 - SP=SP+4 | SP=404/0x194
+TICK  2807 @ 0x42002400 -  ADD MathRRR; PC++ | PC=55/0x37
+TICK  2808 - RA<-RM1+RM2 | RA=1/0x1 N=0,Z=0,V=0,C=0
+TICK  2808 - RA<-RM1 + RM2 | RA=1/0x1
+TICK  2809 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=56/0x38
+TICK  2810 - RF1<-memI[0x38]; PC++ 
+TICK  2811 - memD[0x80]<-RA | memD[0x80]=0x1
+TICK  2812 - memD[0x81]<-RA | memD[0x81]=0x0
+TICK  2813 - memD[0x82]<-RA | memD[0x82]=0x0
+TICK  2814 - memD[0x83]<-RA | memD[0x83]=0x0
+TICK  2815 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=58/0x3A
+TICK  2816 - RF1<-memI[58], PC++ | RF1=104/0x68
+TICK  2817 - RM1<-memD[68] | RM1=4/0x4
+TICK  2818 - RM1<-memD[69] | RM1=4/0x4
+TICK  2819 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2820 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2822 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=60/0x3C
+TICK  2823 - RF1<-memI[60], PC++ | RF1=120/0x78
+TICK  2824 - RM2<-memD[78] | RM2=0/0x0
+TICK  2825 - RM2<-memD[79] | RM2=0/0x0
+TICK  2826 - RM2<-memD[7A] | RM2=0/0x0
+TICK  2827 - RM2<-memD[7B] | RM2=   0/0x0
+TICK  2829 @ 0x42062400 -  ADD MathRRR; PC++ | PC=62/0x3E
+TICK  2830 - RAddr<-RM1+RM2 | RAddr=4/0x4 N=0,Z=0,V=0,C=0
+TICK  2830 - RAddr<-RM1 + RM2 | RAddr=4/0x4
+TICK  2831 @ 0x05E26000 -  MOV MvLowRegIndToReg; PC++ | PC=63/0x3F
+TICK  2832 - RM1 <- memD[4] | RM1=1/0x1
+TICK  2833 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=64/0x40
+TICK  2834 - SP=SP-4 | SP=404/0x194
+TICK  2835 - RF1=SP | SP=404/0x194
+TICK  2836 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  2837 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2838 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2839 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2840 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=65/0x41
+TICK  2841 - RF1<-memI[65], PC++ | RF1=104/0x68
+TICK  2842 - RM1<-memD[68] | RM1=4/0x4
+TICK  2843 - RM1<-memD[69] | RM1=4/0x4
+TICK  2844 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2845 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2847 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=67/0x43
+TICK  2848 - RF1<-memI[67], PC++ | RF1=128/0x80
+TICK  2849 - RM2<-memD[80] | RM2=1/0x1
+TICK  2850 - RM2<-memD[81] | RM2=1/0x1
+TICK  2851 - RM2<-memD[82] | RM2=1/0x1
+TICK  2852 - RM2<-memD[83] | RM2=   1/0x1
+TICK  2854 @ 0x42062400 -  ADD MathRRR; PC++ | PC=69/0x45
+TICK  2855 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  2855 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  2856 @ 0x05E46000 -  MOV MvLowRegIndToReg; PC++ | PC=70/0x46
+TICK  2857 - RM2 <- memD[5] | RM2=0/0x0
+TICK  2858 @ 0x0F820000 -  POP SingleReg; PC++ | PC=71/0x47
+TICK  2859 - RF1<-SP | RF1=404/0x194
+TICK  2860 - RM1<-memD[194] | RM1=1/0x1
+TICK  2861 - RM1<-memD[195] | RM1=1/0x1
+TICK  2862 - RM1<-memD[196] | RM1=1/0x1
+TICK  2863 - RM1<-memD[197] | RM1=   1/0x1
+TICK  2864 - SP=SP+4 | SP=404/0x194
+TICK  2865 @ 0x51C02400 -  CMP RegReg; PC++ | PC=72/0x48
+TICK  2866 - CMP RM1, RM2 | N=0,Z=0,V=0,C=0; RM1=1/0x1 RM2=0/0x0
+TICK  2867 @ 0xD7000000 -  JLE JAbsAddr; PC++ | PC=73/0x49
+TICK  2868 - RF2<-memI[0x49]; PC++ | RF2=114/0x72
+TICK  2869 - JLE not taken | PC=74/0x4A N=0,Z=0,V=0,C=0
+TICK  2870 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=75/0x4B
+TICK  2871 - RF1<-memI[75], PC++ | RF1=104/0x68
+TICK  2872 - RM1<-memD[68] | RM1=4/0x4
+TICK  2873 - RM1<-memD[69] | RM1=4/0x4
+TICK  2874 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2875 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2877 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=77/0x4D
+TICK  2878 - RF1<-memI[77], PC++ | RF1=120/0x78
+TICK  2879 - RM2<-memD[78] | RM2=0/0x0
+TICK  2880 - RM2<-memD[79] | RM2=0/0x0
+TICK  2881 - RM2<-memD[7A] | RM2=0/0x0
+TICK  2882 - RM2<-memD[7B] | RM2=   0/0x0
+TICK  2884 @ 0x42062400 -  ADD MathRRR; PC++ | PC=79/0x4F
+TICK  2885 - RAddr<-RM1+RM2 | RAddr=4/0x4 N=0,Z=0,V=0,C=0
+TICK  2885 - RAddr<-RM1 + RM2 | RAddr=4/0x4
+TICK  2886 @ 0x05F86000 -  MOV MvLowRegIndToReg; PC++ | PC=80/0x50
+TICK  2887 - RT2 <- memD[4] | RT2=1/0x1
+TICK  2888 @ 0x04418000 -  MOV MvRegLowMem; PC++ | PC=81/0x51
+TICK  2889 - RF1 <- memI[0x51]; PC++ | RF1=136/0x88
+TICK  2890 - memD[0x88] <- RT2(byte) = 0x01
+TICK  2891 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=83/0x53
+TICK  2892 - RF1<-memI[83], PC++ | RF1=104/0x68
+TICK  2893 - RM1<-memD[68] | RM1=4/0x4
+TICK  2894 - RM1<-memD[69] | RM1=4/0x4
+TICK  2895 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2896 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2898 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=85/0x55
+TICK  2899 - RF1<-memI[85], PC++ | RF1=128/0x80
+TICK  2900 - RM2<-memD[80] | RM2=1/0x1
+TICK  2901 - RM2<-memD[81] | RM2=1/0x1
+TICK  2902 - RM2<-memD[82] | RM2=1/0x1
+TICK  2903 - RM2<-memD[83] | RM2=   1/0x1
+TICK  2905 @ 0x42062400 -  ADD MathRRR; PC++ | PC=87/0x57
+TICK  2906 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  2906 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  2907 @ 0x05E06000 -  MOV MvLowRegIndToReg; PC++ | PC=88/0x58
+TICK  2908 - RA <- memD[5] | RA=0/0x0
+TICK  2909 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=89/0x59
+TICK  2910 - RF1<-memI[89], PC++ | RF1=104/0x68
+TICK  2911 - RM1<-memD[68] | RM1=4/0x4
+TICK  2912 - RM1<-memD[69] | RM1=4/0x4
+TICK  2913 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2914 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2916 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=91/0x5B
+TICK  2917 - RF1<-memI[91], PC++ | RF1=128/0x80
+TICK  2918 - RM2<-memD[80] | RM2=1/0x1
+TICK  2919 - RM2<-memD[81] | RM2=1/0x1
+TICK  2920 - RM2<-memD[82] | RM2=1/0x1
+TICK  2921 - RM2<-memD[83] | RM2=   1/0x1
+TICK  2923 @ 0x42062400 -  ADD MathRRR; PC++ | PC=93/0x5D
+TICK  2924 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  2924 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  2925 @ 0x05E06000 -  MOV MvLowRegIndToReg; PC++ | PC=94/0x5E
+TICK  2926 - RA <- memD[5] | RA=0/0x0
+TICK  2927 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=95/0x5F
+TICK  2928 - RF1<-memI[95], PC++ | RF1=104/0x68
+TICK  2929 - RM1<-memD[68] | RM1=4/0x4
+TICK  2930 - RM1<-memD[69] | RM1=4/0x4
+TICK  2931 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2932 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2934 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=97/0x61
+TICK  2935 - RF1<-memI[97], PC++ | RF1=120/0x78
+TICK  2936 - RM2<-memD[78] | RM2=0/0x0
+TICK  2937 - RM2<-memD[79] | RM2=0/0x0
+TICK  2938 - RM2<-memD[7A] | RM2=0/0x0
+TICK  2939 - RM2<-memD[7B] | RM2=   0/0x0
+TICK  2941 @ 0x42062400 -  ADD MathRRR; PC++ | PC=99/0x63
+TICK  2942 - RAddr<-RM1+RM2 | RAddr=4/0x4 N=0,Z=0,V=0,C=0
+TICK  2942 - RAddr<-RM1 + RM2 | RAddr=4/0x4
+TICK  2943 @ 0x04A60000 -  MOV MvLowRegToRegInd; PC++ | PC=100/0x64
+TICK  2944 - memD[0x4] <- RA(byte); mem[RAddr]<-RA(byte) = 0x00
+TICK  2945 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=101/0x65
+TICK  2946 - RF1<-memI[101], PC++ | RF1=136/0x88
+TICK  2947 - RA<-memD[88] | RA=1/0x1
+TICK  2948 - RA<-memD[89] | RA=1/0x1
+TICK  2949 - RA<-memD[8A] | RA=1/0x1
+TICK  2950 - RA<-memD[8B] | RA=   1/0x1
+TICK  2952 @ 0x04C00000 -  MOV MvMemReg; PC++ | PC=103/0x67
+TICK  2953 - RF1<-memI[103], PC++ | RF1=136/0x88
+TICK  2954 - RA<-memD[88] | RA=1/0x1
+TICK  2955 - RA<-memD[89] | RA=1/0x1
+TICK  2956 - RA<-memD[8A] | RA=1/0x1
+TICK  2957 - RA<-memD[8B] | RA=   1/0x1
+TICK  2959 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=105/0x69
+TICK  2960 - RF1<-memI[105], PC++ | RF1=104/0x68
+TICK  2961 - RM1<-memD[68] | RM1=4/0x4
+TICK  2962 - RM1<-memD[69] | RM1=4/0x4
+TICK  2963 - RM1<-memD[6A] | RM1=4/0x4
+TICK  2964 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  2966 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=107/0x6B
+TICK  2967 - RF1<-memI[107], PC++ | RF1=128/0x80
+TICK  2968 - RM2<-memD[80] | RM2=1/0x1
+TICK  2969 - RM2<-memD[81] | RM2=1/0x1
+TICK  2970 - RM2<-memD[82] | RM2=1/0x1
+TICK  2971 - RM2<-memD[83] | RM2=   1/0x1
+TICK  2973 @ 0x42062400 -  ADD MathRRR; PC++ | PC=109/0x6D
+TICK  2974 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  2974 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  2975 @ 0x04A60000 -  MOV MvLowRegToRegInd; PC++ | PC=110/0x6E
+TICK  2976 - memD[0x5] <- RA(byte); mem[RAddr]<-RA(byte) = 0x01
+TICK  2977 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=111/0x6F
+TICK  2978 - RA<-#1; PC++ | SP=408/0x198
+TICK  2979 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=113/0x71
+TICK  2980 - RF1<-memI[0x71]; PC++ 
+TICK  2981 - memD[0x7C]<-RA | memD[0x7C]=0x1
+TICK  2982 - memD[0x7D]<-RA | memD[0x7D]=0x0
+TICK  2983 - memD[0x7E]<-RA | memD[0x7E]=0x0
+TICK  2984 - memD[0x7F]<-RA | memD[0x7F]=0x0
+TICK  2985 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=115/0x73
+TICK  2986 - RF1<-memI[115], PC++ | RF1=120/0x78
+TICK  2987 - RM1<-memD[78] | RM1=0/0x0
+TICK  2988 - RM1<-memD[79] | RM1=0/0x0
+TICK  2989 - RM1<-memD[7A] | RM1=0/0x0
+TICK  2990 - RM1<-memD[7B] | RM1=   0/0x0
+TICK  2992 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=117/0x75
+TICK  2993 - SP=SP-4 | SP=404/0x194
+TICK  2994 - RF1=SP | SP=404/0x194
+TICK  2995 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  2996 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  2997 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  2998 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  2999 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=118/0x76
+TICK  3000 - RM2<-#1; PC++ | SP=404/0x194
+TICK  3001 @ 0x0F820000 -  POP SingleReg; PC++ | PC=120/0x78
+TICK  3002 - RF1<-SP | RF1=404/0x194
+TICK  3003 - RM1<-memD[194] | RM1=0/0x0
+TICK  3004 - RM1<-memD[195] | RM1=0/0x0
+TICK  3005 - RM1<-memD[196] | RM1=0/0x0
+TICK  3006 - RM1<-memD[197] | RM1=   0/0x0
+TICK  3007 - SP=SP+4 | SP=404/0x194
+TICK  3008 @ 0x42002400 -  ADD MathRRR; PC++ | PC=121/0x79
+TICK  3009 - RA<-RM1+RM2 | RA=1/0x1 N=0,Z=0,V=0,C=0
+TICK  3009 - RA<-RM1 + RM2 | RA=1/0x1
+TICK  3010 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=122/0x7A
+TICK  3011 - RF1<-memI[0x7A]; PC++ 
+TICK  3012 - memD[0x78]<-RA | memD[0x78]=0x1
+TICK  3013 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  3014 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  3015 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  3016 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=124/0x7C
+TICK  3017 - PC<-memI[0x22]| PC=34/0x22
+TICK  3018 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=35/0x23
+TICK  3019 - RF1<-memI[35], PC++ | RF1=120/0x78
+TICK  3020 - RM1<-memD[78] | RM1=1/0x1
+TICK  3021 - RM1<-memD[79] | RM1=1/0x1
+TICK  3022 - RM1<-memD[7A] | RM1=1/0x1
+TICK  3023 - RM1<-memD[7B] | RM1=   1/0x1
+TICK  3025 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=37/0x25
+TICK  3026 - SP=SP-4 | SP=404/0x194
+TICK  3027 - RF1=SP | SP=404/0x194
+TICK  3028 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  3029 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3030 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3031 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3032 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=38/0x26
+TICK  3033 - RF1<-memI[38], PC++ | RF1=132/0x84
+TICK  3034 - RM1<-memD[84] | RM1=2/0x2
+TICK  3035 - RM1<-memD[85] | RM1=2/0x2
+TICK  3036 - RM1<-memD[86] | RM1=2/0x2
+TICK  3037 - RM1<-memD[87] | RM1=   2/0x2
+TICK  3039 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=40/0x28
+TICK  3040 - SP=SP-4 | SP=400/0x190
+TICK  3041 - RF1=SP | SP=400/0x190
+TICK  3042 - memD[0x190]<-RM1 | memD[0x190]=0x2
+TICK  3043 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  3044 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  3045 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  3046 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=41/0x29
+TICK  3047 - RM2<-#1; PC++ | SP=400/0x190
+TICK  3048 @ 0x0F820000 -  POP SingleReg; PC++ | PC=43/0x2B
+TICK  3049 - RF1<-SP | RF1=400/0x190
+TICK  3050 - RM1<-memD[190] | RM1=2/0x2
+TICK  3051 - RM1<-memD[191] | RM1=2/0x2
+TICK  3052 - RM1<-memD[192] | RM1=2/0x2
+TICK  3053 - RM1<-memD[193] | RM1=   2/0x2
+TICK  3054 - SP=SP+4 | SP=400/0x190
+TICK  3055 @ 0x46042400 -  SUB MathRRR; PC++ | PC=44/0x2C
+TICK  3056 - RM2<-RM1-RM2 | RM2=1/0x1 N=0,Z=0,V=0,C=1
+TICK  3057 @ 0x0F820000 -  POP SingleReg; PC++ | PC=45/0x2D
+TICK  3058 - RF1<-SP | RF1=404/0x194
+TICK  3059 - RM1<-memD[194] | RM1=1/0x1
+TICK  3060 - RM1<-memD[195] | RM1=1/0x1
+TICK  3061 - RM1<-memD[196] | RM1=1/0x1
+TICK  3062 - RM1<-memD[197] | RM1=   1/0x1
+TICK  3063 - SP=SP+4 | SP=404/0x194
+TICK  3064 @ 0x51C02400 -  CMP RegReg; PC++ | PC=46/0x2E
+TICK  3065 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  3066 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=47/0x2F
+TICK  3067 - RF2<-memI[0x2F]; PC++ | RF2=125/0x7D
+TICK  3068 - JGE taken → PC<-RF2 | PC=125/0x7D
+TICK  3069 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=126/0x7E
+TICK  3070 - RF1<-memI[126], PC++ | RF1=132/0x84
+TICK  3071 - RM1<-memD[84] | RM1=2/0x2
+TICK  3072 - RM1<-memD[85] | RM1=2/0x2
+TICK  3073 - RM1<-memD[86] | RM1=2/0x2
+TICK  3074 - RM1<-memD[87] | RM1=   2/0x2
+TICK  3076 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=128/0x80
+TICK  3077 - SP=SP-4 | SP=404/0x194
+TICK  3078 - RF1=SP | SP=404/0x194
+TICK  3079 - memD[0x194]<-RM1 | memD[0x194]=0x2
+TICK  3080 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3081 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3082 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3083 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=129/0x81
+TICK  3084 - RM2<-#1; PC++ | SP=404/0x194
+TICK  3085 @ 0x0F820000 -  POP SingleReg; PC++ | PC=131/0x83
+TICK  3086 - RF1<-SP | RF1=404/0x194
+TICK  3087 - RM1<-memD[194] | RM1=2/0x2
+TICK  3088 - RM1<-memD[195] | RM1=2/0x2
+TICK  3089 - RM1<-memD[196] | RM1=2/0x2
+TICK  3090 - RM1<-memD[197] | RM1=   2/0x2
+TICK  3091 - SP=SP+4 | SP=404/0x194
+TICK  3092 @ 0x46002400 -  SUB MathRRR; PC++ | PC=132/0x84
+TICK  3093 - RA<-RM1-RM2 | RA=1/0x1 N=0,Z=0,V=0,C=1
+TICK  3094 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=133/0x85
+TICK  3095 - RF1<-memI[0x85]; PC++ 
+TICK  3096 - memD[0x84]<-RA | memD[0x84]=0x1
+TICK  3097 - memD[0x85]<-RA | memD[0x85]=0x0
+TICK  3098 - memD[0x86]<-RA | memD[0x86]=0x0
+TICK  3099 - memD[0x87]<-RA | memD[0x87]=0x0
+TICK  3100 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=135/0x87
+TICK  3101 - PC<-memI[0x11]| PC=17/0x11
+TICK  3102 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=18/0x12
+TICK  3103 - RF1<-memI[18], PC++ | RF1=124/0x7C
+TICK  3104 - RM1<-memD[7C] | RM1=1/0x1
+TICK  3105 - RM1<-memD[7D] | RM1=1/0x1
+TICK  3106 - RM1<-memD[7E] | RM1=1/0x1
+TICK  3107 - RM1<-memD[7F] | RM1=   1/0x1
+TICK  3109 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=20/0x14
+TICK  3110 - SP=SP-4 | SP=404/0x194
+TICK  3111 - RF1=SP | SP=404/0x194
+TICK  3112 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  3113 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3114 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3115 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3116 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=21/0x15
+TICK  3117 - RM2<-#1; PC++ | SP=404/0x194
+TICK  3118 @ 0x0F820000 -  POP SingleReg; PC++ | PC=23/0x17
+TICK  3119 - RF1<-SP | RF1=404/0x194
+TICK  3120 - RM1<-memD[194] | RM1=1/0x1
+TICK  3121 - RM1<-memD[195] | RM1=1/0x1
+TICK  3122 - RM1<-memD[196] | RM1=1/0x1
+TICK  3123 - RM1<-memD[197] | RM1=   1/0x1
+TICK  3124 - SP=SP+4 | SP=404/0x194
+TICK  3125 @ 0x51C02400 -  CMP RegReg; PC++ | PC=24/0x18
+TICK  3126 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=1/0x1 RM2=1/0x1
+TICK  3127 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=25/0x19
+TICK  3128 - RF2<-memI[0x19]; PC++ | RF2=136/0x88
+TICK  3129 - JNE not taken | PC=26/0x1A; N=0,Z=1,V=0,C=0
+TICK  3130 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=27/0x1B
+TICK  3131 - RA<-#0; PC++ | SP=408/0x198
+TICK  3132 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=29/0x1D
+TICK  3133 - RF1<-memI[0x1D]; PC++ 
+TICK  3134 - memD[0x7C]<-RA | memD[0x7C]=0x0
+TICK  3135 - memD[0x7D]<-RA | memD[0x7D]=0x0
+TICK  3136 - memD[0x7E]<-RA | memD[0x7E]=0x0
+TICK  3137 - memD[0x7F]<-RA | memD[0x7F]=0x0
+TICK  3138 @ 0x04200000 -  MOV MvImmReg; PC++ | PC=31/0x1F
+TICK  3139 - RA<-#0; PC++ | SP=408/0x198
+TICK  3140 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=33/0x21
+TICK  3141 - RF1<-memI[0x21]; PC++ 
+TICK  3142 - memD[0x78]<-RA | memD[0x78]=0x0
+TICK  3143 - memD[0x79]<-RA | memD[0x79]=0x0
+TICK  3144 - memD[0x7A]<-RA | memD[0x7A]=0x0
+TICK  3145 - memD[0x7B]<-RA | memD[0x7B]=0x0
+TICK  3146 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=35/0x23
+TICK  3147 - RF1<-memI[35], PC++ | RF1=120/0x78
+TICK  3148 - RM1<-memD[78] | RM1=0/0x0
+TICK  3149 - RM1<-memD[79] | RM1=0/0x0
+TICK  3150 - RM1<-memD[7A] | RM1=0/0x0
+TICK  3151 - RM1<-memD[7B] | RM1=   0/0x0
+TICK  3153 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=37/0x25
+TICK  3154 - SP=SP-4 | SP=404/0x194
+TICK  3155 - RF1=SP | SP=404/0x194
+TICK  3156 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  3157 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3158 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3159 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3160 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=38/0x26
+TICK  3161 - RF1<-memI[38], PC++ | RF1=132/0x84
+TICK  3162 - RM1<-memD[84] | RM1=1/0x1
+TICK  3163 - RM1<-memD[85] | RM1=1/0x1
+TICK  3164 - RM1<-memD[86] | RM1=1/0x1
+TICK  3165 - RM1<-memD[87] | RM1=   1/0x1
+TICK  3167 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=40/0x28
+TICK  3168 - SP=SP-4 | SP=400/0x190
+TICK  3169 - RF1=SP | SP=400/0x190
+TICK  3170 - memD[0x190]<-RM1 | memD[0x190]=0x1
+TICK  3171 - memD[0x191]<-RM1 | memD[0x191]=0x0
+TICK  3172 - memD[0x192]<-RM1 | memD[0x192]=0x0
+TICK  3173 - memD[0x193]<-RM1 | memD[0x193]=0x0
+TICK  3174 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=41/0x29
+TICK  3175 - RM2<-#1; PC++ | SP=400/0x190
+TICK  3176 @ 0x0F820000 -  POP SingleReg; PC++ | PC=43/0x2B
+TICK  3177 - RF1<-SP | RF1=400/0x190
+TICK  3178 - RM1<-memD[190] | RM1=1/0x1
+TICK  3179 - RM1<-memD[191] | RM1=1/0x1
+TICK  3180 - RM1<-memD[192] | RM1=1/0x1
+TICK  3181 - RM1<-memD[193] | RM1=   1/0x1
+TICK  3182 - SP=SP+4 | SP=400/0x190
+TICK  3183 @ 0x46042400 -  SUB MathRRR; PC++ | PC=44/0x2C
+TICK  3184 - RM2<-RM1-RM2 | RM2=0/0x0 N=0,Z=1,V=0,C=1
+TICK  3185 @ 0x0F820000 -  POP SingleReg; PC++ | PC=45/0x2D
+TICK  3186 - RF1<-SP | RF1=404/0x194
+TICK  3187 - RM1<-memD[194] | RM1=0/0x0
+TICK  3188 - RM1<-memD[195] | RM1=0/0x0
+TICK  3189 - RM1<-memD[196] | RM1=0/0x0
+TICK  3190 - RM1<-memD[197] | RM1=   0/0x0
+TICK  3191 - SP=SP+4 | SP=404/0x194
+TICK  3192 @ 0x51C02400 -  CMP RegReg; PC++ | PC=46/0x2E
+TICK  3193 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=0/0x0 RM2=0/0x0
+TICK  3194 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=47/0x2F
+TICK  3195 - RF2<-memI[0x2F]; PC++ | RF2=125/0x7D
+TICK  3196 - JGE taken → PC<-RF2 | PC=125/0x7D
+TICK  3197 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=126/0x7E
+TICK  3198 - RF1<-memI[126], PC++ | RF1=132/0x84
+TICK  3199 - RM1<-memD[84] | RM1=1/0x1
+TICK  3200 - RM1<-memD[85] | RM1=1/0x1
+TICK  3201 - RM1<-memD[86] | RM1=1/0x1
+TICK  3202 - RM1<-memD[87] | RM1=   1/0x1
+TICK  3204 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=128/0x80
+TICK  3205 - SP=SP-4 | SP=404/0x194
+TICK  3206 - RF1=SP | SP=404/0x194
+TICK  3207 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  3208 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3209 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3210 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3211 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=129/0x81
+TICK  3212 - RM2<-#1; PC++ | SP=404/0x194
+TICK  3213 @ 0x0F820000 -  POP SingleReg; PC++ | PC=131/0x83
+TICK  3214 - RF1<-SP | RF1=404/0x194
+TICK  3215 - RM1<-memD[194] | RM1=1/0x1
+TICK  3216 - RM1<-memD[195] | RM1=1/0x1
+TICK  3217 - RM1<-memD[196] | RM1=1/0x1
+TICK  3218 - RM1<-memD[197] | RM1=   1/0x1
+TICK  3219 - SP=SP+4 | SP=404/0x194
+TICK  3220 @ 0x46002400 -  SUB MathRRR; PC++ | PC=132/0x84
+TICK  3221 - RA<-RM1-RM2 | RA=0/0x0 N=0,Z=1,V=0,C=1
+TICK  3222 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=133/0x85
+TICK  3223 - RF1<-memI[0x85]; PC++ 
+TICK  3224 - memD[0x84]<-RA | memD[0x84]=0x0
+TICK  3225 - memD[0x85]<-RA | memD[0x85]=0x0
+TICK  3226 - memD[0x86]<-RA | memD[0x86]=0x0
+TICK  3227 - memD[0x87]<-RA | memD[0x87]=0x0
+TICK  3228 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=135/0x87
+TICK  3229 - PC<-memI[0x11]| PC=17/0x11
+TICK  3230 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=18/0x12
+TICK  3231 - RF1<-memI[18], PC++ | RF1=124/0x7C
+TICK  3232 - RM1<-memD[7C] | RM1=0/0x0
+TICK  3233 - RM1<-memD[7D] | RM1=0/0x0
+TICK  3234 - RM1<-memD[7E] | RM1=0/0x0
+TICK  3235 - RM1<-memD[7F] | RM1=   0/0x0
+TICK  3237 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=20/0x14
+TICK  3238 - SP=SP-4 | SP=404/0x194
+TICK  3239 - RF1=SP | SP=404/0x194
+TICK  3240 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  3241 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3242 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3243 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3244 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=21/0x15
+TICK  3245 - RM2<-#1; PC++ | SP=404/0x194
+TICK  3246 @ 0x0F820000 -  POP SingleReg; PC++ | PC=23/0x17
+TICK  3247 - RF1<-SP | RF1=404/0x194
+TICK  3248 - RM1<-memD[194] | RM1=0/0x0
+TICK  3249 - RM1<-memD[195] | RM1=0/0x0
+TICK  3250 - RM1<-memD[196] | RM1=0/0x0
+TICK  3251 - RM1<-memD[197] | RM1=   0/0x0
+TICK  3252 - SP=SP+4 | SP=404/0x194
+TICK  3253 @ 0x51C02400 -  CMP RegReg; PC++ | PC=24/0x18
+TICK  3254 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=0/0x0 RM2=1/0x1
+TICK  3255 @ 0xC7000000 -  JNE JAbsAddr; PC++ | PC=25/0x19
+TICK  3256 - RF2<-memI[0x19]; PC++ | RF2=136/0x88
+TICK  3257 - JNE taken; PC<-RF2 | PC=136/0x88
+TICK  3258 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=137/0x89
+TICK  3259 - RF1<-memI[137], PC++ | RF1=104/0x68
+TICK  3260 - RM1<-memD[68] | RM1=4/0x4
+TICK  3261 - RM1<-memD[69] | RM1=4/0x4
+TICK  3262 - RM1<-memD[6A] | RM1=4/0x4
+TICK  3263 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  3265 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=139/0x8B
+TICK  3266 - RM2<-#0; PC++ | SP=408/0x198
+TICK  3267 @ 0x42062400 -  ADD MathRRR; PC++ | PC=141/0x8D
+TICK  3268 - RAddr<-RM1+RM2 | RAddr=4/0x4 N=0,Z=0,V=0,C=0
+TICK  3268 - RAddr<-RM1 + RM2 | RAddr=4/0x4
+TICK  3269 @ 0x05F86000 -  MOV MvLowRegIndToReg; PC++ | PC=142/0x8E
+TICK  3270 - RT2 <- memD[4] | RT2=0/0x0
+TICK  3271 @ 0x04418000 -  MOV MvRegLowMem; PC++ | PC=143/0x8F
+TICK  3272 - RF1 <- memI[0x8F]; PC++ | RF1=140/0x8C
+TICK  3273 - memD[0x8C] <- RT2(byte) = 0x00
+TICK  3274 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=145/0x91
+TICK  3275 - RF1<-memI[145], PC++ | RF1=144/0x90
+TICK  3276 - RM1<-memD[90] | RM1=0/0x0
+TICK  3277 - RM1<-memD[91] | RM1=0/0x0
+TICK  3278 - RM1<-memD[92] | RM1=0/0x0
+TICK  3279 - RM1<-memD[93] | RM1=   0/0x0
+TICK  3281 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=147/0x93
+TICK  3282 - SP=SP-4 | SP=404/0x194
+TICK  3283 - RF1=SP | SP=404/0x194
+TICK  3284 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  3285 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3286 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3287 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3288 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=148/0x94
+TICK  3289 - RF1<-memI[148], PC++ | RF1=116/0x74
+TICK  3290 - RM2<-memD[74] | RM2=4/0x4
+TICK  3291 - RM2<-memD[75] | RM2=4/0x4
+TICK  3292 - RM2<-memD[76] | RM2=4/0x4
+TICK  3293 - RM2<-memD[77] | RM2=   4/0x4
+TICK  3295 @ 0x0F820000 -  POP SingleReg; PC++ | PC=150/0x96
+TICK  3296 - RF1<-SP | RF1=404/0x194
+TICK  3297 - RM1<-memD[194] | RM1=0/0x0
+TICK  3298 - RM1<-memD[195] | RM1=0/0x0
+TICK  3299 - RM1<-memD[196] | RM1=0/0x0
+TICK  3300 - RM1<-memD[197] | RM1=   0/0x0
+TICK  3301 - SP=SP+4 | SP=404/0x194
+TICK  3302 @ 0x51C02400 -  CMP RegReg; PC++ | PC=151/0x97
+TICK  3303 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=0/0x0 RM2=4/0x4
+TICK  3304 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=152/0x98
+TICK  3305 - RF2<-memI[0x98]; PC++ | RF2=175/0xAF
+TICK  3306 - JGE not taken | PC=153/0x99 N=1,Z=0,V=0,C=1
+TICK  3307 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=154/0x9A
+TICK  3308 - RF1<-memI[154], PC++ | RF1=104/0x68
+TICK  3309 - RM1<-memD[68] | RM1=4/0x4
+TICK  3310 - RM1<-memD[69] | RM1=4/0x4
+TICK  3311 - RM1<-memD[6A] | RM1=4/0x4
+TICK  3312 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  3314 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=156/0x9C
+TICK  3315 - RF1<-memI[156], PC++ | RF1=144/0x90
+TICK  3316 - RM2<-memD[90] | RM2=0/0x0
+TICK  3317 - RM2<-memD[91] | RM2=0/0x0
+TICK  3318 - RM2<-memD[92] | RM2=0/0x0
+TICK  3319 - RM2<-memD[93] | RM2=   0/0x0
+TICK  3321 @ 0x42062400 -  ADD MathRRR; PC++ | PC=158/0x9E
+TICK  3322 - RAddr<-RM1+RM2 | RAddr=4/0x4 N=0,Z=0,V=0,C=0
+TICK  3322 - RAddr<-RM1 + RM2 | RAddr=4/0x4
+TICK  3323 @ 0x05E06000 -  MOV MvLowRegIndToReg; PC++ | PC=159/0x9F
+TICK  3324 - RA <- memD[4] | RA=0/0x0
+TICK  3325 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=160/0xA0
+TICK  3326 - RF1<-memI[0xA0]; PC++ 
+TICK  3327 - memD[0x8C]<-RA | memD[0x8C]=0x0
+TICK  3328 - memD[0x8D]<-RA | memD[0x8D]=0x0
+TICK  3329 - memD[0x8E]<-RA | memD[0x8E]=0x0
+TICK  3330 - memD[0x8F]<-RA | memD[0x8F]=0x0
+TICK  3331 @ 0x04CC0000 -  MOV MvMemReg; PC++ | PC=162/0xA2
+TICK  3332 - RF1<-memI[162], PC++ | RF1=140/0x8C
+TICK  3333 - ROutData<-memD[8C] | ROutData=0/0x0
+TICK  3334 - ROutData<-memD[8D] | ROutData=0/0x0
+TICK  3335 - ROutData<-memD[8E] | ROutData=0/0x0
+TICK  3336 - ROutData<-memD[8F] | ROutData=   0/0x0
+TICK  3338 @ 0x6AA00000 -  OUT Digit; PC++ | PC=164/0xA4
+TICK  3339 - port 0 <- ROutData(0x00) digit | [0]
+TICK  3340 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=165/0xA5
+TICK  3341 - RF1<-memI[165], PC++ | RF1=144/0x90
+TICK  3342 - RM1<-memD[90] | RM1=0/0x0
+TICK  3343 - RM1<-memD[91] | RM1=0/0x0
+TICK  3344 - RM1<-memD[92] | RM1=0/0x0
+TICK  3345 - RM1<-memD[93] | RM1=   0/0x0
+TICK  3347 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=167/0xA7
+TICK  3348 - SP=SP-4 | SP=404/0x194
+TICK  3349 - RF1=SP | SP=404/0x194
+TICK  3350 - memD[0x194]<-RM1 | memD[0x194]=0x0
+TICK  3351 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3352 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3353 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3354 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=168/0xA8
+TICK  3355 - RM2<-#1; PC++ | SP=404/0x194
+TICK  3356 @ 0x0F820000 -  POP SingleReg; PC++ | PC=170/0xAA
+TICK  3357 - RF1<-SP | RF1=404/0x194
+TICK  3358 - RM1<-memD[194] | RM1=0/0x0
+TICK  3359 - RM1<-memD[195] | RM1=0/0x0
+TICK  3360 - RM1<-memD[196] | RM1=0/0x0
+TICK  3361 - RM1<-memD[197] | RM1=   0/0x0
+TICK  3362 - SP=SP+4 | SP=404/0x194
+TICK  3363 @ 0x42002400 -  ADD MathRRR; PC++ | PC=171/0xAB
+TICK  3364 - RA<-RM1+RM2 | RA=1/0x1 N=0,Z=0,V=0,C=0
+TICK  3364 - RA<-RM1 + RM2 | RA=1/0x1
+TICK  3365 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=172/0xAC
+TICK  3366 - RF1<-memI[0xAC]; PC++ 
+TICK  3367 - memD[0x90]<-RA | memD[0x90]=0x1
+TICK  3368 - memD[0x91]<-RA | memD[0x91]=0x0
+TICK  3369 - memD[0x92]<-RA | memD[0x92]=0x0
+TICK  3370 - memD[0x93]<-RA | memD[0x93]=0x0
+TICK  3371 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=174/0xAE
+TICK  3372 - PC<-memI[0x90]| PC=144/0x90
+TICK  3373 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=145/0x91
+TICK  3374 - RF1<-memI[145], PC++ | RF1=144/0x90
+TICK  3375 - RM1<-memD[90] | RM1=1/0x1
+TICK  3376 - RM1<-memD[91] | RM1=1/0x1
+TICK  3377 - RM1<-memD[92] | RM1=1/0x1
+TICK  3378 - RM1<-memD[93] | RM1=   1/0x1
+TICK  3380 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=147/0x93
+TICK  3381 - SP=SP-4 | SP=404/0x194
+TICK  3382 - RF1=SP | SP=404/0x194
+TICK  3383 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  3384 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3385 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3386 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3387 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=148/0x94
+TICK  3388 - RF1<-memI[148], PC++ | RF1=116/0x74
+TICK  3389 - RM2<-memD[74] | RM2=4/0x4
+TICK  3390 - RM2<-memD[75] | RM2=4/0x4
+TICK  3391 - RM2<-memD[76] | RM2=4/0x4
+TICK  3392 - RM2<-memD[77] | RM2=   4/0x4
+TICK  3394 @ 0x0F820000 -  POP SingleReg; PC++ | PC=150/0x96
+TICK  3395 - RF1<-SP | RF1=404/0x194
+TICK  3396 - RM1<-memD[194] | RM1=1/0x1
+TICK  3397 - RM1<-memD[195] | RM1=1/0x1
+TICK  3398 - RM1<-memD[196] | RM1=1/0x1
+TICK  3399 - RM1<-memD[197] | RM1=   1/0x1
+TICK  3400 - SP=SP+4 | SP=404/0x194
+TICK  3401 @ 0x51C02400 -  CMP RegReg; PC++ | PC=151/0x97
+TICK  3402 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=1/0x1 RM2=4/0x4
+TICK  3403 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=152/0x98
+TICK  3404 - RF2<-memI[0x98]; PC++ | RF2=175/0xAF
+TICK  3405 - JGE not taken | PC=153/0x99 N=1,Z=0,V=0,C=1
+TICK  3406 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=154/0x9A
+TICK  3407 - RF1<-memI[154], PC++ | RF1=104/0x68
+TICK  3408 - RM1<-memD[68] | RM1=4/0x4
+TICK  3409 - RM1<-memD[69] | RM1=4/0x4
+TICK  3410 - RM1<-memD[6A] | RM1=4/0x4
+TICK  3411 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  3413 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=156/0x9C
+TICK  3414 - RF1<-memI[156], PC++ | RF1=144/0x90
+TICK  3415 - RM2<-memD[90] | RM2=1/0x1
+TICK  3416 - RM2<-memD[91] | RM2=1/0x1
+TICK  3417 - RM2<-memD[92] | RM2=1/0x1
+TICK  3418 - RM2<-memD[93] | RM2=   1/0x1
+TICK  3420 @ 0x42062400 -  ADD MathRRR; PC++ | PC=158/0x9E
+TICK  3421 - RAddr<-RM1+RM2 | RAddr=5/0x5 N=0,Z=0,V=0,C=0
+TICK  3421 - RAddr<-RM1 + RM2 | RAddr=5/0x5
+TICK  3422 @ 0x05E06000 -  MOV MvLowRegIndToReg; PC++ | PC=159/0x9F
+TICK  3423 - RA <- memD[5] | RA=1/0x1
+TICK  3424 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=160/0xA0
+TICK  3425 - RF1<-memI[0xA0]; PC++ 
+TICK  3426 - memD[0x8C]<-RA | memD[0x8C]=0x1
+TICK  3427 - memD[0x8D]<-RA | memD[0x8D]=0x0
+TICK  3428 - memD[0x8E]<-RA | memD[0x8E]=0x0
+TICK  3429 - memD[0x8F]<-RA | memD[0x8F]=0x0
+TICK  3430 @ 0x04CC0000 -  MOV MvMemReg; PC++ | PC=162/0xA2
+TICK  3431 - RF1<-memI[162], PC++ | RF1=140/0x8C
+TICK  3432 - ROutData<-memD[8C] | ROutData=1/0x1
+TICK  3433 - ROutData<-memD[8D] | ROutData=1/0x1
+TICK  3434 - ROutData<-memD[8E] | ROutData=1/0x1
+TICK  3435 - ROutData<-memD[8F] | ROutData=   1/0x1
+TICK  3437 @ 0x6AA00000 -  OUT Digit; PC++ | PC=164/0xA4
+TICK  3438 - port 0 <- ROutData(0x01) digit | [0 1]
+TICK  3439 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=165/0xA5
+TICK  3440 - RF1<-memI[165], PC++ | RF1=144/0x90
+TICK  3441 - RM1<-memD[90] | RM1=1/0x1
+TICK  3442 - RM1<-memD[91] | RM1=1/0x1
+TICK  3443 - RM1<-memD[92] | RM1=1/0x1
+TICK  3444 - RM1<-memD[93] | RM1=   1/0x1
+TICK  3446 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=167/0xA7
+TICK  3447 - SP=SP-4 | SP=404/0x194
+TICK  3448 - RF1=SP | SP=404/0x194
+TICK  3449 - memD[0x194]<-RM1 | memD[0x194]=0x1
+TICK  3450 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3451 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3452 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3453 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=168/0xA8
+TICK  3454 - RM2<-#1; PC++ | SP=404/0x194
+TICK  3455 @ 0x0F820000 -  POP SingleReg; PC++ | PC=170/0xAA
+TICK  3456 - RF1<-SP | RF1=404/0x194
+TICK  3457 - RM1<-memD[194] | RM1=1/0x1
+TICK  3458 - RM1<-memD[195] | RM1=1/0x1
+TICK  3459 - RM1<-memD[196] | RM1=1/0x1
+TICK  3460 - RM1<-memD[197] | RM1=   1/0x1
+TICK  3461 - SP=SP+4 | SP=404/0x194
+TICK  3462 @ 0x42002400 -  ADD MathRRR; PC++ | PC=171/0xAB
+TICK  3463 - RA<-RM1+RM2 | RA=2/0x2 N=0,Z=0,V=0,C=0
+TICK  3463 - RA<-RM1 + RM2 | RA=2/0x2
+TICK  3464 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=172/0xAC
+TICK  3465 - RF1<-memI[0xAC]; PC++ 
+TICK  3466 - memD[0x90]<-RA | memD[0x90]=0x2
+TICK  3467 - memD[0x91]<-RA | memD[0x91]=0x0
+TICK  3468 - memD[0x92]<-RA | memD[0x92]=0x0
+TICK  3469 - memD[0x93]<-RA | memD[0x93]=0x0
+TICK  3470 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=174/0xAE
+TICK  3471 - PC<-memI[0x90]| PC=144/0x90
+TICK  3472 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=145/0x91
+TICK  3473 - RF1<-memI[145], PC++ | RF1=144/0x90
+TICK  3474 - RM1<-memD[90] | RM1=2/0x2
+TICK  3475 - RM1<-memD[91] | RM1=2/0x2
+TICK  3476 - RM1<-memD[92] | RM1=2/0x2
+TICK  3477 - RM1<-memD[93] | RM1=   2/0x2
+TICK  3479 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=147/0x93
+TICK  3480 - SP=SP-4 | SP=404/0x194
+TICK  3481 - RF1=SP | SP=404/0x194
+TICK  3482 - memD[0x194]<-RM1 | memD[0x194]=0x2
+TICK  3483 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3484 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3485 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3486 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=148/0x94
+TICK  3487 - RF1<-memI[148], PC++ | RF1=116/0x74
+TICK  3488 - RM2<-memD[74] | RM2=4/0x4
+TICK  3489 - RM2<-memD[75] | RM2=4/0x4
+TICK  3490 - RM2<-memD[76] | RM2=4/0x4
+TICK  3491 - RM2<-memD[77] | RM2=   4/0x4
+TICK  3493 @ 0x0F820000 -  POP SingleReg; PC++ | PC=150/0x96
+TICK  3494 - RF1<-SP | RF1=404/0x194
+TICK  3495 - RM1<-memD[194] | RM1=2/0x2
+TICK  3496 - RM1<-memD[195] | RM1=2/0x2
+TICK  3497 - RM1<-memD[196] | RM1=2/0x2
+TICK  3498 - RM1<-memD[197] | RM1=   2/0x2
+TICK  3499 - SP=SP+4 | SP=404/0x194
+TICK  3500 @ 0x51C02400 -  CMP RegReg; PC++ | PC=151/0x97
+TICK  3501 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=2/0x2 RM2=4/0x4
+TICK  3502 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=152/0x98
+TICK  3503 - RF2<-memI[0x98]; PC++ | RF2=175/0xAF
+TICK  3504 - JGE not taken | PC=153/0x99 N=1,Z=0,V=0,C=1
+TICK  3505 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=154/0x9A
+TICK  3506 - RF1<-memI[154], PC++ | RF1=104/0x68
+TICK  3507 - RM1<-memD[68] | RM1=4/0x4
+TICK  3508 - RM1<-memD[69] | RM1=4/0x4
+TICK  3509 - RM1<-memD[6A] | RM1=4/0x4
+TICK  3510 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  3512 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=156/0x9C
+TICK  3513 - RF1<-memI[156], PC++ | RF1=144/0x90
+TICK  3514 - RM2<-memD[90] | RM2=2/0x2
+TICK  3515 - RM2<-memD[91] | RM2=2/0x2
+TICK  3516 - RM2<-memD[92] | RM2=2/0x2
+TICK  3517 - RM2<-memD[93] | RM2=   2/0x2
+TICK  3519 @ 0x42062400 -  ADD MathRRR; PC++ | PC=158/0x9E
+TICK  3520 - RAddr<-RM1+RM2 | RAddr=6/0x6 N=0,Z=0,V=0,C=0
+TICK  3520 - RAddr<-RM1 + RM2 | RAddr=6/0x6
+TICK  3521 @ 0x05E06000 -  MOV MvLowRegIndToReg; PC++ | PC=159/0x9F
+TICK  3522 - RA <- memD[6] | RA=2/0x2
+TICK  3523 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=160/0xA0
+TICK  3524 - RF1<-memI[0xA0]; PC++ 
+TICK  3525 - memD[0x8C]<-RA | memD[0x8C]=0x2
+TICK  3526 - memD[0x8D]<-RA | memD[0x8D]=0x0
+TICK  3527 - memD[0x8E]<-RA | memD[0x8E]=0x0
+TICK  3528 - memD[0x8F]<-RA | memD[0x8F]=0x0
+TICK  3529 @ 0x04CC0000 -  MOV MvMemReg; PC++ | PC=162/0xA2
+TICK  3530 - RF1<-memI[162], PC++ | RF1=140/0x8C
+TICK  3531 - ROutData<-memD[8C] | ROutData=2/0x2
+TICK  3532 - ROutData<-memD[8D] | ROutData=2/0x2
+TICK  3533 - ROutData<-memD[8E] | ROutData=2/0x2
+TICK  3534 - ROutData<-memD[8F] | ROutData=   2/0x2
+TICK  3536 @ 0x6AA00000 -  OUT Digit; PC++ | PC=164/0xA4
+TICK  3537 - port 0 <- ROutData(0x02) digit | [0 1 2]
+TICK  3538 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=165/0xA5
+TICK  3539 - RF1<-memI[165], PC++ | RF1=144/0x90
+TICK  3540 - RM1<-memD[90] | RM1=2/0x2
+TICK  3541 - RM1<-memD[91] | RM1=2/0x2
+TICK  3542 - RM1<-memD[92] | RM1=2/0x2
+TICK  3543 - RM1<-memD[93] | RM1=   2/0x2
+TICK  3545 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=167/0xA7
+TICK  3546 - SP=SP-4 | SP=404/0x194
+TICK  3547 - RF1=SP | SP=404/0x194
+TICK  3548 - memD[0x194]<-RM1 | memD[0x194]=0x2
+TICK  3549 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3550 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3551 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3552 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=168/0xA8
+TICK  3553 - RM2<-#1; PC++ | SP=404/0x194
+TICK  3554 @ 0x0F820000 -  POP SingleReg; PC++ | PC=170/0xAA
+TICK  3555 - RF1<-SP | RF1=404/0x194
+TICK  3556 - RM1<-memD[194] | RM1=2/0x2
+TICK  3557 - RM1<-memD[195] | RM1=2/0x2
+TICK  3558 - RM1<-memD[196] | RM1=2/0x2
+TICK  3559 - RM1<-memD[197] | RM1=   2/0x2
+TICK  3560 - SP=SP+4 | SP=404/0x194
+TICK  3561 @ 0x42002400 -  ADD MathRRR; PC++ | PC=171/0xAB
+TICK  3562 - RA<-RM1+RM2 | RA=3/0x3 N=0,Z=0,V=0,C=0
+TICK  3562 - RA<-RM1 + RM2 | RA=3/0x3
+TICK  3563 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=172/0xAC
+TICK  3564 - RF1<-memI[0xAC]; PC++ 
+TICK  3565 - memD[0x90]<-RA | memD[0x90]=0x3
+TICK  3566 - memD[0x91]<-RA | memD[0x91]=0x0
+TICK  3567 - memD[0x92]<-RA | memD[0x92]=0x0
+TICK  3568 - memD[0x93]<-RA | memD[0x93]=0x0
+TICK  3569 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=174/0xAE
+TICK  3570 - PC<-memI[0x90]| PC=144/0x90
+TICK  3571 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=145/0x91
+TICK  3572 - RF1<-memI[145], PC++ | RF1=144/0x90
+TICK  3573 - RM1<-memD[90] | RM1=3/0x3
+TICK  3574 - RM1<-memD[91] | RM1=3/0x3
+TICK  3575 - RM1<-memD[92] | RM1=3/0x3
+TICK  3576 - RM1<-memD[93] | RM1=   3/0x3
+TICK  3578 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=147/0x93
+TICK  3579 - SP=SP-4 | SP=404/0x194
+TICK  3580 - RF1=SP | SP=404/0x194
+TICK  3581 - memD[0x194]<-RM1 | memD[0x194]=0x3
+TICK  3582 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3583 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3584 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3585 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=148/0x94
+TICK  3586 - RF1<-memI[148], PC++ | RF1=116/0x74
+TICK  3587 - RM2<-memD[74] | RM2=4/0x4
+TICK  3588 - RM2<-memD[75] | RM2=4/0x4
+TICK  3589 - RM2<-memD[76] | RM2=4/0x4
+TICK  3590 - RM2<-memD[77] | RM2=   4/0x4
+TICK  3592 @ 0x0F820000 -  POP SingleReg; PC++ | PC=150/0x96
+TICK  3593 - RF1<-SP | RF1=404/0x194
+TICK  3594 - RM1<-memD[194] | RM1=3/0x3
+TICK  3595 - RM1<-memD[195] | RM1=3/0x3
+TICK  3596 - RM1<-memD[196] | RM1=3/0x3
+TICK  3597 - RM1<-memD[197] | RM1=   3/0x3
+TICK  3598 - SP=SP+4 | SP=404/0x194
+TICK  3599 @ 0x51C02400 -  CMP RegReg; PC++ | PC=151/0x97
+TICK  3600 - CMP RM1, RM2 | N=1,Z=0,V=0,C=1; RM1=3/0x3 RM2=4/0x4
+TICK  3601 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=152/0x98
+TICK  3602 - RF2<-memI[0x98]; PC++ | RF2=175/0xAF
+TICK  3603 - JGE not taken | PC=153/0x99 N=1,Z=0,V=0,C=1
+TICK  3604 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=154/0x9A
+TICK  3605 - RF1<-memI[154], PC++ | RF1=104/0x68
+TICK  3606 - RM1<-memD[68] | RM1=4/0x4
+TICK  3607 - RM1<-memD[69] | RM1=4/0x4
+TICK  3608 - RM1<-memD[6A] | RM1=4/0x4
+TICK  3609 - RM1<-memD[6B] | RM1=   4/0x4
+TICK  3611 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=156/0x9C
+TICK  3612 - RF1<-memI[156], PC++ | RF1=144/0x90
+TICK  3613 - RM2<-memD[90] | RM2=3/0x3
+TICK  3614 - RM2<-memD[91] | RM2=3/0x3
+TICK  3615 - RM2<-memD[92] | RM2=3/0x3
+TICK  3616 - RM2<-memD[93] | RM2=   3/0x3
+TICK  3618 @ 0x42062400 -  ADD MathRRR; PC++ | PC=158/0x9E
+TICK  3619 - RAddr<-RM1+RM2 | RAddr=7/0x7 N=0,Z=0,V=0,C=0
+TICK  3619 - RAddr<-RM1 + RM2 | RAddr=7/0x7
+TICK  3620 @ 0x05E06000 -  MOV MvLowRegIndToReg; PC++ | PC=159/0x9F
+TICK  3621 - RA <- memD[7] | RA=3/0x3
+TICK  3622 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=160/0xA0
+TICK  3623 - RF1<-memI[0xA0]; PC++ 
+TICK  3624 - memD[0x8C]<-RA | memD[0x8C]=0x3
+TICK  3625 - memD[0x8D]<-RA | memD[0x8D]=0x0
+TICK  3626 - memD[0x8E]<-RA | memD[0x8E]=0x0
+TICK  3627 - memD[0x8F]<-RA | memD[0x8F]=0x0
+TICK  3628 @ 0x04CC0000 -  MOV MvMemReg; PC++ | PC=162/0xA2
+TICK  3629 - RF1<-memI[162], PC++ | RF1=140/0x8C
+TICK  3630 - ROutData<-memD[8C] | ROutData=3/0x3
+TICK  3631 - ROutData<-memD[8D] | ROutData=3/0x3
+TICK  3632 - ROutData<-memD[8E] | ROutData=3/0x3
+TICK  3633 - ROutData<-memD[8F] | ROutData=   3/0x3
+TICK  3635 @ 0x6AA00000 -  OUT Digit; PC++ | PC=164/0xA4
+TICK  3636 - port 0 <- ROutData(0x03) digit | [0 1 2 3]
+TICK  3637 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=165/0xA5
+TICK  3638 - RF1<-memI[165], PC++ | RF1=144/0x90
+TICK  3639 - RM1<-memD[90] | RM1=3/0x3
+TICK  3640 - RM1<-memD[91] | RM1=3/0x3
+TICK  3641 - RM1<-memD[92] | RM1=3/0x3
+TICK  3642 - RM1<-memD[93] | RM1=   3/0x3
+TICK  3644 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=167/0xA7
+TICK  3645 - SP=SP-4 | SP=404/0x194
+TICK  3646 - RF1=SP | SP=404/0x194
+TICK  3647 - memD[0x194]<-RM1 | memD[0x194]=0x3
+TICK  3648 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3649 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3650 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3651 @ 0x04240000 -  MOV MvImmReg; PC++ | PC=168/0xA8
+TICK  3652 - RM2<-#1; PC++ | SP=404/0x194
+TICK  3653 @ 0x0F820000 -  POP SingleReg; PC++ | PC=170/0xAA
+TICK  3654 - RF1<-SP | RF1=404/0x194
+TICK  3655 - RM1<-memD[194] | RM1=3/0x3
+TICK  3656 - RM1<-memD[195] | RM1=3/0x3
+TICK  3657 - RM1<-memD[196] | RM1=3/0x3
+TICK  3658 - RM1<-memD[197] | RM1=   3/0x3
+TICK  3659 - SP=SP+4 | SP=404/0x194
+TICK  3660 @ 0x42002400 -  ADD MathRRR; PC++ | PC=171/0xAB
+TICK  3661 - RA<-RM1+RM2 | RA=4/0x4 N=0,Z=0,V=0,C=0
+TICK  3661 - RA<-RM1 + RM2 | RA=4/0x4
+TICK  3662 @ 0x04E00000 -  MOV MvRegMem; PC++ | PC=172/0xAC
+TICK  3663 - RF1<-memI[0xAC]; PC++ 
+TICK  3664 - memD[0x90]<-RA | memD[0x90]=0x4
+TICK  3665 - memD[0x91]<-RA | memD[0x91]=0x0
+TICK  3666 - memD[0x92]<-RA | memD[0x92]=0x0
+TICK  3667 - memD[0x93]<-RA | memD[0x93]=0x0
+TICK  3668 @ 0x83000000 -  JMP JAbsAddr; PC++ | PC=174/0xAE
+TICK  3669 - PC<-memI[0x90]| PC=144/0x90
+TICK  3670 @ 0x04C20000 -  MOV MvMemReg; PC++ | PC=145/0x91
+TICK  3671 - RF1<-memI[145], PC++ | RF1=144/0x90
+TICK  3672 - RM1<-memD[90] | RM1=4/0x4
+TICK  3673 - RM1<-memD[91] | RM1=4/0x4
+TICK  3674 - RM1<-memD[92] | RM1=4/0x4
+TICK  3675 - RM1<-memD[93] | RM1=   4/0x4
+TICK  3677 @ 0x0B802000 -  PUSH SingleReg; PC++ | PC=147/0x93
+TICK  3678 - SP=SP-4 | SP=404/0x194
+TICK  3679 - RF1=SP | SP=404/0x194
+TICK  3680 - memD[0x194]<-RM1 | memD[0x194]=0x4
+TICK  3681 - memD[0x195]<-RM1 | memD[0x195]=0x0
+TICK  3682 - memD[0x196]<-RM1 | memD[0x196]=0x0
+TICK  3683 - memD[0x197]<-RM1 | memD[0x197]=0x0
+TICK  3684 @ 0x04C40000 -  MOV MvMemReg; PC++ | PC=148/0x94
+TICK  3685 - RF1<-memI[148], PC++ | RF1=116/0x74
+TICK  3686 - RM2<-memD[74] | RM2=4/0x4
+TICK  3687 - RM2<-memD[75] | RM2=4/0x4
+TICK  3688 - RM2<-memD[76] | RM2=4/0x4
+TICK  3689 - RM2<-memD[77] | RM2=   4/0x4
+TICK  3691 @ 0x0F820000 -  POP SingleReg; PC++ | PC=150/0x96
+TICK  3692 - RF1<-SP | RF1=404/0x194
+TICK  3693 - RM1<-memD[194] | RM1=4/0x4
+TICK  3694 - RM1<-memD[195] | RM1=4/0x4
+TICK  3695 - RM1<-memD[196] | RM1=4/0x4
+TICK  3696 - RM1<-memD[197] | RM1=   4/0x4
+TICK  3697 - SP=SP+4 | SP=404/0x194
+TICK  3698 @ 0x51C02400 -  CMP RegReg; PC++ | PC=151/0x97
+TICK  3699 - CMP RM1, RM2 | N=0,Z=1,V=0,C=0; RM1=4/0x4 RM2=4/0x4
+TICK  3700 @ 0xD3000000 -  JGE JAbsAddr; PC++ | PC=152/0x98
+TICK  3701 - RF2<-memI[0x98]; PC++ | RF2=175/0xAF
+TICK  3702 - JGE taken → PC<-RF2 | PC=175/0xAF
+TICK  3703 @ 0x1BE00000 -  HALT NoOperands; PC++ | PC=176/0xB0
+TICK  3704 - simultaion stopped
