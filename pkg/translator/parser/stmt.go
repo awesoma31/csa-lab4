@@ -60,27 +60,6 @@ func parseVarDeclStmt(p *parser) ast.Stmt {
 		AssignedValue: assignmentValue,
 	}
 }
-func parseLongDeclStmt(p *parser) ast.Stmt {
-	startToken := p.advance().Kind
-	symbolName := p.expectError(lexer.IDENTIFIER,
-		fmt.Sprintf("Following %s expected variable name however instead recieved %s instead\n",
-			lexer.TokenKindString(startToken), lexer.TokenKindString(p.currentTokenKind())))
-
-	p.expect(lexer.ASSIGNMENT)
-	assignmentValue := parseExpr(p, assignment)
-	// var assignmentValue ast.Expr
-	// if p.currentTokenKind() != lexer.SemiColon {
-	// 	p.expect(lexer.ASSIGNMENT)
-	// 	assignmentValue = parseExpr(p, assignment)
-	// }
-
-	p.expect(lexer.SemiColon)
-
-	return ast.VarDeclarationStmt{
-		Identifier:    symbolName.Value,
-		AssignedValue: assignmentValue,
-	}
-}
 
 func parsePrintStmt(p *parser) ast.Stmt {
 	p.expect(lexer.PRINT)
