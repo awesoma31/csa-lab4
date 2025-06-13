@@ -52,9 +52,6 @@ tr.log
 tr.log
 cpu.log
 config/config.yaml
-golden/hello_user/logs/symtable.log
-golden/sort/logs/symtable.log
-examples (Copy)
 check-ci.sh
 .vscode
 expr.patch
