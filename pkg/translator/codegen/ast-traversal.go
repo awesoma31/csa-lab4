@@ -295,61 +295,44 @@ func (cg *CodeGenerator) genEx(expr ast.Expr, rd int) {
 
 // rd<-ptr to long number
 // uses RA RT RT2 RM1 RM2 R6 R7
-func (cg *CodeGenerator) genAddLongAssign(args []ast.Expr, rd int) {
-	var addrA, addrB uint32
-	resPtr := cg.addLongData(0)
-	rdLo := isa.RA
-	rdHi := isa.RT2
+// uses: RA (low), RT2 (high), RT, R6, flags
+func (cg *CodeGenerator) genAddLongAssign(args []ast.Expr, target ast.SymbolExpr) {
+	// ----- 1. адреса a и b -----
+	addrA := cg.FindSymbol(args[0].(ast.SymbolExpr)).AbsAddress
+	addrB := cg.FindSymbol(args[1].(ast.SymbolExpr)).AbsAddress
+	addrT := cg.FindSymbol(target).AbsAddress //  адрес переменной-назначения
 
-	aPtrReg := isa.RM1
-	bPtrReg := isa.RM2
+	cg.emitMov(isa.MvImmReg, isa.RM1, int(addrA), -1) // RM1 = a.low
+	cg.emitMov(isa.MvImmReg, isa.RM2, int(addrB), -1) // RM2 = b.low
 
-	switch arg1 := args[0].(type) {
-	case ast.SymbolExpr:
-		addrA = cg.FindSymbol(arg1).AbsAddress
-	}
-	switch arg2 := args[1].(type) {
-	case ast.SymbolExpr:
-		addrB = cg.FindSymbol(arg2).AbsAddress
-	}
+	// ----- 2. low word -----
+	cg.emitMov(isa.MvRegIndToReg, isa.RT, isa.RM1, -1) // RT = a.low
+	cg.emitMov(isa.MvRegIndToReg, isa.R6, isa.RM2, -1) // R6 = b.low
+	cg.emitInstruction(isa.OpAdd, isa.MathRRR, isa.RA, isa.RT, isa.R6)
 
-	cg.emitMov(isa.MvImmReg, aPtrReg, int(addrA), -1) // RM1 = ptr long A
-	cg.emitMov(isa.MvImmReg, bPtrReg, int(addrB), -1) // RM2 = ptr long B
+	// передвигаем указатели на high
+	cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.RM1, isa.RM1, -1)
+	cg.emitImmediate(4)
+	cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.RM2, isa.RM2, -1)
+	cg.emitImmediate(4)
 
-	// lo
-	cg.emitMov(isa.MvRegIndToReg, isa.RT, aPtrReg, -1) // RT = lowA // rt<-[rm1]
-	cg.emitInstruction(isa.OpAdd, isa.MathRIR, aPtrReg, aPtrReg, -1)
-	cg.emitImmediate(4) // RM1 += 4
+	// ----- 3. high word -----
+	cg.emitMov(isa.MvRegIndToReg, isa.RT, isa.RM1, -1) // RT = a.high
+	cg.emitMov(isa.MvRegIndToReg, isa.R6, isa.RM2, -1) // R6 = b.high
+	cg.emitInstruction(isa.OpAdd, isa.MathRRR, isa.RT2, isa.RT, isa.R6)
 
-	cg.emitMov(isa.MvRegIndToReg, isa.R6, bPtrReg, -1) // R6 = lowB
-	cg.emitInstruction(isa.OpAdd, isa.MathRIR, bPtrReg, bPtrReg, -1)
-	cg.emitImmediate(4) // RM2 += 4
-
-	cg.emitInstruction(isa.OpAdd, isa.MathRRR, rdLo, isa.RT, isa.R6) // RA = lawA + lowB
-	cg.emitInstruction(isa.OpJcc, isa.JAbsAddr, -1, -1, -1)
+	// + перенос из младшего слова
+	cg.emitInstruction(isa.OpJcc, isa.JAbsAddr, -1, -1, -1) // JNC → пропустить +1
 	skip := cg.ReserveWord()
-	cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.R7, isa.ZERO, -1) // if C high++ now // 0 + 1
+	cg.emitInstruction(isa.OpAdd, isa.MathRIR, isa.RT2, isa.RT2, -1)
 	cg.emitImmediate(1)
+	cg.PatchWord(skip, cg.nextInstructionAddr)
 
-	// hi
-	high := cg.nextInstructionAddr
-	cg.PatchWord(skip, high)
-
-	cg.emitMov(isa.MvRegIndToReg, isa.RT, aPtrReg, -1) // RT = highA
-	cg.emitMov(isa.MvRegIndToReg, isa.R6, bPtrReg, -1) // R6 = highB
-
-	cg.emitInstruction(isa.OpAdd, isa.MathRRR, rdHi, isa.RT, isa.R6) // RT2 = high
-	cg.emitInstruction(isa.OpAdd, isa.MathRRR, rdHi, rdHi, isa.R7)   // if C was set
-
-	// move to mem
-	cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, rdLo, -1) // mem<-res low
-	cg.emitImmediate(resPtr)
-	cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, rdHi, -1) // mem<-res hi
-	cg.emitImmediate(resPtr + 4)
-
-	// rd<-res ptr (low part)
-	cg.emitInstruction(isa.OpMov, isa.MvImmReg, rd, -1, -1)
-	cg.emitImmediate(resPtr)
+	// ----- 4. сохраняем в a -----
+	cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, isa.RA, -1)
+	cg.emitImmediate(addrT) // a.low
+	cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, isa.RT2, -1)
+	cg.emitImmediate(addrT + 4) // a.high
 }
 
 func (cg *CodeGenerator) FindSymbol(arg ast.SymbolExpr) *SymbolEntry {
@@ -832,7 +815,7 @@ func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd int) {
 
 		case lexer.TokenKindString(lexer.ADDL):
 			targetS := cg.FindSymbolFromEx(e.Assigne)
-			cg.genAddLongAssign(r.Args, rd) // rd<-ptr to long
+			cg.genAddLongAssign(r.Args, e.Assigne.(ast.SymbolExpr)) // rd<-ptr to long
 
 			//todo mov hi and low part to s.AbsAddr:+4
 			cg.emitInstruction(isa.OpMov, isa.MvRegIndToReg, isa.RA, rd, -1) // ra<-lo
