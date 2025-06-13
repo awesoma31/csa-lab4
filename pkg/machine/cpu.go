@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"strconv"
 	"strings"
 
 	"github.com/awesoma31/csa-lab4/pkg/machine/decoder"
@@ -110,54 +111,69 @@ func (c *CPU) Run() string {
 
 	// c.PrintAllPortOutputs()
 	fmt.Println("ticks", c.Tick)
+	fmt.Println(c.GetFormattedPortOutputs())
 	return c.GetFormattedPortOutputs()
 }
 
 func (c *CPU) GetFormattedPortOutputs() string {
-	var all strings.Builder
+	var sb strings.Builder
+
 	for port, buf := range c.Ioc.OutBufAll() {
 		if len(buf) == 0 {
 			continue
 		}
 
-		var line string
 		switch port {
 		case isa.PortCh:
-			var b strings.Builder
+			sb.WriteString(isa.GetPortMnem(isa.PortCh))
+			sb.WriteString("| ")
 			for _, w := range buf {
 				ch := byte(w)
 				if ch >= 32 && ch <= 126 {
-					b.WriteByte(ch)
+					sb.WriteByte(ch)
 				} else {
-					b.WriteByte('*')
+					sb.WriteByte('*')
 				}
 			}
-			line = b.String()
-		case isa.PortD:
-			nums := make([]string, len(buf))
-			for i, w := range buf {
-				nums[i] = fmt.Sprintf("%d", int32(w))
-			}
-			line = strings.Join(nums, " ")
-			// case isa.PortL:
-			// 	var sb strings.Builder
-			// 	if len(buf)%2 != 0 {
-			// 		sb.WriteString("(warn: odd words in PortL)\n")
-			// 	}
-			// 	for i := 0; i+1 < len(buf); i += 2 {
-			// 		lo := uint64(buf[i])
-			// 		hi := uint64(buf[i+1])
-			// 		val := int64(hi<<32 | lo) // sign-extend при печати
-			// 		sb.WriteString(fmt.Sprintf("%d ", val))
-			// 	}
-			// 	sb.WriteByte('\n')
-			//
-		}
+			sb.WriteByte('\n')
 
-		fmt.Fprintf(&all, "port %d| %s\n", port, line)
-		c.log.Infof("port %d| %s", port, line)
+		case isa.PortD:
+			sb.WriteString(isa.GetPortMnem(isa.PortD))
+			sb.WriteString("| ")
+			for i, w := range buf {
+				if i > 0 {
+					sb.WriteByte(' ')
+				}
+				sb.WriteString(strconv.FormatInt(int64(int32(w)), 10))
+			}
+			sb.WriteByte('\n')
+
+		case isa.PortL:
+			sb.WriteString(isa.GetPortMnem(isa.PortL))
+			sb.WriteString("| ")
+			if len(buf)%2 != 0 {
+				sb.WriteString("(warn: odd words) ")
+			}
+			for i := 0; i+1 < len(buf); i += 2 {
+				lo := uint64(buf[i])
+				hi := uint64(buf[i+1])
+				val := int64(hi<<32 | lo) // sign-extend
+				if i > 0 {
+					sb.WriteByte(' ')
+				}
+				sb.WriteString(strconv.FormatInt(val, 10))
+			}
+			sb.WriteByte('\n')
+
+		default:
+			sb.WriteString(fmt.Sprintf("Port %d| ", port))
+			for _, w := range buf {
+				sb.WriteString(fmt.Sprintf("0x%X ", w))
+			}
+			sb.WriteByte('\n')
+		}
 	}
-	return all.String()
+	return strings.TrimRight(sb.String(), "\n")
 }
 
 func (c *CPU) fetch() microStep {

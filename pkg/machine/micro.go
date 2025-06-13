@@ -154,13 +154,13 @@ func uOutL(_, _, _ int) microStep {
 				c.Ioc.WritePort(port, lo)
 				c.log.Debugf("TICK % 4d - %v <- %s(0x%02X) long(lo) | %v\n", c.Tick, isa.GetPortMnem(int(port)), isa.GetRegMnem(isa.ROutData), lo, c.Ioc.Output(port))
 				readStage = 1
-				stage++
+				stage = 1
 			}
 		case 1:
 			if read32LE(c, &readStage, isa.ROutAddr, isa.ROutData) {
 				hi = c.Reg.GPR[isa.ROutData]
 				c.Ioc.WritePort(port, hi)
-				c.log.Debugf("TICK % 4d - %v <- %s(0x%02X) long(lo) | %v\n", c.Tick, isa.GetPortMnem(int(port)), isa.GetRegMnem(isa.ROutData), hi, c.Ioc.Output(port))
+				c.log.Debugf("TICK % 4d - %v <- %s(0x%02X) long(hi) | %v\n", c.Tick, isa.GetPortMnem(int(port)), isa.GetRegMnem(isa.ROutData), hi, c.Ioc.Output(port))
 				return true
 			}
 		}
