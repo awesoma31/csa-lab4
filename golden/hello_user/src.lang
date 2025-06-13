@@ -1,17 +1,25 @@
 intOff;
 print("who? ");
-let f = 1;
+let reading = 1;
 let c = 0;
-let ch = 5;
+let ch = 3;
+
+let c1 = "";
+let c2 = "";
+let c3 = "";
 intOn;
 
-while f == 1 {}
+while reading == 1 {}
+
 
 inter 1{
+    if c == 0 {
+        print("hello,");
+    }
     let b = read();
-    c = c + 1;
     print(b);
+    c = c + 1;
     if c >= ch {
-        f = 0;
+        reading = 0;
     }
 }

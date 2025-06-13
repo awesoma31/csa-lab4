@@ -32,51 +32,78 @@ WHILE STMT BODY:
  # END OF WHILE STMT
 [0x001E] - 1BE00000 - Opc: HALT, Mode: NoOperands, D:, S1:, S2:
 INTERRUPTION 1 STMT
-READ_CHAR EXPR
-[0x001F] - 62820000 - Opc: IN, Mode: Byte, D:port Char, S1:, S2:
-[0x0020] - 04410000 - Opc: MOV, Mode: MvRegLowMem, D:, S1:RInData, S2:
-[0x0021] - 00000019 - Imm
-[0x0022] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
-[0x0023] - 00000010 - Imm
-[0x0024] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x0025] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
-[0x0026] - 00000001 - Imm
-[0x0027] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x0028] - 42002400 - Opc: ADD, Mode: MathRRR, D:RA, S1:RM1, S2:RM2
-[0x0029] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
-[0x002A] - 00000010 - Imm
-PRINT STMT
-[0x002B] - 04CA0000 - Opc: MOV, Mode: MvMemReg, D:ROutAddr, S1:, S2:
-[0x002C] - 0000001C - Imm
-[0x002D] - 0472A000 - Opc: MOV, Mode: MvRegIndToReg, D:RC, S1:ROutAddr, S2:
-[0x002E] - 8D732000 - Opc: AND, Mode: ImmReg, D:RC, S1:RC, S2:
-[0x002F] - 000000FF - Imm
-[0x0030] - 424AA000 - Opc: ADD, Mode: MathRIR, D:ROutAddr, S1:ROutAddr, S2:
-[0x0031] - 00000001 - Imm
-[0x0032] - 51C13A00 - Opc: CMP, Mode: RegReg, D:, S1:RC, S2:zero
-[0x0033] - C3000000 - Opc: JE, Mode: JAbsAddr, D:, S1:, S2:
-[0x0034] - 03E00000 - Opc: NOP, Mode: NoOperands, D:, S1:, S2:
-[0x0035] - 05ECA000 - Opc: MOV, Mode: MvLowRegIndToReg, D:ROutData, S1:ROutAddr, S2:
-[0x0036] - 6A820000 - Opc: OUT, Mode: Byte, D:port Char, S1:, S2:
-[0x0037] - 46532000 - Opc: SUB, Mode: MathRIR, D:RC, S1:RC, S2:
-[0x0038] - 00000001 - Imm
-[0x0039] - 424AA000 - Opc: ADD, Mode: MathRIR, D:ROutAddr, S1:ROutAddr, S2:
-[0x003A] - 00000001 - Imm
-[0x003B] - 83000000 - Opc: JMP, Mode: JAbsAddr, D:, S1:, S2:
-[0x003C] - 00000032 - Imm
 IF STATEMENT CONDITION:
-[0x003D] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
-[0x003E] - 00000010 - Imm
-[0x003F] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x0040] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
-[0x0041] - 00000014 - Imm
-[0x0042] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x0043] - 51C02400 - Opc: CMP, Mode: RegReg, D:, S1:RM1, S2:RM2
-[0x0044] - CF000000 - Opc: JL, Mode: JAbsAddr, D:, S1:, S2:
-[0x0045] - 00000000 - Imm
+[0x001F] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x0020] - 00000010 - Imm
+[0x0021] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0022] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x0023] - 00000000 - Imm
+[0x0024] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0025] - 51C02400 - Opc: CMP, Mode: RegReg, D:, S1:RM1, S2:RM2
+[0x0026] - C7000000 - Opc: JNE, Mode: JAbsAddr, D:, S1:, S2:
+[0x0027] - 00000000 - Imm
 IF STMT CONSEQUENCE:
-[0x0046] - 04200000 - Opc: MOV, Mode: MvImmReg, D:RA, S1:, S2:
-[0x0047] - 00000000 - Imm
-[0x0048] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
-[0x0049] - 0000000C - Imm
-[0x004A] - 93E20000 - Opc: IRet, Mode: NoOperands, D:RM1, S1:, S2:
+PRINT STMT
+[0x0028] - 042A0000 - Opc: MOV, Mode: MvImmReg, D:ROutAddr, S1:, S2:
+[0x0029] - 00000031 - Imm
+[0x002A] - 04320000 - Opc: MOV, Mode: MvImmReg, D:RC, S1:, S2:
+[0x002B] - 00000006 - Imm
+[0x002C] - 51C13A00 - Opc: CMP, Mode: RegReg, D:, S1:RC, S2:zero
+[0x002D] - C3000000 - Opc: JE, Mode: JAbsAddr, D:, S1:, S2:
+[0x002E] - 03E00000 - Opc: NOP, Mode: NoOperands, D:, S1:, S2:
+[0x002F] - 05ECA000 - Opc: MOV, Mode: MvLowRegIndToReg, D:ROutData, S1:ROutAddr, S2:
+[0x0030] - 6A820000 - Opc: OUT, Mode: Byte, D:port Char, S1:, S2:
+[0x0031] - 46532000 - Opc: SUB, Mode: MathRIR, D:RC, S1:RC, S2:
+[0x0032] - 00000001 - Imm
+[0x0033] - 424AA000 - Opc: ADD, Mode: MathRIR, D:ROutAddr, S1:ROutAddr, S2:
+[0x0034] - 00000001 - Imm
+[0x0035] - 83000000 - Opc: JMP, Mode: JAbsAddr, D:, S1:, S2:
+[0x0036] - 0000002C - Imm
+READ_CHAR EXPR
+[0x0037] - 62820000 - Opc: IN, Mode: Byte, D:port Char, S1:, S2:
+[0x0038] - 04410000 - Opc: MOV, Mode: MvRegLowMem, D:, S1:RInData, S2:
+[0x0039] - 00000039 - Imm
+PRINT STMT
+[0x003A] - 04CA0000 - Opc: MOV, Mode: MvMemReg, D:ROutAddr, S1:, S2:
+[0x003B] - 0000003C - Imm
+[0x003C] - 0472A000 - Opc: MOV, Mode: MvRegIndToReg, D:RC, S1:ROutAddr, S2:
+[0x003D] - 8D732000 - Opc: AND, Mode: ImmReg, D:RC, S1:RC, S2:
+[0x003E] - 000000FF - Imm
+[0x003F] - 424AA000 - Opc: ADD, Mode: MathRIR, D:ROutAddr, S1:ROutAddr, S2:
+[0x0040] - 00000001 - Imm
+[0x0041] - 51C13A00 - Opc: CMP, Mode: RegReg, D:, S1:RC, S2:zero
+[0x0042] - C3000000 - Opc: JE, Mode: JAbsAddr, D:, S1:, S2:
+[0x0043] - 03E00000 - Opc: NOP, Mode: NoOperands, D:, S1:, S2:
+[0x0044] - 05ECA000 - Opc: MOV, Mode: MvLowRegIndToReg, D:ROutData, S1:ROutAddr, S2:
+[0x0045] - 6A820000 - Opc: OUT, Mode: Byte, D:port Char, S1:, S2:
+[0x0046] - 46532000 - Opc: SUB, Mode: MathRIR, D:RC, S1:RC, S2:
+[0x0047] - 00000001 - Imm
+[0x0048] - 424AA000 - Opc: ADD, Mode: MathRIR, D:ROutAddr, S1:ROutAddr, S2:
+[0x0049] - 00000001 - Imm
+[0x004A] - 83000000 - Opc: JMP, Mode: JAbsAddr, D:, S1:, S2:
+[0x004B] - 00000041 - Imm
+[0x004C] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x004D] - 00000010 - Imm
+[0x004E] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x004F] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x0050] - 00000001 - Imm
+[0x0051] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0052] - 42002400 - Opc: ADD, Mode: MathRRR, D:RA, S1:RM1, S2:RM2
+[0x0053] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
+[0x0054] - 00000010 - Imm
+IF STATEMENT CONDITION:
+[0x0055] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x0056] - 00000010 - Imm
+[0x0057] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0058] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
+[0x0059] - 00000014 - Imm
+[0x005A] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x005B] - 51C02400 - Opc: CMP, Mode: RegReg, D:, S1:RM1, S2:RM2
+[0x005C] - CF000000 - Opc: JL, Mode: JAbsAddr, D:, S1:, S2:
+[0x005D] - 00000000 - Imm
+IF STMT CONSEQUENCE:
+[0x005E] - 04200000 - Opc: MOV, Mode: MvImmReg, D:RA, S1:, S2:
+[0x005F] - 00000000 - Imm
+[0x0060] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
+[0x0061] - 0000000C - Imm
+[0x0062] - 93E20000 - Opc: IRet, Mode: NoOperands, D:RM1, S1:, S2:

@@ -28,6 +28,7 @@ type SymbolEntry struct {
 	LongValue   int64
 	StringValue string
 	IsStr       bool
+	IsRead      bool
 	IsLong      bool
 }
 

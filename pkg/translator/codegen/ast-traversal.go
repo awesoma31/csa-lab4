@@ -361,12 +361,12 @@ func (cg *CodeGenerator) emitPopToReg(reg int) {
 	cg.emitInstruction(isa.OpPop, isa.SingleRegMode, reg, -1, -1)
 }
 
-// if rd is RInData then it will not move read value to destination register
+// if rd is -1 then it will not move read value to destination register
 // instead, just keep it in RInData
 func (cg *CodeGenerator) genReadChEx(rd int) {
 	cg.debugAssembly = append(cg.debugAssembly, "READ_CHAR EXPR")
 	cg.emitInstruction(isa.OpIn, isa.ByteM, isa.PortCh, -1, -1)
-	if rd != isa.RInData {
+	if rd != -1 {
 		cg.emitMov(isa.MvRegReg, rd, isa.RInData, -1)
 	}
 }
@@ -512,11 +512,12 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 			symbolEntry.NumberValue = int32(strAddr)
 			symbolEntry.AbsAddress = ptrAddr
 			symbolEntry.IsStr = true
+			symbolEntry.IsRead = true
 			symbolEntry.MemoryArea = "data"
 			cg.addSymbolToScope(symbolEntry)
 			cg.dataMemory[strAddr] = 1 // read 1 char -> len = 1
 
-			cg.genReadChEx(isa.RInData)
+			cg.genReadChEx(-1)
 			cg.emitInstruction(isa.OpMov, isa.MvRegLowToMem, -1, isa.RInData, -1)
 			cg.emitImmediate(strAddr + 1) // store after len byte
 			return
@@ -828,6 +829,16 @@ func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd int) {
 			cg.addError(fmt.Sprintf("unknown func name %s", r.Name))
 		}
 
+	case ast.ReadChExpr:
+		trg := cg.FindSymbolFromEx(e.Assigne)
+		trg.IsRead = true
+		trg.IsStr = true
+		trg.IsLong = false
+		cg.emitInstruction(isa.OpIn, isa.ByteM, isa.PortCh, -1, -1)
+
+		cg.emitInstruction(isa.OpMov, isa.MvRegLowToMem, -1, isa.RInData, -1)
+		cg.emitImmediate(uint32(trg.NumberValue))
+		return
 	default:
 		cg.genEx(e.AssignedValue, rd)
 	}
