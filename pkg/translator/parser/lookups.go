@@ -83,6 +83,7 @@ func createTokenLookups() {
 	nud(lexer.STRING, parsePrimaryExpr)
 	nud(lexer.IDENTIFIER, parsePrimaryExpr)
 	nud(lexer.ADDSTR, parseAddStrExpr)
+	nud(lexer.ADDL, parseAddLExpr)
 
 	// nud(lexer.ADDSTR, parseAddStrExpr)
 	// Array literals also start expressions, like `[1, 2, 3]`
@@ -105,6 +106,7 @@ func createTokenLookups() {
 	// Statement handlers
 	stmt(lexer.OpenCurly, parseBlockStmt)
 	stmt(lexer.LET, parseVarDeclStmt)
+	// stmt(lexer.LETL, parseLongDeclStmt)
 	stmt(lexer.IF, parseIfStmt)
 	stmt(lexer.WHILE, parseWhileStmt)
 	stmt(lexer.PRINT, parsePrintStmt)

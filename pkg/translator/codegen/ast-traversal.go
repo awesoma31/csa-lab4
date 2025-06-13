@@ -147,9 +147,16 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 			return
 		}
 
-		if !symbol.IsStr {
+		if !symbol.IsStr && !symbol.IsLong {
 			cg.genEx(arg, isa.ROutData)
 			cg.emitInstruction(isa.OpOut, isa.DigitM, isa.PortD, -1, -1)
+			return
+		} else if symbol.IsLong {
+
+			cg.emitMov(isa.MvImmReg, isa.ROutAddr, int(symbol.AbsAddress), -1)
+			cg.emitInstruction(isa.OpOut, isa.LongM, isa.PortL, -1, -1)
+			return
+
 		} else {
 			cg.genEx(s.Argument, isa.ROutAddr)
 			cg.emitMov(isa.MvRegIndReg, isa.RC, isa.ROutAddr, -1) // mov rc <- mem[routaddr]
@@ -193,6 +200,8 @@ func (cg *CodeGenerator) genEx(expr ast.Expr, rd int) {
 	switch e := expr.(type) {
 	case ast.NumberExpr:
 		cg.emitMov(isa.MvImmReg, rd, int(e.Value), -1)
+	case ast.LongNumberExpr:
+		cg.addError("generating long expr is not supported")
 
 	case ast.ArrayIndexEx:
 		cg.genArrayAddress(e, isa.RAddr)                   // arr addr -> raddr
@@ -247,7 +256,14 @@ func (cg *CodeGenerator) genEx(expr ast.Expr, rd int) {
 	case ast.StringExpr:
 		cg.genStringExPl1(e, rd)
 	case ast.CallExpr:
-		cg.genAddStrConst(e, rd)
+		switch e.Name {
+		case lexer.TokenKindString(lexer.ADDSTR):
+			cg.genAddStrConst(e, rd)
+		// case lexer.TokenKindString(lexer.ADDL):
+		// 	cg.genAddLong(e)
+		default:
+			cg.addError(fmt.Sprintf("unknown func name %s", e.Name))
+		}
 	case ast.PrefixExpr:
 		newExpr := ast.NumberExpr{}
 		switch a := e.Right.(type) {
@@ -274,6 +290,10 @@ func (cg *CodeGenerator) genEx(expr ast.Expr, rd int) {
 	default:
 		cg.addError(fmt.Sprintf("Unsupported expression type: %T", e))
 	}
+}
+
+func (cg *CodeGenerator) genAddLong() {
+	panic("unimplemented")
 }
 
 func (cg *CodeGenerator) emitPushReg(reg int) {
@@ -340,6 +360,16 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 
 	if s.AssignedValue != nil {
 		switch assignedVal := s.AssignedValue.(type) {
+		case ast.LongNumberExpr:
+			symbolEntry.Type = ast.IntType
+			symbolEntry.SizeInBytes = WordSizeBytes * 2
+			symbolEntry.NumberValue = int32(assignedVal.Value)
+			symbolEntry.LongValue = assignedVal.Value
+			symbolEntry.IsLong = true
+
+			symbolEntry.MemoryArea = "data"
+			symbolEntry.AbsAddress = cg.addLongData(symbolEntry.LongValue)
+			cg.addSymbolToScope(symbolEntry)
 		case ast.NumberExpr:
 			symbolEntry.Type = ast.IntType
 			symbolEntry.SizeInBytes = WordSizeBytes
@@ -373,6 +403,37 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 				//TODO: почему то адрес на 1 больше
 				cg.emitInstruction(isa.OpMov, isa.MvRegMem, -1, isa.RA, -1)
 				cg.emitImmediate(ptrAddr)
+			case lexer.TokenKindString(lexer.ADDL):
+				if len(assignedVal.Args) != 2 {
+					cg.addError(fmt.Sprintf("%s( , ) must have 2 arguments, got %d", lexer.TokenKindString(lexer.ADDL), len(assignedVal.Args)))
+					return
+				}
+				if _, ok := assignedVal.Args[0].(ast.SymbolExpr); !ok {
+					panic("argument must be variable")
+				}
+				if _, ok := assignedVal.Args[1].(ast.SymbolExpr); !ok {
+					panic("")
+				}
+				arg1e := assignedVal.Args[0].(ast.SymbolExpr)
+				arg2e := assignedVal.Args[1].(ast.SymbolExpr)
+				s1, found1 := cg.lookupSymbol(arg1e.Value)
+				s2, found2 := cg.lookupSymbol(arg2e.Value)
+				if !found1 || !found2 {
+					cg.addError(fmt.Sprintf("Undeclared variable in print expr: %s or %s; %v", arg1e.Value, arg2e.Value, litter.Sdump(cg.scopeStack)))
+					return
+				}
+				ptrAddr := cg.addLongData(s1.LongValue + s2.LongValue)
+				sym := SymbolEntry{
+					Name:        s.Identifier,
+					Type:        ast.IntType,
+					SizeInBytes: WordSizeBytes * 2,
+					AbsAddress:  ptrAddr,
+					IsLong:      true,
+					MemoryArea:  "data",
+				}
+				cg.addSymbolToScope(sym)
+
+				//TODO:long not in compile time
 
 			default:
 				cg.addError(fmt.Sprintf("unknown function name %v", assignedVal.Name))
@@ -530,6 +591,8 @@ func (cg *CodeGenerator) genAddStrConst(call ast.CallExpr, rd int) {
 	newStr := s1str + s2str
 	cg.genStringEx(ast.StringExpr{Value: newStr}, rd)
 }
+
+const addStrBufSize = 64
 
 // genAddStrRuntime — конкатенация строки-приёмника (arg0) и одного символа (arg1)
 // rd = регистр, в который надо вернуть новый ptr.
@@ -689,12 +752,17 @@ func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd int) {
 	// Evaluate the right-hand side expression, result is left in rd
 	switch r := e.AssignedValue.(type) {
 	case ast.CallExpr:
-		if r.Name != lexer.TokenKindString(lexer.ADDSTR) {
+		switch r.Name {
+		case lexer.TokenKindString(lexer.ADDSTR):
+			//TODO:
 			cg.addError(fmt.Sprintf("not supported func assignment %s", r.Name))
+			cg.genAddStrRuntime(r, isa.RA)
+			rd = isa.RA
+		case lexer.TokenKindString(lexer.ADDL):
+			cg.genAddLong()
+		default:
+			cg.addError(fmt.Sprintf("unknown func name %s", r.Name))
 		}
-		//TODO:
-		cg.genAddStrRuntime(r, isa.RA)
-		rd = isa.RA
 
 	default:
 		cg.genEx(e.AssignedValue, rd)

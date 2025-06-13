@@ -14,6 +14,12 @@ type NumberExpr struct {
 
 func (n NumberExpr) expr() {}
 
+type LongNumberExpr struct {
+	Value int64
+}
+
+func (n LongNumberExpr) expr() {}
+
 type StringExpr struct {
 	Value string
 }

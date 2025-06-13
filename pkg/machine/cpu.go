@@ -76,6 +76,7 @@ func New(cfg *CpuConfig) *CPU {
 		log:       cfg.Logger,
 	}
 
+	//TODO: stack = last sata addr + stack size
 	if StackStart < uint32(len(c.memD)) {
 		StackStart = uint32(len(c.memD) + StackSize)
 	}
@@ -108,6 +109,7 @@ func (c *CPU) Run() string {
 	}
 
 	// c.PrintAllPortOutputs()
+	fmt.Println("ticks", c.Tick)
 	return c.GetFormattedPortOutputs()
 }
 
@@ -131,52 +133,31 @@ func (c *CPU) GetFormattedPortOutputs() string {
 				}
 			}
 			line = b.String()
-		default:
+		case isa.PortD:
 			nums := make([]string, len(buf))
 			for i, w := range buf {
 				nums[i] = fmt.Sprintf("%d", int32(w))
 			}
 			line = strings.Join(nums, " ")
+			// case isa.PortL:
+			// 	var sb strings.Builder
+			// 	if len(buf)%2 != 0 {
+			// 		sb.WriteString("(warn: odd words in PortL)\n")
+			// 	}
+			// 	for i := 0; i+1 < len(buf); i += 2 {
+			// 		lo := uint64(buf[i])
+			// 		hi := uint64(buf[i+1])
+			// 		val := int64(hi<<32 | lo) // sign-extend при печати
+			// 		sb.WriteString(fmt.Sprintf("%d ", val))
+			// 	}
+			// 	sb.WriteByte('\n')
+			//
 		}
+
 		fmt.Fprintf(&all, "port %d| %s\n", port, line)
 		c.log.Infof("port %d| %s", port, line)
 	}
 	return all.String()
-}
-
-func (c *CPU) PrintAllPortOutputs() {
-	c.log.Debug("───── Port Outputs ─────")
-	for port, buf := range c.Ioc.OutBufAll() {
-		if len(buf) == 0 {
-			continue
-		}
-
-		var strBuilder strings.Builder
-		for _, b := range buf {
-			if b >= 32 && b <= 126 {
-				strBuilder.WriteByte(byte(b))
-			} else {
-				strBuilder.WriteString("*")
-			}
-		}
-		strOutput := strBuilder.String()
-
-		// var hexVals []string
-		// for _, b := range buf {
-		// 	hexVals = append(hexVals, fmt.Sprintf("%X", b))
-		// }
-		// hexOutput := strings.Join(hexVals, ", ")
-		//
-		// var byteVals []string
-		// for _, b := range buf {
-		// 	byteVals = append(byteVals, fmt.Sprintf("%d", b))
-		// }
-		// byteOutput := strings.Join(byteVals, ", ")
-
-		c.log.Infof("port %d| %s\n", port, strOutput)
-		// c.log.Debugf("    hex|%s\n", hexOutput)
-		// c.log.Debugf("    dec|%s\n", byteOutput)
-	}
 }
 
 func (c *CPU) fetch() microStep {

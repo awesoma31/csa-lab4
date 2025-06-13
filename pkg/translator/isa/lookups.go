@@ -1,5 +1,7 @@
 package isa
 
+import "maps"
+
 // ────────────────── pretty-printing tables ───────────────────
 var (
 	opcodeMnemonics   = map[uint32]string{}
@@ -10,13 +12,12 @@ var (
 
 func init() {
 	// opcodes → strings
-	for k, v := range map[uint32]string{
+	maps.Copy(opcodeMnemonics, map[uint32]string{
 		OpNop:  "NOP",
 		OpMov:  "MOV",
 		OpPush: "PUSH",
 		OpPop:  "POP",
-		// OpNeg: "NEG",
-		// OpNot: "NOT",
+
 		OpHalt: "HALT",
 
 		OpAdd: "ADD",
@@ -34,17 +35,14 @@ func init() {
 		OpIntOff: "IntOff",
 
 		OpJmp: "JMP",
-		// OpCall: "CALL",
-		// OpRet: "RET",
+
 		OpJe: "JE", OpJne: "JNE", OpJg: "JG", OpJl: "JL",
 		OpJge: "JGE", OpJle: "JLE", OpJa: "JA", OpJb: "JB",
 		OpJae: "JAE", OpJbe: "JBE",
-	} {
-		opcodeMnemonics[k] = v
-	}
+	})
 
-	// address-modes → strings (only the ones that appear in code-gen)
-	for k, v := range map[uint32]string{
+	// address-modes → strings
+	maps.Copy(amMnemonics, map[uint32]string{
 		MvRegReg:         "MvRegReg",
 		MvImmReg:         "MvImmReg",
 		MvRegIndReg:      "MvRegIndReg",
@@ -59,6 +57,7 @@ func init() {
 		MvByteRegIndReg:  "MvLowRegIndReg",
 		ByteM:            "Byte",
 		DigitM:           "Digit",
+		LongM:            "Long",
 
 		MathRRR: "MathRRR",
 		MathRMR: "MathRMR",
@@ -68,12 +67,10 @@ func init() {
 		SingleRegMode: "SingleReg",
 
 		NoOperands: "NoOperands",
-	} {
-		amMnemonics[k] = v
-	}
+	})
 
 	// registers → strings (0-15)
-	for k, v := range map[int]string{
+	maps.Copy(registerMnemonics, map[int]string{
 		RA:       "RA",
 		RM1:      "RM1",
 		RM2:      "RM2",
@@ -88,16 +85,13 @@ func init() {
 		SpReg:    "SP",
 		RT2:      "RT2",
 		RT:       "RT",
-	} {
-		registerMnemonics[k] = v
-	}
+	})
 
-	for k, v := range map[int]string{
+	maps.Copy(portMnemonics, map[int]string{
 		PortD:  "port Digit",
 		PortCh: "port Char",
-	} {
-		portMnemonics[k] = v
-	}
+		PortL:  "port Long",
+	})
 }
 
 func GetOpMnemonic(op uint32) string {
