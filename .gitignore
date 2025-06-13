@@ -24,7 +24,7 @@ go.work.sum
 # env file
 .env
 bin
-examples
+./examples/
 .idea
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
@@ -48,9 +48,12 @@ task.md
 cpu.txt
 tr.txt
 tr.log
-tr.log
-cpu.log
+./logs
+./tr.log
+./cpu.log
 config/config.yaml
 check-ci.sh
 .vscode
 expr.patch
+examples
+logs
