@@ -1,7 +1,7 @@
 instruction_bin: "alg/instr.bin"
 data_bin: "alg/data.bin"
 debug: false
-log_file: "akg/logs/cpu.log"
+log_file: "alg/logs/cpu.log"
 
 tick_limit: 10000
 
