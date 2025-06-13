@@ -84,9 +84,12 @@ func init() {
 		RInData:  "RInData",
 		R6:       "R6",
 		R7:       "R7",
+		R8:       "R8",
 		SpReg:    "SP",
 		RT2:      "RT2",
 		RT:       "RT",
+		RF1:      "RF1",
+		RF2:      "RF2",
 	})
 
 	maps.Copy(portMnemonics, map[int]string{

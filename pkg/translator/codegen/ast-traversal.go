@@ -358,6 +358,17 @@ func (cg *CodeGenerator) FindSymbol(arg ast.SymbolExpr) *SymbolEntry {
 	}
 	panic("undeclared variable")
 }
+func (cg *CodeGenerator) FindSymbolFromEx(arg ast.Expr) *SymbolEntry {
+	switch e := arg.(type) {
+	case ast.SymbolExpr:
+		if s1, found := cg.currentScope().symbols[e.Value]; found {
+			return &s1
+		}
+		panic("undeclared variable")
+	default:
+		panic("unknown")
+	}
+}
 
 func (cg *CodeGenerator) emitPushReg(reg int) {
 	cg.emitInstruction(isa.OpPush, isa.SingleRegMode, -1, reg, -1)
@@ -817,9 +828,21 @@ func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd int) {
 			//TODO: rd<- ptr to new str
 			cg.addError(fmt.Sprintf("not supported func assignment %s", r.Name))
 			cg.genAddStrRuntime(r, isa.RA)
-			rd = isa.RA
+			return
+
 		case lexer.TokenKindString(lexer.ADDL):
+			targetS := cg.FindSymbolFromEx(e.Assigne)
 			cg.genAddLongAssign(r.Args, rd) // rd<-ptr to long
+
+			//todo mov hi and low part to s.AbsAddr:+4
+			cg.emitInstruction(isa.OpMov, isa.MvRegIndToReg, isa.RA, rd, -1) // ra<-lo
+			cg.emitMov(isa.MvRegMem, int(targetS.AbsAddress), isa.RA, -1)    // [targetS]<- ra (low)
+
+			cg.emitInstruction(isa.OpAdd, isa.MathRIR, rd, rd, -1) //rd+=4 points to high
+			cg.emitImmediate(4)
+			cg.emitInstruction(isa.OpMov, isa.MvRegIndToReg, isa.RA, rd, -1) // ra<-lo
+			cg.emitMov(isa.MvRegMem, int(targetS.AbsAddress+4), isa.RA, -1)  // [targetS]<- ra (low)
+			return
 		default:
 			cg.addError(fmt.Sprintf("unknown func name %s", r.Name))
 		}

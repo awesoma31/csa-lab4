@@ -176,11 +176,11 @@ func uCmpRR(_, rs1, rs2 int) microStep {
 		b := uint32(c.Reg.GPR[rs2])
 		diff := int32(a) - int32(b)
 
-		//TODO: check
 		c.N = diff < 0                          // negative
 		c.Z = diff == 0                         // zero
 		c.V = ((a^b)&(uint32(diff)^a))>>31 == 1 // overflow
-		c.C = a < b                             // borrow/carry
+		//TODO: check
+		c.C = a < b // borrow/carry
 
 		c.log.Debugf("TICK % 4d - CMP %v, %v | %v; %v %v\n", c.Tick, isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprFlags(), c.ReprRegVal(rs1), c.ReprRegVal(rs2))
 
@@ -190,7 +190,7 @@ func uCmpRR(_, rs1, rs2 int) microStep {
 
 func uJCC(_, _, _ int) microStep {
 	stage := 0
-	r := isa.RAddr
+	r := isa.RF2
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
@@ -212,7 +212,7 @@ func uJCC(_, _, _ int) microStep {
 }
 func uJCS(_, _, _ int) microStep {
 	stage := 0
-	r := isa.RAddr
+	r := isa.RF2
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
@@ -242,7 +242,7 @@ func uJump(_, _, _ int) microStep {
 }
 func uJE(_, _, _ int) microStep {
 	stage := 0
-	r := isa.RAddr
+	r := isa.RF2
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
@@ -264,7 +264,7 @@ func uJE(_, _, _ int) microStep {
 }
 func uJNE(_, _, _ int) microStep {
 	stage := 0
-	r := isa.RAddr
+	r := isa.RF2
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
@@ -286,7 +286,7 @@ func uJNE(_, _, _ int) microStep {
 }
 func uJG(_, _, _ int) microStep {
 	stage := 0
-	r := isa.RAddr
+	r := isa.RF2
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
@@ -308,7 +308,7 @@ func uJG(_, _, _ int) microStep {
 }
 func uJL(_, _, _ int) microStep {
 	stage := 0
-	r := isa.RAddr
+	r := isa.RF2
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
@@ -330,7 +330,7 @@ func uJL(_, _, _ int) microStep {
 }
 func uJGE(_, _, _ int) microStep {
 	stage := 0
-	r := isa.RAddr
+	r := isa.RF2
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
@@ -352,7 +352,7 @@ func uJGE(_, _, _ int) microStep {
 }
 func uJLE(_, _, _ int) microStep {
 	stage := 0
-	r := isa.RAddr
+	r := isa.RF2
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:
@@ -407,7 +407,7 @@ func uAddRRR(rd, rs1, rs2 int) microStep {
 }
 func uAddRIR(rd, rs1, _ int) microStep {
 	stage := 0
-	r := isa.RC
+	r := isa.RF1
 	return func(c *CPU) bool {
 		switch stage {
 		case 0:

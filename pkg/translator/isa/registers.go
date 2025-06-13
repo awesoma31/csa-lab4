@@ -2,22 +2,25 @@ package isa
 
 // ──────────────────────── registers (4 bits) ─────────────────
 const (
-	RA          = iota // 0
-	RM1                // 1
-	RM2                //2
-	RAddr              //3
-	RD                 //4
-	ROutAddr           //5
-	ROutData           //6
-	R6                 //7
-	RInData            //8
-	RC                 //9
-	SpReg              //10
-	RT                 //11
-	RT2                //12
-	ZERO               // 13
-	R7                 // 14
-	placeholder        // 15
+	RA       = iota // 0
+	RM1             // 1
+	RM2             //2
+	RAddr           //3
+	RD              //4
+	ROutAddr        //5
+	ROutData        //6
+	R6              //7
+	RInData         //8
+	RC              //9
+	SpReg           //10
+	RT              //11
+	RT2             //12
+	ZERO            // 13
+	R7              // 14
+	R8              // 15
+
+	RF1 // internal usage
+	RF2
 )
 
 const (
