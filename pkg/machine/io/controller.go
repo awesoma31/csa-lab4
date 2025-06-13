@@ -33,7 +33,6 @@ func (ioc *Controller) CheckTick(tick int) (bool, uint8) {
 	}
 
 	port := byte(inp.IrqNumber)
-	// ioc.portsVal[port] = toByte(inp.Value)
 	ioc.portsVal[port] = toUint32(inp.Value)
 	delete(ioc.Sched, tick)
 	return true, port
@@ -67,7 +66,7 @@ func toUint32(v any) uint32 {
 		return uint32(reflect.ValueOf(t).Uint())
 	case string:
 		if len(t) > 0 {
-			return uint32(t[0]) // берём первый символ
+			return uint32(t[0]) // 1 char
 		}
 	case byte:
 		return uint32(t)

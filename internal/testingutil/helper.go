@@ -16,7 +16,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var update = flag.Bool("u", false, "rewrite *.golden files")
+var update = flag.Bool("u", false, "rewrite *.golden files") //
 
 func RunGolden(t *testing.T, dir string, tickLimit int) {
 	t.Helper()

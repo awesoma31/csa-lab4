@@ -2,7 +2,6 @@ package isa
 
 // ──────────────────────── op-codes (6 bits) ──────────────────
 const (
-	// 0x00-0x0F: data move & misc
 	OpNop  uint32 = 0x00
 	OpMov  uint32 = 0x01
 	OpPush uint32 = 0x02
@@ -11,29 +10,25 @@ const (
 	OpNot  uint32 = 0x05
 	OpHalt uint32 = 0x06
 
-	// 0x10-0x1F: arithmetic / logical
 	OpAdd uint32 = 0x10
 	OpSub uint32 = 0x11
 	OpMul uint32 = 0x12
 	OpDiv uint32 = 0x13
 	OpCmp uint32 = 0x14
 
-	//I/O
 	OpIn uint32 = 0x18
-	// OpOutB uint32 = 0x19
+	// 0x19
 	OpOut uint32 = 0x1A
-	// OpOutB   uint32 = 0x1B
+	// 0x1B
 	OpIntOn  uint32 = 0x1C
 	OpIntOff uint32 = 0x1D
 
-	// 0x20-0x2F: control-flow (unconditional & calls)
 	OpJmp  uint32 = 0x20
 	OpCall uint32 = 0x21
 	OpRet  uint32 = 0x22
 	OpAnd  uint32 = 0x23
 	OpIRet uint32 = 0x24
 
-	// 0x30-0x3F: conditional jumps (depend on flags)
 	OpJe  uint32 = 0x30
 	OpJne uint32 = 0x31
 	OpJg  uint32 = 0x32

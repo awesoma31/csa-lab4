@@ -31,7 +31,5 @@ func EncodeInstructionWord(opcode, mode uint32, rd, rs1, rs2 int) uint32 {
 		word |= uint32(rs2&0xF) << Rs2Offset
 	}
 
-	// lower 9 bits are left zero – filled later if the
-	// particular address-mode packs an immediate offset here.
 	return word
 }

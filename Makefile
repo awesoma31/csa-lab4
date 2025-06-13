@@ -34,6 +34,9 @@ test:        ## go test ./...
 	@echo "Running tests…"
 	go test -v ./...
 
+.PHONY: ci
+ci:
+	./check-ci.sh
 
 .PHONY: clean
 clean:

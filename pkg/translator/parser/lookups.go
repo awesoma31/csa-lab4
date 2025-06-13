@@ -65,7 +65,7 @@ func createTokenLookups() {
 	led(lexer.LESS, relational, parseBinaryExpr)
 	led(lexer.LessEquals, relational, parseBinaryExpr)
 	led(lexer.GREATER, relational, parseBinaryExpr)
-	led(lexer.GREATER_EQUALS, relational, parseBinaryExpr)
+	led(lexer.GreaterEquals, relational, parseBinaryExpr)
 	led(lexer.EQUALS, relational, parseBinaryExpr)
 	led(lexer.NotEquals, relational, parseBinaryExpr)
 
@@ -85,9 +85,6 @@ func createTokenLookups() {
 	nud(lexer.ADDSTR, parseAddStrExpr)
 	nud(lexer.ADDL, parseAddLExpr)
 
-	// nud(lexer.ADDSTR, parseAddStrExpr)
-	// Array literals also start expressions, like `[1, 2, 3]`
-
 	// Unary/Prefix Operators (NUDs)
 	// The `unary` binding power is typically higher than binary operators,
 	// ensuring `!x + y` parses as `(!x) + y`.
@@ -106,7 +103,6 @@ func createTokenLookups() {
 	// Statement handlers
 	stmt(lexer.OpenCurly, parseBlockStmt)
 	stmt(lexer.LET, parseVarDeclStmt)
-	// stmt(lexer.LETL, parseLongDeclStmt)
 	stmt(lexer.IF, parseIfStmt)
 	stmt(lexer.WHILE, parseWhileStmt)
 	stmt(lexer.PRINT, parsePrintStmt)

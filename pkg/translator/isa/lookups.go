@@ -11,7 +11,6 @@ var (
 )
 
 func init() {
-	// opcodes → strings
 	maps.Copy(opcodeMnemonics, map[uint32]string{
 		OpNop:  "NOP",
 		OpMov:  "MOV",
@@ -41,7 +40,6 @@ func init() {
 		OpJae: "JAE", OpJbe: "JBE", OpJcc: "JCC", OpJcs: "JCS",
 	})
 
-	// address-modes → strings
 	maps.Copy(amMnemonics, map[uint32]string{
 		MvRegReg:          "MvRegReg",
 		MvImmReg:          "MvImmReg",
@@ -70,7 +68,6 @@ func init() {
 		NoOperands: "NoOperands",
 	})
 
-	// registers → strings (0-15)
 	maps.Copy(registerMnemonics, map[int]string{
 		RA:       "RA",
 		RM1:      "RM1",

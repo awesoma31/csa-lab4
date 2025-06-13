@@ -24,7 +24,6 @@ func New(debug bool, logFile string) *Logger {
 		w = io.MultiWriter(f, os.Stdout)
 	}
 
-	// "" и 0 → без времени/даты, только то, что передаём в Print/Printf.
 	base := log.New(w, "", 0)
 
 	return &Logger{
@@ -34,20 +33,18 @@ func New(debug bool, logFile string) *Logger {
 }
 
 func NewForTest(w io.Writer) *Logger {
-	l := New(true, "") // debug-mode
-	l.l.SetOutput(w)   // std = *log.Logger внутри вашего Logger
+	l := New(true, "")
+	l.l.SetOutput(w)
 	return l
 }
 
 func (lg *Logger) Debug(v ...any) {
 	lg.l.Print(
-		// append([]any{"debug "}, v...)...,
 		append([]any{""}, v...)...,
 	)
 }
 func (lg *Logger) Debugf(format string, v ...any) {
 	lg.l.Printf(""+format, v...)
-	// lg.l.Printf("debug "+format, v...)
 }
 
 func (lg *Logger) Info(v ...any) {
@@ -58,7 +55,6 @@ func (lg *Logger) Info(v ...any) {
 }
 
 func (lg *Logger) Infof(format string, v ...any) {
-	// lg.l.Printf("INFO "+format, v...)
 	w := lg.l.Writer()
 	lg.l.SetOutput(os.Stdout)
 	lg.l.Printf(""+format, v...)
@@ -67,11 +63,9 @@ func (lg *Logger) Infof(format string, v ...any) {
 
 func (lg *Logger) Error(v ...any) {
 	lg.l.Print(
-		// append([]any{"debug "}, v...)...,
 		append([]any{"ERROR "}, v...)...,
 	)
 }
 func (lg *Logger) Errorf(format string, v ...any) {
 	lg.l.Printf("ERROR "+format, v...)
-	// lg.l.Printf("debug "+format, v...)
 }

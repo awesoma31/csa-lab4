@@ -17,7 +17,6 @@ func parseExpr(p *parser, rbp bindingPower) ast.Expr {
 	if !exists {
 		p.addError(fmt.Sprintf("NUD Handler expected for token %s\n", lexer.TokenKindString(tokenKind)))
 		return nil
-		// panic(p.errors[len(p.errors)-1])
 	}
 
 	// 1. Call the Null Denotation (NUD) to parse the left-hand side of the expression.
@@ -40,7 +39,7 @@ func parseExpr(p *parser, rbp bindingPower) ast.Expr {
 		// Call the Left Denotation (LED), passing the already parsed 'left' expression.
 		// The LED function is responsible for consuming the current operator token
 		// and then parsing its right-hand side operand(s).
-		left = ledFn(p, left) // Removed 'bp' as an argument to led_fn; it's handled internally by specific LED handlers.
+		left = ledFn(p, left)
 	}
 
 	return left
@@ -60,7 +59,7 @@ func parsePrefixExpr(p *parser) ast.Expr {
 }
 
 // parseAssignmentExpr handles assignment operators (e.g., x = y, x += y)
-func parseAssignmentExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp, it's determined by the operator's own LBP
+func parseAssignmentExpr(p *parser, left ast.Expr) ast.Expr {
 	operatorToken := p.advance() // Consume the assignment token (=, +=, etc.)
 
 	// Assignment is right-associative (e.g., a = b = c parses as a = (b = c)).
@@ -106,7 +105,7 @@ func parseListEx(p *parser) ast.Expr {
 }
 
 // parseBinaryExpr handles standard binary operators (+, -, *, /, ==, <, etc.)
-func parseBinaryExpr(p *parser, left ast.Expr) ast.Expr { // Removed bp
+func parseBinaryExpr(p *parser, left ast.Expr) ast.Expr {
 	operatorToken := p.advance() // Consume the operator token (+, *, ==, etc.)
 
 	right := parseExpr(p, bpLu[operatorToken.Kind])
@@ -122,7 +121,6 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 	switch p.currentTokenKind() {
 	case lexer.NUMBER:
 		tok := p.advance()
-		// number, err := strconv.ParseUint(tok.Value, 10, 32)
 		number, err := strconv.ParseInt(tok.Value, 10, 32)
 		if err != nil {
 			number, err := strconv.ParseInt(tok.Value, 10, 64)

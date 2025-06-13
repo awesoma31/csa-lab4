@@ -46,14 +46,6 @@ func (lex *lexer) advanceN(n int) {
 	lex.pos += n
 }
 
-// func (lex *lexer) at() byte {
-// 	return lex.source[lex.pos]
-// }
-//
-// func (lex *lexer) advance() {
-// 	lex.pos += 1
-// }
-
 func (lex *lexer) remainder() string {
 	return lex.source[lex.pos:]
 }
@@ -90,7 +82,7 @@ func createLexer(source string) *lexer {
 			{regexp.MustCompile(`!`), defaultHandler(NOT, "!")},
 			{regexp.MustCompile(`<=`), defaultHandler(LessEquals, "<=")},
 			{regexp.MustCompile(`<`), defaultHandler(LESS, "<")},
-			{regexp.MustCompile(`>=`), defaultHandler(GREATER_EQUALS, ">=")},
+			{regexp.MustCompile(`>=`), defaultHandler(GreaterEquals, ">=")},
 			{regexp.MustCompile(`>`), defaultHandler(GREATER, ">")},
 			{regexp.MustCompile(`\|\|`), defaultHandler(OR, "||")},
 			{regexp.MustCompile(`&&`), defaultHandler(AND, "&&")},
@@ -163,3 +155,11 @@ func commentHandler(lex *lexer, regex *regexp.Regexp) {
 		lex.line++
 	}
 }
+
+// func (lex *lexer) at() byte {
+// 	return lex.source[lex.pos]
+// }
+//
+// func (lex *lexer) advance() {
+// 	lex.pos += 1
+// }

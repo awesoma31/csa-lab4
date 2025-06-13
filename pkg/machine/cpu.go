@@ -53,36 +53,33 @@ type CPU struct {
 	savedNZVCFlags uint8
 	IsIntOn        bool
 
-	step      microStep // current micro-routine
-	inISR     bool
-	pending   bool
-	pendNum   int
-	Tick      int
-	TickLimit int
-	halted    bool
-	maxInt    int
+	step             microStep // current micro-routine
+	inISR            bool
+	pending          bool
+	pendNum          int
+	Tick             int
+	TickLimit        int
+	halted           bool
+	maxInterruptions int
 
 	log *logger.Logger
 }
 
 func New(cfg *CpuConfig) *CPU {
 	c := &CPU{
-		memI:      cfg.MemI,
-		memD:      cfg.MemD,
-		Ioc:       cfg.IOC,
-		TickLimit: cfg.TickLimit,
-		halted:    false,
-		maxInt:    cfg.MaxInterruptions,
-		IsIntOn:   true,
-		log:       cfg.Logger,
+		memI:             cfg.MemI,
+		memD:             cfg.MemD,
+		Ioc:              cfg.IOC,
+		TickLimit:        cfg.TickLimit,
+		halted:           false,
+		maxInterruptions: cfg.MaxInterruptions,
+		IsIntOn:          true,
+		log:              cfg.Logger,
 	}
 
-	//TODO: stack = last sata addr + stack size
-	if StackStart < uint32(len(c.memD)) {
-		StackStart = uint32(len(c.memD) + StackSize)
-	}
+	StackStart = uint32(len(c.memD) + StackSize)
 	c.Reg.GPR[isa.SpReg] = StackStart
-	c.Reg.PC = uint32(c.maxInt)
+	c.Reg.PC = uint32(c.maxInterruptions)
 
 	c.step = c.fetch()
 	return c
@@ -109,10 +106,29 @@ func (c *CPU) Run() string {
 		}
 	}
 
-	// c.PrintAllPortOutputs()
 	fmt.Println("ticks", c.Tick)
 	fmt.Println(c.GetFormattedPortOutputs())
 	return c.GetFormattedPortOutputs()
+}
+
+func (c *CPU) fetch() microStep {
+	return func(c *CPU) bool {
+		c.Reg.IR = c.memI[c.Reg.PC]
+		c.Reg.PC++
+		op, mode, rd, rs1, rs2 := decoder.Dec(c.Reg.IR)
+
+		f := ucode[op][mode]
+		c.log.Debug(
+			fmt.Sprintf("TICK % 4d @ 0x%08X -  %v %v; PC++ | %v\n", c.Tick, c.Reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC()),
+		)
+		if f == nil {
+			slog.Error("unknown instruction", "PC", c.Reg.PC-1, "IR", c.Reg.IR)
+			log.Fatal()
+			return false
+		}
+		c.step = f(rd, rs1, rs2)
+		return false
+	}
 }
 
 func (c *CPU) GetFormattedPortOutputs() string {
@@ -176,26 +192,6 @@ func (c *CPU) GetFormattedPortOutputs() string {
 	return strings.TrimRight(sb.String(), "\n")
 }
 
-func (c *CPU) fetch() microStep {
-	return func(c *CPU) bool {
-		c.Reg.IR = c.memI[c.Reg.PC]
-		c.Reg.PC++
-		op, mode, rd, rs1, rs2 := decoder.Dec(c.Reg.IR)
-
-		f := ucode[op][mode]
-		c.log.Debug(
-			fmt.Sprintf("TICK % 4d @ 0x%08X -  %v %v; PC++ | %v\n", c.Tick, c.Reg.IR, isa.GetOpMnemonic(op), isa.GetAMnemonic(mode), c.ReprPC()),
-		)
-		if f == nil {
-			slog.Error("unknown instruction", "PC", c.Reg.PC-1, "IR", c.Reg.IR)
-			log.Fatal()
-			return false
-		}
-		c.step = f(rd, rs1, rs2)
-		return false
-	}
-}
-
 func (c *CPU) raiseIRQ(vec uint8) {
 	if c.inISR || c.pending {
 		c.log.Debugf("interruption ignored, either in one or one is already pending, %v\n", vec)
@@ -204,7 +200,6 @@ func (c *CPU) raiseIRQ(vec uint8) {
 	c.pending, c.pendNum = true, int(vec)
 }
 func (c *CPU) enterISR() {
-	// c.log.Debug(c.DumpState())
 	c.log.Debugf("------------Entering Interruption %d, value=%v/0x%X------------\n", c.pendNum, c.Ioc.ReadPort(byte(c.pendNum)), c.Ioc.ReadPort(byte(c.pendNum)))
 	c.Reg.savedPC = c.Reg.PC
 	c.SaveNZVC()
@@ -212,7 +207,6 @@ func (c *CPU) enterISR() {
 	c.SaveGPRValues()
 	c.inISR = true
 	c.pending = false
-	// c.log.Debug(c.DumpState())
 
 }
 
@@ -230,16 +224,16 @@ func (c *CPU) RestoreGPRValues() {
 func (c *CPU) SaveNZVC() {
 	c.savedNZVCFlags = 0
 	if c.N {
-		c.savedNZVCFlags |= (1 << 0) // Set bit 0 for N
+		c.savedNZVCFlags |= (1 << 0)
 	}
 	if c.Z {
-		c.savedNZVCFlags |= (1 << 1) // Set bit 1 for Z
+		c.savedNZVCFlags |= (1 << 1)
 	}
 	if c.V {
-		c.savedNZVCFlags |= (1 << 2) // Set bit 2 for V
+		c.savedNZVCFlags |= (1 << 2)
 	}
 	if c.C {
-		c.savedNZVCFlags |= (1 << 3) // Set bit 3 for C
+		c.savedNZVCFlags |= (1 << 3)
 	}
 }
 
@@ -294,28 +288,6 @@ func (c *CPU) DumpState() string {
 	for i := range len(c.Reg.GPR) {
 		sb.WriteString(fmt.Sprintf("%s: %d (0x%X)\n", isa.GetRegMnem(i), c.Reg.GPR[i], c.Reg.GPR[i]))
 	}
-
-	// sb.WriteString("\n--- Stack Pointer (SP) and Stack Content (top 16 bytes) ---\n")
-	// spVal := c.Reg.GPR[isa.SpReg] // Assuming SpReg is the index for the stack pointer register
-	// sb.WriteString(fmt.Sprintf("SP (R%d): %d (0x%X)\n", isa.SpReg, spVal, spVal))
-	//
-	// stackDumpStart := max(int(spVal)-8, 0)
-	// stackDumpEnd := min(int(spVal)+8, len(c.memD))
-	//
-	// if stackDumpEnd > stackDumpStart {
-	// 	sb.WriteString("Stack (data memory around SP):\n")
-	// 	for i := stackDumpStart; i < stackDumpEnd; i++ {
-	// 		if i%8 == 0 {
-	// 			sb.WriteString(fmt.Sprintf("0x%08X: ", i))
-	// 		}
-	// 		sb.WriteString(fmt.Sprintf("%02X ", c.memD[i]))
-	// 		if (i+1)%8 == 0 || i == stackDumpEnd-1 {
-	// 			sb.WriteString("\n")
-	// 		}
-	// 	}
-	// } else {
-	// 	sb.WriteString("Stack content not accessible or empty.\n")
-	// }
 
 	sb.WriteString("--- Saved Registers (for ISR) ---\n")
 	for i := range len(c.Reg.savedGPR) {

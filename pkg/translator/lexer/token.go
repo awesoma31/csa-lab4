@@ -16,7 +16,6 @@ const (
 	STRING
 	IDENTIFIER
 
-	// Grouping & Braces
 	OpenBracket
 	CloseBracket
 	OpenCurly
@@ -24,24 +23,19 @@ const (
 	OpenParen
 	CloseParen
 
-	// Equivalence
 	ASSIGNMENT
 	EQUALS
 	NotEquals
 	NOT
 
-	// Conditional
-
 	LESS
 	LessEquals
 	GREATER
-	GREATER_EQUALS
+	GreaterEquals
 
-	// Logical
 	OR
 	AND
 
-	// Symbols
 	DOT
 	DotDot
 	SemiColon
@@ -49,14 +43,12 @@ const (
 	QUESTION
 	COMMA
 
-	// Shorthand
 	PlusPlus
 	MinusMinus
 	PlusEquals
 	MinusEquals
-	NullishAssignment // ??=
+	NullishAssignment
 
-	//Maths
 	PLUS
 	MINUS // -
 	SLASH
@@ -65,7 +57,6 @@ const (
 
 	// Reserved Keywords
 	LET
-	LETL
 	IF
 	ELSE
 	WHILE
@@ -91,7 +82,6 @@ var reservedLu = map[string]TokenKind{
 	"true":    TRUE,
 	"false":   FALSE,
 	"let":     LET,
-	"letL":    LETL,
 	"if":      IF,
 	"else":    ELSE,
 	"while":   WHILE,
@@ -165,7 +155,7 @@ func TokenKindString(kind TokenKind) string {
 		return "less_equals"
 	case GREATER:
 		return "greater"
-	case GREATER_EQUALS:
+	case GreaterEquals:
 		return "greater_equals"
 	case OR:
 		return "or"

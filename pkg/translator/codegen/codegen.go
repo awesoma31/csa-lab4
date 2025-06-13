@@ -3,7 +3,6 @@ package codegen
 import (
 	"encoding/binary"
 	"fmt"
-	"regexp"
 
 	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
 
@@ -11,8 +10,6 @@ import (
 )
 
 const (
-	DataMemSize                   = 200
-	StackStartAddr         uint32 = DataMemSize
 	WordSizeBytes                 = 4
 	intVectorTableBaseAddr uint32 = 0
 	maxInterrupts          uint32 = 2
@@ -24,7 +21,7 @@ type SymbolEntry struct {
 	MemoryArea  string
 	AbsAddress  uint32
 	SizeInBytes int
-	NumberValue int32 // str addr if points to str
+	NumberValue int32 // str addr if symbol points to str
 	LongValue   int64
 	StringValue string
 	IsStr       bool
@@ -40,14 +37,11 @@ func (sc *Scope) Symbols() map[string]SymbolEntry {
 	return sc.symbols
 }
 
-// CodeGenerator  Main code generator structure
 type CodeGenerator struct {
-	// Output segments
 	instructionMemory []uint32 // Machine words for instruction memory
 	dataMemory        []byte   // Machine words for data memory
 	debugAssembly     []string // Assembly mnemonics with addresses
 
-	// State of the code generator
 	scopeStack          []Scope
 	nextInstructionAddr uint32 // Next free address in instruction memory (word-addresses)
 	nextDataAddr        uint32 // Next free address in data memory (byte-addresses)
@@ -110,7 +104,6 @@ func (cg *CodeGenerator) lookupSymbol(name string) (SymbolEntry, bool) {
 
 func (cg *CodeGenerator) addSymbolToScope(entry SymbolEntry) {
 	cg.currentScope().symbols[entry.Name] = entry
-	// fmt.Println("added to scope", entry.Name, cg.currentScope().symbols[entry.Name])
 }
 
 // emitInstruction encodes an instruction to the instruction memory and stores dubeg info in debugAssembly.
@@ -141,7 +134,6 @@ func (cg *CodeGenerator) emitInstruction(opcode, mode uint32, dest, s1, s2 int) 
 }
 
 func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
-	// var instructionWord uint32
 	switch mode {
 	case isa.MvRegReg: // reg to reg
 		cg.emitInstruction(isa.OpMov, isa.MvRegReg, dest, s1, s2)
@@ -171,7 +163,6 @@ func (cg *CodeGenerator) emitMov(mode uint32, dest, s1, s2 int) {
 	default:
 		panic("unknown mov mode")
 	}
-	// cg.nextInstructionAddr++
 }
 
 // emitImmediate adds an immediate value as an operand to the instruction memory.
@@ -195,27 +186,6 @@ func (cg *CodeGenerator) PatchWord(address, value uint32) {
 		return
 	}
 	cg.instructionMemory[address] = value
-}
-
-func (cg *CodeGenerator) PatchDebugAssemblyByAddress(targetAddress uint32, newContent string) {
-	addressHex := fmt.Sprintf("0x%08X", targetAddress)
-	re, err := regexp.Compile("^" + regexp.QuoteMeta(addressHex) + ":")
-	if err != nil {
-		cg.addError(fmt.Sprintf("Failed to compile regex for address %s: %v", addressHex, err))
-		return
-	}
-
-	foundAndPatched := false
-	for i, line := range cg.debugAssembly {
-		if re.MatchString(line) {
-			cg.debugAssembly[i] = fmt.Sprintf("%s -> PATCHED: %s", line, newContent)
-			foundAndPatched = true
-		}
-	}
-
-	if !foundAndPatched {
-		cg.addError(fmt.Sprintf("No debug assembly line found for address %s to patch.", addressHex))
-	}
 }
 
 // addString adds a string literal to data memory.
@@ -244,26 +214,25 @@ func (cg *CodeGenerator) addString(s string) uint32 {
 }
 
 func (cg *CodeGenerator) addLongData(v int64) uint32 {
-	lo := int32(v & 0xFFFF_FFFF)         // младшее 32 бита
-	hi := int32((v >> 32) & 0xFFFF_FFFF) // старшие 32 бита
-	addr := cg.addNumberData(lo)         // [addr+0 … addr+3] ← lo
-	cg.addNumberData(hi)                 // [addr+4 … addr+7] ← hi
-	return addr                          // адрес всей 8-байтовой константы
+	lo := int32(v & 0xFFFF_FFFF)
+	hi := int32((v >> 32) & 0xFFFF_FFFF)
+	addr := cg.addNumberData(lo)
+	cg.addNumberData(hi)
+	return addr
 }
 
 // addNumberData adds an uint32 number to data memory.
 // This function ensures the number is stored at a word-aligned byte-address.
-// Returns the byte-address where the number is stored.
+// Returns the address where the number is stored.
 func (cg *CodeGenerator) addNumberData(val int32) uint32 {
-	// Ensure current data address is aligned to the next word boundary
 	allignDataMem(cg)
 
-	dataAddr := cg.nextDataAddr // This is now a word-aligned byte-address
+	dataAddr := cg.nextDataAddr
 	buf := make([]byte, WordSizeBytes)
-	binary.LittleEndian.PutUint32(buf, uint32(val)) // Assuming LittleEndian
+	binary.LittleEndian.PutUint32(buf, uint32(val))
 
 	cg.dataMemory = append(cg.dataMemory, buf...)
-	cg.nextDataAddr += WordSizeBytes // Increment by the size of the number in bytes
+	cg.nextDataAddr += WordSizeBytes
 
 	return dataAddr
 }
@@ -272,7 +241,7 @@ func allignDataMem(cg *CodeGenerator) {
 	currentByteAddr := cg.nextDataAddr
 	alignmentPadding := (WordSizeBytes - int(currentByteAddr%WordSizeBytes)) % WordSizeBytes
 	for range alignmentPadding {
-		cg.dataMemory = append(cg.dataMemory, 0) // Add padding bytes
+		cg.dataMemory = append(cg.dataMemory, 0)
 		cg.nextDataAddr++
 	}
 }

@@ -19,13 +19,13 @@ type parser struct {
 func createParser(tokens []lexer.Token) *parser {
 	if len(bpLu) == 0 {
 		createTokenLookups()
-		createTypeTokenLookups()
+		// createTypeTokenLookups()
 	}
 
 	p := &parser{
 		tokens: tokens,
 		pos:    0,
-		errors: make([]string, 0), // Initialize errors slice
+		errors: make([]string, 0),
 	}
 
 	return p
@@ -45,12 +45,10 @@ func Parse(source string) (ast.BlockStmt, []string) {
 	body := make([]ast.Stmt, 0)
 
 	for p.hasTokens() {
-		// body = append(body, parse_stmt(p))
 		stmt := parseStmt(p)
-		if stmt != nil { // Only append if a statement was successfully parsed
+		if stmt != nil {
 			body = append(body, stmt)
 		} else {
-			// If parse_stmt returns nil (due to error recovery), advance to avoid infinite loop
 			p.advance()
 		}
 	}
@@ -97,8 +95,6 @@ func (p *parser) expect(kind lexer.TokenKind) lexer.Token {
 	}
 	p.addError(fmt.Sprintf("Expected token %s but got %s",
 		lexer.TokenKindString(kind), lexer.TokenKindString(p.currentTokenKind())))
-	// In a real parser, you might insert a dummy node or skip tokens here for recovery.
-	// For now, we'll return a dummy token.
 	return lexer.Token{Kind: lexer.UNKNOWN, Value: "ERROR"}
 }
 
