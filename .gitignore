@@ -56,3 +56,9 @@ check-ci.sh
 .vscode
 expr.patch
 examples
+logs/symtable.log
+logs/instr.log
+logs/debugIntr.log
+logs/data.log
+logs/cpu.log
+logs/ast.log
