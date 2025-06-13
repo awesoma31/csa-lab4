@@ -1,0 +1,73 @@
+[0x0002] - 77E00000 - Opc: IntOff, Mode: NoOperands, D:, S1:, S2:
+[0x0003] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x0004] - 00000004 - Imm
+[0x0005] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0006] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x0007] - 00000004 - Imm
+[0x0008] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0009] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x000A] - 00000001 - Imm
+[0x000B] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x000C] - 42042400 - Opc: ADD, Mode: MathRRR, D:RM2, S1:RM1, S2:RM2
+[0x000D] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x000E] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+[0x000F] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0010] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x0011] - 00000002 - Imm
+[0x0012] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0013] - 4E002400 - Opc: DIV, Mode: MathRRR, D:RA, S1:RM1, S2:RM2
+[0x0014] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
+[0x0015] - 00000008 - Imm
+[0x0016] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x0017] - 00000004 - Imm
+[0x0018] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0019] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x001A] - 00000004 - Imm
+[0x001B] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x001C] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x001D] - 00000001 - Imm
+[0x001E] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x001F] - 42042400 - Opc: ADD, Mode: MathRRR, D:RM2, S1:RM1, S2:RM2
+[0x0020] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0021] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+[0x0022] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0023] - 04220000 - Opc: MOV, Mode: MvImmReg, D:RM1, S1:, S2:
+[0x0024] - 00000002 - Imm
+[0x0025] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0026] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
+[0x0027] - 00000004 - Imm
+[0x0028] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0029] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+[0x002A] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x002B] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x002C] - 00000001 - Imm
+[0x002D] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x002E] - 42042400 - Opc: ADD, Mode: MathRRR, D:RM2, S1:RM1, S2:RM2
+[0x002F] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0030] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+[0x0031] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0032] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x0033] - 00000006 - Imm
+[0x0034] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0035] - 4E002400 - Opc: DIV, Mode: MathRRR, D:RA, S1:RM1, S2:RM2
+[0x0036] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
+[0x0037] - 0000000C - Imm
+[0x0038] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x0039] - 00000008 - Imm
+[0x003A] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x003B] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
+[0x003C] - 00000008 - Imm
+[0x003D] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x003E] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+[0x003F] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0040] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
+[0x0041] - 0000000C - Imm
+[0x0042] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0043] - 46002400 - Opc: SUB, Mode: MathRRR, D:RA, S1:RM1, S2:RM2
+[0x0044] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
+[0x0045] - 00000010 - Imm
+PRINT STMT
+[0x0046] - 04CC0000 - Opc: MOV, Mode: MvMemReg, D:ROutData, S1:, S2:
+[0x0047] - 00000010 - Imm
+[0x0048] - 6AA00000 - Opc: OUT, Mode: Digit, D:port Digit, S1:, S2:
+[0x0049] - 1BE00000 - Opc: HALT, Mode: NoOperands, D:, S1:, S2:

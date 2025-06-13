@@ -1,0 +1,133 @@
+ast.BlockStmt{
+  Body: []ast.Stmt{
+    ast.IntOffStmt{},
+    ast.VarDeclarationStmt{
+      Identifier: "n",
+      AssignedValue: ast.NumberExpr{
+        Value: 100,
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "S",
+      AssignedValue: ast.BinaryExpr{
+        Left: ast.BinaryExpr{
+          Left: ast.SymbolExpr{
+            Value: "n",
+          },
+          Operator: lexer.Token{
+            Kind: 37,
+            Value: "*",
+          },
+          Right: ast.BinaryExpr{
+            Left: ast.SymbolExpr{
+              Value: "n",
+            },
+            Operator: lexer.Token{
+              Kind: 34,
+              Value: "+",
+            },
+            Right: ast.NumberExpr{
+              Value: 1,
+            },
+          },
+        },
+        Operator: lexer.Token{
+          Kind: 36,
+          Value: "/",
+        },
+        Right: ast.NumberExpr{
+          Value: 2,
+        },
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "Q",
+      AssignedValue: ast.BinaryExpr{
+        Left: ast.BinaryExpr{
+          Left: ast.BinaryExpr{
+            Left: ast.SymbolExpr{
+              Value: "n",
+            },
+            Operator: lexer.Token{
+              Kind: 37,
+              Value: "*",
+            },
+            Right: ast.BinaryExpr{
+              Left: ast.SymbolExpr{
+                Value: "n",
+              },
+              Operator: lexer.Token{
+                Kind: 34,
+                Value: "+",
+              },
+              Right: ast.NumberExpr{
+                Value: 1,
+              },
+            },
+          },
+          Operator: lexer.Token{
+            Kind: 37,
+            Value: "*",
+          },
+          Right: ast.BinaryExpr{
+            Left: ast.BinaryExpr{
+              Left: ast.NumberExpr{
+                Value: 2,
+              },
+              Operator: lexer.Token{
+                Kind: 37,
+                Value: "*",
+              },
+              Right: ast.SymbolExpr{
+                Value: "n",
+              },
+            },
+            Operator: lexer.Token{
+              Kind: 34,
+              Value: "+",
+            },
+            Right: ast.NumberExpr{
+              Value: 1,
+            },
+          },
+        },
+        Operator: lexer.Token{
+          Kind: 36,
+          Value: "/",
+        },
+        Right: ast.NumberExpr{
+          Value: 6,
+        },
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "D",
+      AssignedValue: ast.BinaryExpr{
+        Left: ast.BinaryExpr{
+          Left: ast.SymbolExpr{
+            Value: "S",
+          },
+          Operator: lexer.Token{
+            Kind: 37,
+            Value: "*",
+          },
+          Right: ast.SymbolExpr{
+            Value: "S",
+          },
+        },
+        Operator: lexer.Token{
+          Kind: 35,
+          Value: "-",
+        },
+        Right: ast.SymbolExpr{
+          Value: "Q",
+        },
+      },
+    },
+    ast.PrintStmt{
+      Argument: ast.SymbolExpr{
+        Value: "D",
+      },
+    },
+  },
+}

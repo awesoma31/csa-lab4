@@ -24,7 +24,6 @@ go.work.sum
 # env file
 .env
 bin
-logs
 examples
 .idea
 # If you prefer the allow list template instead of the deny list, see community template:
