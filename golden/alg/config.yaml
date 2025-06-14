@@ -4,5 +4,10 @@ debug: false
 log_file: "alg/logs/cpu.log"
 
 tick_limit: 10000
+schedule:
+  - tick: 1
+    input:
+      interrupt: 0
+      value: 100
 
 max_interruptions: 2

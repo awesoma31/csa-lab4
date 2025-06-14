@@ -1,8 +1,18 @@
-intOff;
+let n = 0;
+let reading = 1;
 
-let n = 100;
+while reading == 1 {
+
+}
+
 let S = n*(n+1)/2;
 let Q = n*(n+1)*(2*n+1)/6;
 let D = S*S - Q;
 
 print(D);
+
+inter 0 {
+    let t = readInt();
+    n = t;
+    reading = 0;    
+}

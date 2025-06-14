@@ -1,73 +1,100 @@
-[0x0002] - 77E00000 - Opc: IntOff, Mode: NoOperands, D:, S1:, S2:
-[0x0003] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
-[0x0004] - 00000004 - Imm
-[0x0005] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x0006] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
-[0x0007] - 00000004 - Imm
-[0x0008] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x0009] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
-[0x000A] - 00000001 - Imm
-[0x000B] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x000C] - 42042400 - Opc: ADD, Mode: MathRRR, D:RM2, S1:RM1, S2:RM2
-[0x000D] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x000E] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+WHILE STATEMENT CONDITION:
+[0x0002] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x0003] - 00000008 - Imm
+[0x0004] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0005] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x0006] - 00000001 - Imm
+[0x0007] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0008] - 51C02400 - Opc: CMP, Mode: RegReg, D:, S1:RM1, S2:RM2
+[0x0009] - C7000000 - Opc: JNE, Mode: JAbsAddr, D:, S1:, S2:
+[0x000A] - 03E00000 - Opc: NOP, Mode: NoOperands, D:, S1:, S2:
+WHILE STMT BODY:
+[0x000B] - 83000000 - Opc: JMP, Mode: JAbsAddr, D:, S1:, S2:
+[0x000C] - 00000002 - Imm
+ # END OF WHILE STMT
+[0x000D] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x000E] - 00000004 - Imm
 [0x000F] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x0010] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
-[0x0011] - 00000002 - Imm
-[0x0012] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x0013] - 4E002400 - Opc: DIV, Mode: MathRRR, D:RA, S1:RM1, S2:RM2
-[0x0014] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
-[0x0015] - 00000008 - Imm
-[0x0016] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
-[0x0017] - 00000004 - Imm
-[0x0018] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x0019] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
-[0x001A] - 00000004 - Imm
-[0x001B] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x001C] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
-[0x001D] - 00000001 - Imm
-[0x001E] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x001F] - 42042400 - Opc: ADD, Mode: MathRRR, D:RM2, S1:RM1, S2:RM2
-[0x0020] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x0021] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+[0x0010] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x0011] - 00000004 - Imm
+[0x0012] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0013] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x0014] - 00000001 - Imm
+[0x0015] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0016] - 42042400 - Opc: ADD, Mode: MathRRR, D:RM2, S1:RM1, S2:RM2
+[0x0017] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0018] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+[0x0019] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x001A] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x001B] - 00000002 - Imm
+[0x001C] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x001D] - 4E002400 - Opc: DIV, Mode: MathRRR, D:RA, S1:RM1, S2:RM2
+[0x001E] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
+[0x001F] - 0000000C - Imm
+[0x0020] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x0021] - 00000004 - Imm
 [0x0022] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x0023] - 04220000 - Opc: MOV, Mode: MvImmReg, D:RM1, S1:, S2:
-[0x0024] - 00000002 - Imm
+[0x0023] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x0024] - 00000004 - Imm
 [0x0025] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x0026] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
-[0x0027] - 00000004 - Imm
+[0x0026] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x0027] - 00000001 - Imm
 [0x0028] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x0029] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
-[0x002A] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x002B] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
-[0x002C] - 00000001 - Imm
-[0x002D] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x002E] - 42042400 - Opc: ADD, Mode: MathRRR, D:RM2, S1:RM1, S2:RM2
-[0x002F] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x0030] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
-[0x0031] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x0032] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
-[0x0033] - 00000006 - Imm
-[0x0034] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x0035] - 4E002400 - Opc: DIV, Mode: MathRRR, D:RA, S1:RM1, S2:RM2
-[0x0036] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
-[0x0037] - 0000000C - Imm
-[0x0038] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
-[0x0039] - 00000008 - Imm
-[0x003A] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x003B] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
-[0x003C] - 00000008 - Imm
-[0x003D] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x003E] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
-[0x003F] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
-[0x0040] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
-[0x0041] - 0000000C - Imm
-[0x0042] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
-[0x0043] - 46002400 - Opc: SUB, Mode: MathRRR, D:RA, S1:RM1, S2:RM2
-[0x0044] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
-[0x0045] - 00000010 - Imm
+[0x0029] - 42042400 - Opc: ADD, Mode: MathRRR, D:RM2, S1:RM1, S2:RM2
+[0x002A] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x002B] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+[0x002C] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x002D] - 04220000 - Opc: MOV, Mode: MvImmReg, D:RM1, S1:, S2:
+[0x002E] - 00000002 - Imm
+[0x002F] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0030] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
+[0x0031] - 00000004 - Imm
+[0x0032] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0033] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+[0x0034] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0035] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x0036] - 00000001 - Imm
+[0x0037] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0038] - 42042400 - Opc: ADD, Mode: MathRRR, D:RM2, S1:RM1, S2:RM2
+[0x0039] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x003A] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+[0x003B] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x003C] - 04240000 - Opc: MOV, Mode: MvImmReg, D:RM2, S1:, S2:
+[0x003D] - 00000006 - Imm
+[0x003E] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x003F] - 4E002400 - Opc: DIV, Mode: MathRRR, D:RA, S1:RM1, S2:RM2
+[0x0040] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
+[0x0041] - 00000010 - Imm
+[0x0042] - 04C20000 - Opc: MOV, Mode: MvMemReg, D:RM1, S1:, S2:
+[0x0043] - 0000000C - Imm
+[0x0044] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x0045] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
+[0x0046] - 0000000C - Imm
+[0x0047] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x0048] - 4A022400 - Opc: MUL, Mode: MathRRR, D:RM1, S1:RM1, S2:RM2
+[0x0049] - 0B802000 - Opc: PUSH, Mode: SingleReg, D:, S1:RM1, S2:
+[0x004A] - 04C40000 - Opc: MOV, Mode: MvMemReg, D:RM2, S1:, S2:
+[0x004B] - 00000010 - Imm
+[0x004C] - 0F820000 - Opc: POP, Mode: SingleReg, D:RM1, S1:, S2:
+[0x004D] - 46002400 - Opc: SUB, Mode: MathRRR, D:RA, S1:RM1, S2:RM2
+[0x004E] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
+[0x004F] - 00000014 - Imm
 PRINT STMT
-[0x0046] - 04CC0000 - Opc: MOV, Mode: MvMemReg, D:ROutData, S1:, S2:
-[0x0047] - 00000010 - Imm
-[0x0048] - 6AA00000 - Opc: OUT, Mode: Digit, D:port Digit, S1:, S2:
-[0x0049] - 1BE00000 - Opc: HALT, Mode: NoOperands, D:, S1:, S2:
+[0x0050] - 04CC0000 - Opc: MOV, Mode: MvMemReg, D:ROutData, S1:, S2:
+[0x0051] - 00000014 - Imm
+[0x0052] - 6AA00000 - Opc: OUT, Mode: Digit, D:port Digit, S1:, S2:
+[0x0053] - 1BE00000 - Opc: HALT, Mode: NoOperands, D:, S1:, S2:
+INTERRUPTION 0 STMT
+READ DIGIT EXPR
+[0x0054] - 62A00000 - Opc: IN, Mode: Digit, D:port Digit, S1:, S2:
+[0x0055] - 04E10000 - Opc: MOV, Mode: MvRegMem, D:, S1:RInData, S2:
+[0x0056] - 00000018 - Imm
+[0x0057] - 04C00000 - Opc: MOV, Mode: MvMemReg, D:RA, S1:, S2:
+[0x0058] - 00000018 - Imm
+[0x0059] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
+[0x005A] - 00000004 - Imm
+[0x005B] - 04200000 - Opc: MOV, Mode: MvImmReg, D:RA, S1:, S2:
+[0x005C] - 00000000 - Imm
+[0x005D] - 04E00000 - Opc: MOV, Mode: MvRegMem, D:, S1:RA, S2:
+[0x005E] - 00000008 - Imm
+[0x005F] - 93E00000 - Opc: IRet, Mode: NoOperands, D:RA, S1:, S2:

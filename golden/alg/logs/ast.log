@@ -1,10 +1,32 @@
 ast.BlockStmt{
   Body: []ast.Stmt{
-    ast.IntOffStmt{},
     ast.VarDeclarationStmt{
       Identifier: "n",
       AssignedValue: ast.NumberExpr{
-        Value: 100,
+        Value: 0,
+      },
+    },
+    ast.VarDeclarationStmt{
+      Identifier: "reading",
+      AssignedValue: ast.NumberExpr{
+        Value: 1,
+      },
+    },
+    ast.WhileStmt{
+      Condition: ast.BinaryExpr{
+        Left: ast.SymbolExpr{
+          Value: "reading",
+        },
+        Operator: lexer.Token{
+          Kind: 14,
+          Value: "==",
+        },
+        Right: ast.NumberExpr{
+          Value: 1,
+        },
+      },
+      Body: ast.BlockStmt{
+        Body: nil,
       },
     },
     ast.VarDeclarationStmt{
@@ -127,6 +149,37 @@ ast.BlockStmt{
     ast.PrintStmt{
       Argument: ast.SymbolExpr{
         Value: "D",
+      },
+    },
+    ast.InterruptionStmt{
+      IrqNumber: 0,
+      Body: ast.BlockStmt{
+        Body: []ast.Stmt{
+          ast.VarDeclarationStmt{
+            Identifier: "t",
+            AssignedValue: ast.ReadIntExpr{},
+          },
+          ast.ExpressionStmt{
+            Expression: ast.AssignmentExpr{
+              Assigne: ast.SymbolExpr{
+                Value: "n",
+              },
+              AssignedValue: ast.SymbolExpr{
+                Value: "t",
+              },
+            },
+          },
+          ast.ExpressionStmt{
+            Expression: ast.AssignmentExpr{
+              Assigne: ast.SymbolExpr{
+                Value: "reading",
+              },
+              AssignedValue: ast.NumberExpr{
+                Value: 0,
+              },
+            },
+          },
+        },
       },
     },
   },
