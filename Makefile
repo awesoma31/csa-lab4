@@ -27,7 +27,8 @@ build-machine:
 	go build $(GOFLAGS) -o $(BIN_DIR)/$(NAME_MACHINE) ./cmd/$(NAME_MACHINE)
 
 .PHONY: release
-release: test build-translator build-machine
+release: clean ci test build
+
 
 .PHONY: test
 test:        ## go test ./...
