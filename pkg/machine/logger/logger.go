@@ -31,12 +31,6 @@ func New(debug bool, logFile string) *Logger {
 	}
 }
 
-func NewForTest(w io.Writer) *Logger {
-	l := New(true, "")
-	l.l.SetOutput(w)
-	return l
-}
-
 func (lg *Logger) Debug(v ...any) {
 	lg.l.Print(
 		append([]any{""}, v...)...,

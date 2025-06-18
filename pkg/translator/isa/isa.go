@@ -18,7 +18,7 @@ const DestRegOffset = 17
 const Rs1Offset = 13
 const Rs2Offset = 9
 
-func EncodeInstructionWord(opcode, mode uint32, rd, rs1, rs2 int) uint32 {
+func EncodeInstructionWord(opcode, mode uint32, rd, rs1, rs2 Register) uint32 {
 	word := opcode<<OpcodeOffset | mode<<ModeOffset
 
 	if rd >= 0 {

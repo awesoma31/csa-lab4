@@ -20,7 +20,7 @@ func TestGolden(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			testingutil.RunGolden(t, tt.dir, 20_000)
+			testingutil.RunGolden(t, tt.dir)
 		})
 	}
 }

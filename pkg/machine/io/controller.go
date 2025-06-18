@@ -1,12 +1,13 @@
 package io
 
 import (
+	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
 	"reflect"
 )
 
 type Controller struct {
 	Sched    map[int]Input
-	portsVal map[uint8]uint32
+	portsVal map[isa.Register]uint32
 	outBuf   map[uint8][]uint32
 }
 
@@ -21,24 +22,24 @@ func NewIOController(entries []TickEntry) *Controller {
 	}
 	return &Controller{
 		Sched:    m,
-		portsVal: make(map[uint8]uint32),
+		portsVal: make(map[isa.Register]uint32),
 		outBuf:   make(map[uint8][]uint32),
 	}
 }
 
-func (ioc *Controller) CheckTick(tick int) (bool, uint8) {
+func (ioc *Controller) CheckTick(tick int) (bool, isa.Register) {
 	inp, ok := ioc.Sched[tick]
 	if !ok {
 		return false, 0
 	}
 
-	port := byte(inp.IrqNumber)
+	port := isa.Register(inp.IrqNumber)
 	ioc.portsVal[port] = toUint32(inp.Value)
 	delete(ioc.Sched, tick)
 	return true, port
 }
 
-func (ioc *Controller) ReadPort(p uint8) uint32 {
+func (ioc *Controller) ReadPort(p isa.Register) uint32 {
 	return ioc.portsVal[p]
 }
 

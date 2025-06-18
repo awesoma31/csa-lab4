@@ -14,8 +14,10 @@ const (
 	MvRegToRegInd    uint32 = 0x0A // mem[rd]<-rs1
 
 	ImmReg uint32 = 0x0B
+
 	// 0x0C
 	// 0x0D
+
 	RegReg            uint32 = 0x0E
 	MvByteRegIndToReg uint32 = 0x0F //byte mem[rs1]->rd
 

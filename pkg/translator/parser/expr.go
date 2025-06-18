@@ -127,7 +127,7 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 			if err != nil {
 				p.addError(fmt.Sprintf("Failed to parse number: %v", err))
 			}
-			return ast.LongNumberExpr{Value: int64(number)}
+			return ast.LongNumberExpr{Value: number}
 
 		}
 		return ast.NumberExpr{

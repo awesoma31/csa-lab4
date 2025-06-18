@@ -1,13 +1,10 @@
 package isa
 
-// ──────────────────────── op-codes (6 bits) ──────────────────
 const (
 	OpNop  uint32 = 0x00
 	OpMov  uint32 = 0x01
 	OpPush uint32 = 0x02
 	OpPop  uint32 = 0x03
-	OpNeg  uint32 = 0x04
-	OpNot  uint32 = 0x05
 	OpHalt uint32 = 0x06
 
 	OpAdd uint32 = 0x10
@@ -24,8 +21,6 @@ const (
 	OpIntOff uint32 = 0x1D
 
 	OpJmp  uint32 = 0x20
-	OpCall uint32 = 0x21
-	OpRet  uint32 = 0x22
 	OpAnd  uint32 = 0x23
 	OpIRet uint32 = 0x24
 

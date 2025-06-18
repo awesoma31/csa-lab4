@@ -276,7 +276,7 @@ inter 0 {
 
 ## Транслятор
 
-[Реализация](pkg/translator/) в `pkg/tranlator`.
+[Реализация](pkg/translator) в `pkg/tranlator`.
 
 - Использование:
 
@@ -303,7 +303,7 @@ inter 0 {
 
 ## Модель процессора
 
-[Схемы](docs/schemas/).
+[Схемы](docs/schemas).
 
 ControlUnit:
 
@@ -313,7 +313,7 @@ DataPath:
 
 ![DataPath](docs/schemas/DP-csa-lab4.png)
 
-[Реализация](pkg/machine/) в `pkg/machine`.
+[Реализация](pkg/machine) в `pkg/machine`.
 
 - Использование:
 
@@ -424,7 +424,7 @@ go test ./golden -u
 
 Логика golden-тестов - [internal/testingutil/helper.go](internal/testingutil/helper.go)
 
-Ресурсы для golden-тестов расположены в директории [golden](golden/).
+Ресурсы для golden-тестов расположены в директории [golden](golden).
 
 **Тестовое покрытие** !TODO
 

@@ -46,7 +46,7 @@ func nud(kind lexer.TokenKind, nudFn nudHandler) {
 }
 
 func stmt(kind lexer.TokenKind, stmtFn stmtHandler) {
-	// Statements usually have default/lowest precedence for expression parsing within them
+	// Statements usually have default/the lowest precedence for expression parsing within them
 	bpLu[kind] = defaultBp
 	stmtLu[kind] = stmtFn
 }

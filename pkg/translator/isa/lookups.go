@@ -6,8 +6,8 @@ import "maps"
 var (
 	opcodeMnemonics   = map[uint32]string{}
 	amMnemonics       = map[uint32]string{}
-	registerMnemonics = map[int]string{}
-	portMnemonics     = map[int]string{}
+	registerMnemonics = map[Register]string{}
+	portMnemonics     = map[Register]string{}
 )
 
 func init() {
@@ -68,7 +68,7 @@ func init() {
 		NoOperands: "NoOperands",
 	})
 
-	maps.Copy(registerMnemonics, map[int]string{
+	maps.Copy(registerMnemonics, map[Register]string{
 		RA:       "RA",
 		RM1:      "RM1",
 		RM2:      "RM2",
@@ -89,7 +89,7 @@ func init() {
 		RF2:      "RF2",
 	})
 
-	maps.Copy(portMnemonics, map[int]string{
+	maps.Copy(portMnemonics, map[Register]string{
 		PortD:  "port Digit",
 		PortCh: "port Char",
 		PortL:  "port Long",
@@ -102,10 +102,10 @@ func GetOpMnemonic(op uint32) string {
 func GetAMnemonic(m uint32) string {
 	return amMnemonics[m]
 }
-func GetPortMnem(r int) string {
+func GetPortMnem(r Register) string {
 	return portMnemonics[r]
 }
-func GetRegMnem(r int) string {
+func GetRegMnem(r Register) string {
 	if r < 0 {
 		return ""
 	}

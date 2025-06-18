@@ -18,7 +18,7 @@ import (
 
 var update = flag.Bool("u", false, "rewrite *.golden files") //
 
-func RunGolden(t *testing.T, dir string, tickLimit int) {
+func RunGolden(t *testing.T, dir string) {
 	t.Helper()
 
 	src := filepath.Join(dir, "src.lang")

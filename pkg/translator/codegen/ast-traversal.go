@@ -74,7 +74,7 @@ func (cg *CodeGenerator) genIntOnStmt() {
 
 func (cg *CodeGenerator) generateInterStmt(s ast.InterruptionStmt) {
 	irqN := s.IrqNumber
-	if irqN > int(maxInterrupts) {
+	if irqN > maxInterrupts {
 		cg.addError(fmt.Sprintf("Invalid interruption number, must be between 0 and %d", maxInterrupts))
 		return
 	}
@@ -89,7 +89,7 @@ func (cg *CodeGenerator) generateInterStmt(s ast.InterruptionStmt) {
 		cg.addError(fmt.Sprint("interruption body must be block stmt, got: ", litter.Sdump(t)))
 	}
 
-	cg.emitInstruction(isa.OpIRet, isa.NoOperands, irqN, -1, -1)
+	cg.emitInstruction(isa.OpIRet, isa.NoOperands, isa.Register(irqN), -1, -1)
 }
 
 func (cg *CodeGenerator) generateWhileStmt(s ast.WhileStmt) {
@@ -150,7 +150,7 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 			cg.addError(fmt.Sprintf("String length cannot be more than 1 byte (255): %d - %s", strLen, arg.Value))
 			return
 		}
-		cg.emitMov(isa.MvImmReg, isa.RC, strLen, -1)
+		cg.emitMov(isa.MvImmReg, isa.RC, isa.Register(strLen), -1)
 
 		cmpAddr := cg.nextInstructionAddr
 		cg.emitInstruction(isa.OpCmp, isa.RegReg, -1, isa.RC, isa.ZERO)
@@ -180,7 +180,7 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 			return
 		} else if symbol.IsLong {
 
-			cg.emitMov(isa.MvImmReg, isa.ROutAddr, int(symbol.AbsAddress), -1)
+			cg.emitMov(isa.MvImmReg, isa.ROutAddr, isa.Register(symbol.AbsAddress), -1)
 			cg.emitInstruction(isa.OpOut, isa.LongM, isa.PortL, -1, -1)
 			return
 
@@ -223,10 +223,10 @@ func (cg *CodeGenerator) genPrintStmt(s ast.PrintStmt) {
 }
 
 // genEx generates code for a given expression, leaving its result in specified register.
-func (cg *CodeGenerator) genEx(expr ast.Expr, rd int) {
+func (cg *CodeGenerator) genEx(expr ast.Expr, rd isa.Register) {
 	switch e := expr.(type) {
 	case ast.NumberExpr:
-		cg.emitMov(isa.MvImmReg, rd, int(e.Value), -1)
+		cg.emitMov(isa.MvImmReg, rd, isa.Register(e.Value), -1)
 	case ast.LongNumberExpr:
 		cg.addError("generating long expr is not supported")
 
@@ -333,16 +333,16 @@ func (cg *CodeGenerator) FindSymbolFromEx(arg ast.Expr) *SymbolEntry {
 	}
 }
 
-func (cg *CodeGenerator) emitPushReg(reg int) {
+func (cg *CodeGenerator) emitPushReg(reg isa.Register) {
 	cg.emitInstruction(isa.OpPush, isa.SingleRegMode, -1, reg, -1)
 }
 
-func (cg *CodeGenerator) emitPopToReg(reg int) {
+func (cg *CodeGenerator) emitPopToReg(reg isa.Register) {
 	cg.emitInstruction(isa.OpPop, isa.SingleRegMode, reg, -1, -1)
 }
 
 // if rd is -1 then it will not move read value to destination register, instead just keep it in RInData
-func (cg *CodeGenerator) genReadChEx(rd int) {
+func (cg *CodeGenerator) genReadChEx(rd isa.Register) {
 	cg.debugAssembly = append(cg.debugAssembly, "READ_CHAR EXPR")
 	cg.emitInstruction(isa.OpIn, isa.ByteM, isa.PortCh, -1, -1)
 	if rd != -1 {
@@ -352,7 +352,7 @@ func (cg *CodeGenerator) genReadChEx(rd int) {
 
 // if rd is RInData then it will not move read value to destination register
 // instead, just keep it in RInData
-func (cg *CodeGenerator) genReadIntEx(rd int) {
+func (cg *CodeGenerator) genReadIntEx(rd isa.Register) {
 	cg.debugAssembly = append(cg.debugAssembly, "READ DIGIT EXPR")
 	cg.emitInstruction(isa.OpIn, isa.DigitM, isa.PortD, -1, -1)
 	if rd != isa.RInData {
@@ -467,7 +467,7 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 			listPtr := cg.nextDataAddr
 			cg.dataMemory = append(cg.dataMemory, make([]byte, assignedVal.Size)...)
 			cg.nextDataAddr += uint32(assignedVal.Size)
-			allignDataMem(cg)
+			// allignDataMem(cg)
 
 			ptrAddr := cg.addNumberData(int32(listPtr))
 
@@ -554,7 +554,7 @@ func (cg *CodeGenerator) genVarDeclStmt(s ast.VarDeclarationStmt) {
 
 }
 
-func (cg *CodeGenerator) genAddStrc(call ast.CallExpr, rd int) {
+func (cg *CodeGenerator) genAddStrc(call ast.CallExpr, rd isa.Register) {
 	var s1Len byte
 	var s2Len byte
 	var s1str string
@@ -600,7 +600,7 @@ func (cg *CodeGenerator) genAddStrc(call ast.CallExpr, rd int) {
 	cg.genStringEx(ast.StringExpr{Value: newStr}, rd)
 }
 
-func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd int) {
+func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd isa.Register) {
 	// Evaluate the right-hand side expression, result is left in rd
 	switch r := e.AssignedValue.(type) {
 	case ast.ReadChExpr:
@@ -621,12 +621,12 @@ func (cg *CodeGenerator) genAssignEx(e ast.AssignmentExpr, rd int) {
 			cg.genAddLongAssign(r.Args, e.Assigne.(ast.SymbolExpr))
 
 			cg.emitInstruction(isa.OpMov, isa.MvRegIndToReg, isa.RA, rd, -1)
-			cg.emitMov(isa.MvRegMem, int(targetS.AbsAddress), isa.RA, -1)
+			cg.emitMov(isa.MvRegMem, isa.Register(targetS.AbsAddress), isa.RA, -1)
 
 			cg.emitInstruction(isa.OpAdd, isa.MathRIR, rd, rd, -1)
 			cg.emitImmediate(4)
 			cg.emitInstruction(isa.OpMov, isa.MvRegIndToReg, isa.RA, rd, -1)
-			cg.emitMov(isa.MvRegMem, int(targetS.AbsAddress+4), isa.RA, -1)
+			cg.emitMov(isa.MvRegMem, isa.Register(targetS.AbsAddress+4), isa.RA, -1)
 			return
 		default:
 			cg.addError(fmt.Sprintf("unknown func name %s", r.Name))
@@ -663,7 +663,7 @@ func (cg *CodeGenerator) genAssignArray(e ast.AssignmentExpr, target ast.ArrayIn
 }
 
 // calculates addr of array element and stores it in rd
-func (cg *CodeGenerator) genArrayAddress(ix ast.ArrayIndexEx, rd int) {
+func (cg *CodeGenerator) genArrayAddress(ix ast.ArrayIndexEx, rd isa.Register) {
 	cg.genEx(ix.Target, isa.RM1)
 	cg.genEx(ix.Index, isa.RM2)
 
@@ -735,7 +735,7 @@ func (cg *CodeGenerator) genIfStmt(s ast.IfStmt) {
 }
 
 // genStringExPl1 generates code to move string literal's ptr to rd. rd <- strAddr + 1
-func (cg *CodeGenerator) genStringExPl1(e ast.StringExpr, rd int) {
+func (cg *CodeGenerator) genStringExPl1(e ast.StringExpr, rd isa.Register) {
 	stringAddr := cg.addString(e.Value)
 
 	cg.emitInstruction(isa.OpMov, isa.MvImmReg, rd, -1, -1)
@@ -743,7 +743,7 @@ func (cg *CodeGenerator) genStringExPl1(e ast.StringExpr, rd int) {
 }
 
 // genStringEx generates code to move string len ptr to rd. rd <- strAddr
-func (cg *CodeGenerator) genStringEx(e ast.StringExpr, rd int) {
+func (cg *CodeGenerator) genStringEx(e ast.StringExpr, rd isa.Register) {
 	stringAddr := cg.addString(e.Value)
 
 	cg.emitInstruction(isa.OpMov, isa.MvImmReg, rd, -1, -1)
@@ -755,8 +755,8 @@ func (cg *CodeGenerator) genAddLongAssign(args []ast.Expr, target ast.SymbolExpr
 	addrB := cg.FindSymbol(args[1].(ast.SymbolExpr)).AbsAddress
 	addrT := cg.FindSymbol(target).AbsAddress
 
-	cg.emitMov(isa.MvImmReg, isa.RM1, int(addrA), -1)
-	cg.emitMov(isa.MvImmReg, isa.RM2, int(addrB), -1)
+	cg.emitMov(isa.MvImmReg, isa.RM1, isa.Register(addrA), -1)
+	cg.emitMov(isa.MvImmReg, isa.RM2, isa.Register(addrB), -1)
 
 	cg.emitMov(isa.MvRegIndToReg, isa.RT, isa.RM1, -1)
 	cg.emitMov(isa.MvRegIndToReg, isa.R6, isa.RM2, -1)

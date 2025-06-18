@@ -14,7 +14,7 @@ const (
 )
 
 // [opcode][mode] → factory(rd,rs1,rs2)→microStep
-var ucode [opcMaxAmount][modesMaxAmount]func(int, int, int) microStep
+var ucode [opcMaxAmount][modesMaxAmount]func(isa.Register, isa.Register, isa.Register) microStep
 
 func init() {
 	ucode[isa.OpNop][isa.NoOperands] = uNop
@@ -72,7 +72,7 @@ func init() {
 
 }
 
-func uIntOn(_, _, _ int) microStep {
+func uIntOn(_, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		c.IsIntOn = true
 		c.log.Debugf("TICK % 4d - interruptions on | %v\n", c.Tick, c.IsIntOn)
@@ -80,7 +80,7 @@ func uIntOn(_, _, _ int) microStep {
 	}
 }
 
-func uIntOff(_, _, _ int) microStep {
+func uIntOff(_, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		c.IsIntOn = false
 		c.log.Debugf("TICK % 4d - interruptions on | %v\n", c.Tick, c.IsIntOn)
@@ -88,7 +88,7 @@ func uIntOff(_, _, _ int) microStep {
 	}
 }
 
-func uIRet(_, _, _ int) microStep {
+func uIRet(_, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		c.RestoreGPRValues()
 		c.inISR = false
@@ -101,16 +101,16 @@ func uIRet(_, _, _ int) microStep {
 	}
 }
 
-func uInCh(_, _, _ int) microStep {
+func uInCh(_, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		val := c.Ioc.ReadPort(isa.PortCh)
-		c.Reg.GPR[isa.RInData] = uint32(val)
+		c.Reg.GPR[isa.RInData] = val
 		c.log.Debugf("TICK % 4d - %s <- %v (%d/0x%X) | %v\n", c.Tick, isa.GetRegMnem(isa.RInData), isa.GetPortMnem(isa.PortCh), val, val, c.ReprRegVal(isa.RInData))
 		return true
 	}
 }
 
-func uInD(rd, _, _ int) microStep {
+func uInD(_, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		val := c.Ioc.ReadPort(isa.PortD)
 		signedVal := int32(val)
@@ -120,7 +120,7 @@ func uInD(rd, _, _ int) microStep {
 	}
 }
 
-func uOutCh(rd, _, _ int) microStep {
+func uOutCh(_, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		port := uint8(isa.PortCh)
 		data := c.Reg.GPR[isa.ROutData]
@@ -130,7 +130,7 @@ func uOutCh(rd, _, _ int) microStep {
 	}
 }
 
-func uOutD(_, _, _ int) microStep {
+func uOutD(_, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		port := uint8(isa.PortD)
 		data := c.Reg.GPR[isa.ROutData]
@@ -139,7 +139,7 @@ func uOutD(_, _, _ int) microStep {
 		return true
 	}
 }
-func uOutL(_, _, _ int) microStep {
+func uOutL(_, _, _ isa.Register) microStep {
 	var hi, lo uint32
 	stage := 0
 	readStage := 1
@@ -151,7 +151,7 @@ func uOutL(_, _, _ int) microStep {
 			if read32(c, &readStage, isa.ROutAddr, isa.ROutData) {
 				lo = c.Reg.GPR[isa.ROutData]
 				c.Ioc.WritePort(port, lo)
-				c.log.Debugf("TICK % 4d - %v <- %s(0x%02X) long(lo) | %v\n", c.Tick, isa.GetPortMnem(int(port)), isa.GetRegMnem(isa.ROutData), lo, c.Ioc.Output(port))
+				c.log.Debugf("TICK % 4d - %v <- %s(0x%02X) long(lo) | %v\n", c.Tick, isa.GetPortMnem(isa.Register(port)), isa.GetRegMnem(isa.ROutData), lo, c.Ioc.Output(port))
 				readStage = 1
 				stage = 1
 			}
@@ -159,7 +159,7 @@ func uOutL(_, _, _ int) microStep {
 			if read32(c, &readStage, isa.ROutAddr, isa.ROutData) {
 				hi = c.Reg.GPR[isa.ROutData]
 				c.Ioc.WritePort(port, hi)
-				c.log.Debugf("TICK % 4d - %v <- %s(0x%02X) long(hi) | %v\n", c.Tick, isa.GetPortMnem(int(port)), isa.GetRegMnem(isa.ROutData), hi, c.Ioc.Output(port))
+				c.log.Debugf("TICK % 4d - %v <- %s(0x%02X) long(hi) | %v\n", c.Tick, isa.GetPortMnem(isa.Register(port)), isa.GetRegMnem(isa.ROutData), hi, c.Ioc.Output(port))
 				return true
 			}
 		}
@@ -167,7 +167,7 @@ func uOutL(_, _, _ int) microStep {
 	}
 }
 
-func uCmpRR(_, rs1, rs2 int) microStep {
+func uCmpRR(_, rs1, rs2 isa.Register) microStep {
 	return func(c *CPU) bool {
 		a := c.Reg.GPR[rs1]
 		b := c.Reg.GPR[rs2]
@@ -184,7 +184,7 @@ func uCmpRR(_, rs1, rs2 int) microStep {
 	}
 }
 
-func uJCC(_, _, _ int) microStep {
+func uJCC(_, _, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF2
 	return func(c *CPU) bool {
@@ -206,7 +206,7 @@ func uJCC(_, _, _ int) microStep {
 		return false
 	}
 }
-func uJCS(_, _, _ int) microStep {
+func uJCS(_, _, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF2
 	return func(c *CPU) bool {
@@ -229,14 +229,14 @@ func uJCS(_, _, _ int) microStep {
 	}
 }
 
-func uJump(_, _, _ int) microStep {
+func uJump(_, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		c.Reg.PC = c.memI[c.Reg.PC]
 		c.log.Debugf("TICK % 4d - PC<-memI[0x%X]| %v\n", c.Tick, c.Reg.PC, c.ReprPC())
 		return true
 	}
 }
-func uJE(_, _, _ int) microStep {
+func uJE(_, _, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF2
 	return func(c *CPU) bool {
@@ -258,7 +258,7 @@ func uJE(_, _, _ int) microStep {
 		return false
 	}
 }
-func uJNE(_, _, _ int) microStep {
+func uJNE(_, _, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF2
 	return func(c *CPU) bool {
@@ -280,7 +280,7 @@ func uJNE(_, _, _ int) microStep {
 		return false
 	}
 }
-func uJG(_, _, _ int) microStep {
+func uJG(_, _, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF2
 	return func(c *CPU) bool {
@@ -302,7 +302,7 @@ func uJG(_, _, _ int) microStep {
 		return false
 	}
 }
-func uJL(_, _, _ int) microStep {
+func uJL(_, _, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF2
 	return func(c *CPU) bool {
@@ -324,7 +324,7 @@ func uJL(_, _, _ int) microStep {
 		return false
 	}
 }
-func uJGE(_, _, _ int) microStep {
+func uJGE(_, _, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF2
 	return func(c *CPU) bool {
@@ -346,7 +346,7 @@ func uJGE(_, _, _ int) microStep {
 		return false
 	}
 }
-func uJLE(_, _, _ int) microStep {
+func uJLE(_, _, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF2
 	return func(c *CPU) bool {
@@ -369,7 +369,7 @@ func uJLE(_, _, _ int) microStep {
 	}
 }
 
-func uAndIR(rd, rs1, _ int) microStep {
+func uAndIR(rd, rs1, _ isa.Register) microStep {
 	stage := 0
 	return func(c *CPU) bool {
 		switch stage {
@@ -386,7 +386,7 @@ func uAndIR(rd, rs1, _ int) microStep {
 		return false
 	}
 }
-func uAndRR(rd, rs1, rs2 int) microStep {
+func uAndRR(rd, rs1, rs2 isa.Register) microStep {
 	return func(c *CPU) bool {
 		c.Reg.GPR[rd] = c.Reg.GPR[rs1] & c.Reg.GPR[rs2]
 		c.log.Debugf("TICK % 4d - %v<-%v & %v | %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
@@ -394,14 +394,14 @@ func uAndRR(rd, rs1, rs2 int) microStep {
 	}
 }
 
-func uAddRRR(rd, rs1, rs2 int) microStep {
+func uAddRRR(rd, rs1, rs2 isa.Register) microStep {
 	return func(c *CPU) bool {
 		MathRRR(c, rd, rs1, rs2, isa.OpAdd)
 		c.log.Debugf("TICK % 4d - %v<-%v + %v | %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
 		return true
 	}
 }
-func uAddRIR(rd, rs1, _ int) microStep {
+func uAddRIR(rd, rs1, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF1
 	return func(c *CPU) bool {
@@ -419,13 +419,13 @@ func uAddRIR(rd, rs1, _ int) microStep {
 	}
 }
 
-func uSubRRR(rd, rs1, rs2 int) microStep {
+func uSubRRR(rd, rs1, rs2 isa.Register) microStep {
 	return func(c *CPU) bool {
 		MathRRR(c, rd, rs1, rs2, isa.OpSub)
 		return true
 	}
 }
-func uSubRIR(rd, rs1, _ int) microStep {
+func uSubRIR(rd, rs1, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF1
 	return func(c *CPU) bool {
@@ -443,14 +443,14 @@ func uSubRIR(rd, rs1, _ int) microStep {
 		return false
 	}
 }
-func uMulRRR(rd, rs1, rs2 int) microStep {
+func uMulRRR(rd, rs1, rs2 isa.Register) microStep {
 	return func(c *CPU) bool {
 		MathRRR(c, rd, rs1, rs2, isa.OpMul)
 		c.log.Debugf("TICK % 4d - %v<-%v*%v | %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
 		return true
 	}
 }
-func uDivRRR(rd, rs1, rs2 int) microStep {
+func uDivRRR(rd, rs1, rs2 isa.Register) microStep {
 	return func(c *CPU) bool {
 		MathRRR(c, rd, rs1, rs2, isa.OpDiv)
 		c.log.Debugf("TICK % 4d - %v<-%v//%v | %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), isa.GetRegMnem(rs2), c.ReprRegVal(rd))
@@ -458,8 +458,7 @@ func uDivRRR(rd, rs1, rs2 int) microStep {
 	}
 }
 
-func MathRRR(c *CPU, rd, rs1, rs2 int, opc uint32) {
-	//TODO: check flag setting
+func MathRRR(c *CPU, rd, rs1, rs2 isa.Register, opc uint32) {
 	a := c.Reg.GPR[rs1]
 	b := c.Reg.GPR[rs2]
 
@@ -525,7 +524,7 @@ func MathRRR(c *CPU, rd, rs1, rs2 int, opc uint32) {
 	c.log.Debugf("TICK % 4d - %v<-%v%v%v | %v %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), aluOpLu[opc], isa.GetRegMnem(rs2), c.ReprRegVal(rd), c.ReprFlags())
 }
 
-func uPopReg(rd, _, _ int) microStep {
+func uPopReg(rd, _, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF1
 	return func(c *CPU) bool {
@@ -546,7 +545,7 @@ func uPopReg(rd, _, _ int) microStep {
 	}
 }
 
-func uPushReg(_, rs1, _ int) microStep {
+func uPushReg(_, rs1, _ isa.Register) microStep {
 	stage := 0
 	readStage := 1
 	rf1 := isa.RF1
@@ -569,7 +568,7 @@ func uPushReg(_, rs1, _ int) microStep {
 	}
 }
 
-func uNop(_, _, _ int) microStep {
+func uNop(_, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		c.log.Debugf("TICK % 4d - NOP, PC++ | %v\n", c.Tick, c.ReprPC())
 		c.Reg.PC++
@@ -577,7 +576,7 @@ func uNop(_, _, _ int) microStep {
 	}
 }
 
-func uHalt(_, _, _ int) microStep {
+func uHalt(_, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		c.log.Debugf("TICK % 4d - simultaion stopped\n", c.Tick)
 		c.halted = true
@@ -585,7 +584,7 @@ func uHalt(_, _, _ int) microStep {
 	}
 }
 
-func uMovRegIndReg(rd, rs1, _ int) microStep {
+func uMovRegIndReg(rd, rs1, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF2
 	return func(c *CPU) bool {
@@ -604,7 +603,7 @@ func uMovRegIndReg(rd, rs1, _ int) microStep {
 	}
 }
 
-func uMovByteRegIndReg(rd, rs1, _ int) microStep {
+func uMovByteRegIndReg(rd, rs1, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		addr := c.Reg.GPR[rs1]
 		c.ensureDataSize(addr)
@@ -613,7 +612,7 @@ func uMovByteRegIndReg(rd, rs1, _ int) microStep {
 		return true
 	}
 }
-func uMovRegByteToMem(_, rs1, _ int) microStep {
+func uMovRegByteToMem(_, rs1, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF1
 	return func(c *CPU) bool {
@@ -634,7 +633,7 @@ func uMovRegByteToMem(_, rs1, _ int) microStep {
 		return false
 	}
 }
-func uMovByteRegToRegInd(rd, rs1, _ int) microStep {
+func uMovByteRegToRegInd(rd, rs1, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		val := byte(c.Reg.GPR[rs1] & 0xFF)
 		addr := c.Reg.GPR[rd]
@@ -645,7 +644,7 @@ func uMovByteRegToRegInd(rd, rs1, _ int) microStep {
 		return true
 	}
 }
-func uMovRegMem(_, rs1, _ int) microStep {
+func uMovRegMem(_, rs1, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF1
 	return func(c *CPU) bool {
@@ -663,7 +662,7 @@ func uMovRegMem(_, rs1, _ int) microStep {
 		return false
 	}
 }
-func uMovMemReg(rd, _, _ int) microStep {
+func uMovMemReg(rd, _, _ isa.Register) microStep {
 	stage := 0
 	r := isa.RF1
 	return func(c *CPU) bool {
@@ -681,7 +680,7 @@ func uMovMemReg(rd, _, _ int) microStep {
 		return false
 	}
 }
-func uMovImmReg(rd, _, _ int) microStep {
+func uMovImmReg(rd, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		c.Reg.GPR[rd] = c.memI[c.Reg.PC]
 		c.log.Debugf("TICK % 4d - %v<-#%d; PC++ | %v\n", c.Tick, isa.GetRegMnem(rd), c.memI[c.Reg.PC], c.ReprRegVal(isa.SpReg))
@@ -689,7 +688,7 @@ func uMovImmReg(rd, _, _ int) microStep {
 		return true
 	}
 }
-func uMovRegReg(rd, rs1, _ int) microStep {
+func uMovRegReg(rd, rs1, _ isa.Register) microStep {
 	return func(c *CPU) bool {
 		c.Reg.GPR[rd] = c.Reg.GPR[rs1]
 		c.log.Debugf("TICK % 4d - %v<-%v | %v\n", c.Tick, isa.GetRegMnem(rd), isa.GetRegMnem(rs1), c.ReprRegVal(rd))
@@ -699,7 +698,7 @@ func uMovRegReg(rd, rs1, _ int) microStep {
 
 // записывает 32-битное значение little-endian по адресу в regWithAddr
 // возвращает true, когда все 4 байта записаны
-func write32(c *CPU, stage *int, regWithAddr int, regSource int) bool {
+func write32(c *CPU, stage *int, regWithAddr isa.Register, regSource isa.Register) bool {
 	c.ensureDataSize(c.Reg.GPR[regWithAddr] + 3)
 
 	val := c.Reg.GPR[regSource]
@@ -728,7 +727,7 @@ func write32(c *CPU, stage *int, regWithAddr int, regSource int) bool {
 	return false
 }
 
-func read32(c *CPU, stage *int, regWithAddr int, regToStoreTo int) bool {
+func read32(c *CPU, stage *int, regWithAddr isa.Register, regToStoreTo isa.Register) bool {
 	c.ensureDataSize(c.Reg.GPR[regWithAddr] + 3)
 	switch *stage {
 	case 1:

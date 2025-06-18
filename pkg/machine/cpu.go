@@ -153,7 +153,7 @@ func (c *CPU) GetFormattedPortOutputs() string {
 			}
 			sb.WriteByte('\n')
 
-		case isa.PortD:
+		case uint8(isa.PortD):
 			sb.WriteString(isa.GetPortMnem(isa.PortD))
 			sb.WriteString("| ")
 			for i, w := range buf {
@@ -192,7 +192,7 @@ func (c *CPU) GetFormattedPortOutputs() string {
 	return strings.TrimRight(sb.String(), "\n")
 }
 
-func (c *CPU) raiseIRQ(vec uint8) {
+func (c *CPU) raiseIRQ(vec isa.Register) {
 	if c.inISR || c.pending {
 		c.log.Debugf("interruption ignored, either in one or one is already pending, %v\n", vec)
 		return
@@ -200,7 +200,8 @@ func (c *CPU) raiseIRQ(vec uint8) {
 	c.pending, c.pendNum = true, int(vec)
 }
 func (c *CPU) enterISR() {
-	c.log.Debugf("------------Entering Interruption %d, value=%v/0x%X------------\n", c.pendNum, c.Ioc.ReadPort(byte(c.pendNum)), c.Ioc.ReadPort(byte(c.pendNum)))
+	c.log.Debugf("------------Entering Interruption %d, value=%v/0x%X------------\n",
+		c.pendNum, c.Ioc.ReadPort(isa.Register(c.pendNum)), c.Ioc.ReadPort(isa.Register(c.pendNum)))
 	c.Reg.savedPC = c.Reg.PC
 	c.SaveNZVC()
 	c.Reg.PC = c.memI[c.pendNum]
@@ -224,24 +225,24 @@ func (c *CPU) RestoreGPRValues() {
 func (c *CPU) SaveNZVC() {
 	c.savedNZVCFlags = 0
 	if c.N {
-		c.savedNZVCFlags |= (1 << 0)
+		c.savedNZVCFlags |= 1 << 0
 	}
 	if c.Z {
-		c.savedNZVCFlags |= (1 << 1)
+		c.savedNZVCFlags |= 1 << 1
 	}
 	if c.V {
-		c.savedNZVCFlags |= (1 << 2)
+		c.savedNZVCFlags |= 1 << 2
 	}
 	if c.C {
-		c.savedNZVCFlags |= (1 << 3)
+		c.savedNZVCFlags |= 1 << 3
 	}
 }
 
 func (c *CPU) RestoreNZVC() {
-	c.N = (c.savedNZVCFlags&(1<<0) != 0)
-	c.Z = (c.savedNZVCFlags&(1<<1) != 0)
-	c.V = (c.savedNZVCFlags&(1<<2) != 0)
-	c.C = (c.savedNZVCFlags&(1<<3) != 0)
+	c.N = c.savedNZVCFlags&(1<<0) != 0
+	c.Z = c.savedNZVCFlags&(1<<1) != 0
+	c.V = c.savedNZVCFlags&(1<<2) != 0
+	c.C = c.savedNZVCFlags&(1<<3) != 0
 }
 
 func (c *CPU) ReprPC() string {
@@ -264,7 +265,7 @@ func (c *CPU) ReprFlags() string {
 	)
 }
 
-func (c *CPU) ReprRegVal(r int) any {
+func (c *CPU) ReprRegVal(r isa.Register) any {
 	return fmt.Sprintf("%v=%d/0x%X", isa.GetRegMnem(r), c.Reg.GPR[r], c.Reg.GPR[r])
 }
 
@@ -286,12 +287,12 @@ func (c *CPU) DumpState() string {
 	sb.WriteString(fmt.Sprintf("Interrupts On:%t | In ISR:%t | Pending:%t(num: %d)\n", c.IsIntOn, c.inISR, c.pending, c.pendNum))
 
 	for i := range len(c.Reg.GPR) {
-		sb.WriteString(fmt.Sprintf("%s: %d (0x%X)\n", isa.GetRegMnem(i), c.Reg.GPR[i], c.Reg.GPR[i]))
+		sb.WriteString(fmt.Sprintf("%s: %d (0x%X)\n", isa.GetRegMnem(isa.Register(i)), c.Reg.GPR[i], c.Reg.GPR[i]))
 	}
 
 	sb.WriteString("--- Saved Registers (for ISR) ---\n")
 	for i := range len(c.Reg.savedGPR) {
-		sb.WriteString(fmt.Sprintf("%s: %d (0x%X)\n", isa.GetRegMnem(i), c.Reg.GPR[i], c.Reg.GPR[i]))
+		sb.WriteString(fmt.Sprintf("%s: %d (0x%X)\n", isa.GetRegMnem(isa.Register(i)), c.Reg.GPR[i], c.Reg.GPR[i]))
 	}
 	sb.WriteString(fmt.Sprintf("Saved PC: %d (0x%X)\n", c.Reg.savedPC, c.Reg.savedPC))
 	sb.WriteString(fmt.Sprintf("Saved Flags: %08b\n", c.savedNZVCFlags))

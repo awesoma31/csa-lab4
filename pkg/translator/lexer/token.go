@@ -60,7 +60,6 @@ const (
 	IF
 	ELSE
 	WHILE
-	IN
 
 	INTER
 	IntOn

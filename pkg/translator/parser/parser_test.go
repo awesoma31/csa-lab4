@@ -15,7 +15,7 @@ const src = `intOff;
 `
 
 func TestAstBuild(t *testing.T) {
-	got, pErr := parser.Parse(string(src))
+	got, pErr := parser.Parse(src)
 	if len(pErr) != 0 {
 		t.Fatal("parse errors")
 	}
@@ -31,7 +31,7 @@ func TestAstBuild(t *testing.T) {
 		},
 	}
 
-	opts := []cmp.Option{}
+	var opts []cmp.Option
 
 	if diff := cmp.Diff(want, got, opts...); diff != "" {
 		t.Errorf("AST mismatch (-want +got):\n%s", diff)
