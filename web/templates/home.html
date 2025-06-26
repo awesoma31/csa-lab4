@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{.Title}}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        color: #333;
+      }
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      li {
+        background-color: #f0f0f0;
+        margin-bottom: 5px;
+        padding: 8px;
+        border-radius: 4px;
+      }
+      .nav-link {
+        margin-right: 15px;
+        text-decoration: none;
+        color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-link">Home</a>
+      <a href="/exam" class="nav-link">Exam</a>
+    </nav>
+
+    <h1>{{.Title}}</h1>
+    <p>{{.Message}}</p>
+
+    <h2>Important Topics:</h2>
+    <ul>
+      {{range .Items}}
+      <li>{{.}}</li>
+      {{end}}
+    </ul>
+  </body>
+</html>
