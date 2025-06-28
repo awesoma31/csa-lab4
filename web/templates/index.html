@@ -1,23 +1,91 @@
-{{define "index"}} <!doctype html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>IDE</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Go API Simulation</title>
     <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
       textarea {
-        width: 100%;
-        height: 12rem;
+        width: 45%;
+        height: 150px;
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+      button {
+        padding: 10px 20px;
+        background-color: red;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: darkred;
+      }
+      #log-output {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        white-space: pre-wrap;
+        font-family: monospace;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+      .container {
+        display: flex;
+        justify-content: space-around;
       }
     </style>
   </head>
   <body>
-    <h3>Code:</h3>
-    <textarea id="src"></textarea><br />
-    <button onclick="act('compile')">Compile</button>
-    <button onclick="act('run')">Run</button>
-    <pre id="out"></pre>
-    <pre id="log"></pre>
-    <script src="/static/script.js"></script>
+    <h1>API Simulation with Go</h1>
+
+    <div class="container">
+      <textarea id="src" placeholder="source code:"></textarea>
+      <textarea id="config" placeholder="config.yaml"></textarea>
+    </div>
+
+    <button onclick="sendToAPI()">Run Simulation</button>
+
+    <h2>Simulation Logs:</h2>
+    <pre id="log-output">No logs yet.</pre>
+
+    <script>
+      async function sendToAPI() {
+        const srcTextArea = document.getElementById("src").value;
+        const configTextArea = document.getElementById("config").value;
+        const logOutput = document.getElementById("log-output");
+
+        logOutput.textContent = "Running simulation...";
+
+        try {
+          const response = await fetch("api/simulate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              src: srcTextArea,
+              config: configTextArea,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          logOutput.textContent = data.output;
+        } catch (error) {
+          console.error("Error:", error);
+          logOutput.textContent = "Error during simulation: " + error.message;
+        }
+      }
+    </script>
   </body>
 </html>
-{{end}}
