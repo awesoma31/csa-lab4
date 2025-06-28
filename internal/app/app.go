@@ -13,6 +13,7 @@ import (
 	"github.com/awesoma31/csa-lab4/pkg/machine/logger"
 	"github.com/awesoma31/csa-lab4/pkg/translator/codegen"
 	"github.com/awesoma31/csa-lab4/pkg/translator/parser"
+	"github.com/sanity-io/litter"
 	"gopkg.in/yaml.v2"
 )
 
@@ -48,13 +49,14 @@ func Run(cfg *config.Config) {
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
-	err := tpl.ExecuteTemplate(w, "index.html", nil)
+	err := tpl.ExecuteTemplate(w, "index.templ", nil)
 	if err != nil {
 		http.Error(w, "error parsing index template html", http.StatusInternalServerError)
 	}
 }
 
 func handleSimulate(w http.ResponseWriter, r *http.Request) error {
+	//TODO: duplicate logs in cpu
 	if r.Method != http.MethodPost {
 		http.Error(w, "Only POST requests are allowed", http.StatusMethodNotAllowed)
 		return apiError{Err: "only POST is allowed", Status: http.StatusMethodNotAllowed}
@@ -76,8 +78,6 @@ func handleSimulate(w http.ResponseWriter, r *http.Request) error {
 	if len(cgErr) != 0 {
 		return apiError{Err: "code generation error", Status: http.StatusBadRequest, Errors: cgErr}
 	}
-
-	//TODO: to bin, run sim
 
 	cfgBytes := []byte(req.Config)
 	var cpuCFG *machine.CpuConfig
@@ -101,14 +101,12 @@ func handleSimulate(w http.ResponseWriter, r *http.Request) error {
 	cpu := machine.New(cpuCFG)
 	output := cpu.Run()
 
-	//TODO: memD into readable view
 	resp := SimulateResponse{
-		Message:    "success",
-		StatusCode: http.StatusOK,
-		Output:     output,
-		MemI:       imem,
-		MemD:       dmem,
-		DebugAsm:   dbgAsm,
+		Output:   output,
+		Ast:      litter.Sdump(ast),
+		MemI:     formatMemI(imem),
+		MemD:     formatMemD(dmem),
+		DebugAsm: dbgAsm,
 	}
 
 	return writeJson(w, http.StatusOK, resp)
