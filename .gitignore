@@ -63,3 +63,4 @@ logs/data.log
 logs/cpu.log
 logs/ast.log
 node_modules
+web/static/css/style.css.map
