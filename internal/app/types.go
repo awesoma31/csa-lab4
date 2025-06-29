@@ -17,11 +17,13 @@ type SimulateRequest struct {
 }
 
 type SimulateResponse struct {
-	Output   any      `json:"output,omitempty"`
-	MemI     []string `json:"mem_i"`
-	MemD     []string `json:"mem_d"`
-	Ast      string   `json:"ast"`
-	DebugAsm []string `json:"debug_asm"`
+	Output   string `json:"output,omitempty"`
+	MemI     string `json:"mem_i"`
+	MemD     string `json:"mem_d"`
+	Ast      string `json:"ast"`
+	DebugAsm string `json:"debug_asm"`
+	//TODO:
+	// SymbolTable string `json:"symbol_table"`
 }
 
 type ErrorResponse struct {

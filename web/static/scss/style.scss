@@ -1,0 +1,76 @@
+  @use 'fonts';
+  @use 'variables';
+
+
+  body {
+    @extend .default-font;
+    font-family: Arial, sans-serif;
+
+    margin: 20px;
+    background-color: #2d2d2d;
+    color: wheat;
+  }
+
+  .input {
+    width: 100%;
+    min-height: 200px;
+    margin: 10px;
+    padding: 10px;
+    margin-left: 0%;
+    border: 1px solid black;
+    line-height: 1.5;
+    overflow: auto;
+    resize: none;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: #aaa;
+    }
+  }
+
+  .btn {
+    width: 100px;
+    // padding: 10px 20px;
+    background-color: darksalmon;
+    color: black;
+    border: none;
+    border-radius: 3px;
+
+
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgb(218, 119, 86);
+    }
+
+    &:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
+    }
+  }
+
+  .field {
+    // keeps label above textarea
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sim-form {
+    display: grid;
+    grid-template-columns: 65% 1fr;
+    grid-template-rows: 90% 10%;
+    grid-column-gap: 5px;
+    grid-row-gap: 5px;
+    // gap: 5px;
+  }
+
+  .log {
+    width: 100%;
+    height: 10rem;
+    font-family: monospace;
+    margin-bottom: 1rem;
+  }
+
+  .non-resize {
+    resize: none;
+  }

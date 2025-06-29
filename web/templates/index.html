@@ -1,93 +1,42 @@
-{{define "index.templ"}}
+{{define "indexTempl"}}
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Go API Simulation</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
-      textarea {
-        width: 45%;
-        height: 150px;
-        margin: 10px;
-        padding: 10px;
-        border: 1px solid #ccc;
-      }
-      button {
-        padding: 10px 20px;
-        background-color: red;
-        color: white;
-        border: none;
-        cursor: pointer;
-      }
-      button:hover {
-        background-color: darkred;
-      }
-      #log-output {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #f4f4f4;
-        border: 1px solid #ddd;
-        white-space: pre-wrap;
-        font-family: monospace;
-        max-height: 400px;
-        overflow-y: auto;
-      }
-      .container {
-        display: flex;
-        justify-content: space-around;
-      }
-    </style>
-  </head>
-  <body>
-    <header>{{template "headerTempl"}}</header>
 
-    <div class="container">
-      <textarea id="src" placeholder="source code:"></textarea>
-      <textarea id="config" placeholder="config.yaml"></textarea>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>csa-lab4</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"></script>
+</head>
 
-    <button onclick="sendToAPI()">Run Simulation</button>
+<body spellcheck="false">
+  <header>{{template "headerTempl"}}</header>
 
-    <h2>Simulation Logs:</h2>
-    <pre id="log-output">No logs yet.</pre>
+  <div class="">
+    <form hx-post="/api/simulate" hx-target="#result" hx-swap="innerHTML" hx-include="#src,#cfg" class="sim-form">
 
-    <script>
-      async function sendToAPI() {
-        const srcTextArea = document.getElementById("src").value;
-        const configTextArea = document.getElementById("config").value;
-        const logOutput = document.getElementById("log-output");
+      <div class="field">
+        <label for="src">code:</label>
+        <textarea name="src" class="code-font input non-resize" id="src" placeholder="code here"
+          spellcheck="false"></textarea>
+      </div>
 
-        logOutput.textContent = "Running simulation...";
+      <div class="field">
+        <label for="cfg">config.yaml:</label>
+        <textarea name="cfg" id="cfg" class="code-font input non-resize" placeholder="max_interruptions: 2"
+          spellcheck="false"></textarea>
+      </div>
 
-        try {
-          const response = await fetch("api/simulate", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              src: srcTextArea,
-              config: configTextArea,
-            }),
-          });
+      <div>
+        <button type="submit" class="btn large-font">Simulate</button>
+      </div>
+    </form>
+  </div>
 
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+  <h3>Result / logs</h3>
+  <div id="result"></div>
+</body>
 
-          const data = await response.json();
-          logOutput.textContent = data.output;
-        } catch (error) {
-          console.error("Error:", error);
-          logOutput.textContent = "Error during simulation: " + error.message;
-        }
-      }
-    </script>
-  </body>
 </html>
 {{end}}

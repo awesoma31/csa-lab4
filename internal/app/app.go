@@ -1,13 +1,14 @@
 package app
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/awesoma31/csa-lab4/config"
+	"github.com/awesoma31/csa-lab4/internal/middleware"
 	"github.com/awesoma31/csa-lab4/pkg/machine"
 	"github.com/awesoma31/csa-lab4/pkg/machine/io"
 	"github.com/awesoma31/csa-lab4/pkg/machine/logger"
@@ -24,62 +25,67 @@ const (
 
 var tpl = template.Must(template.ParseGlob(filepath.Join(templateDir, "*.html")))
 
-func makeHTTPHandler(f apiFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if err := f(w, r); err != nil {
-			if e, ok := err.(apiError); ok {
-				_ = writeJson(w, e.Status, e)
-				return
-			}
-			_ = writeJson(w, http.StatusInternalServerError, apiError{Err: "internal server", Status: http.StatusInternalServerError})
-		}
-	}
-}
-
 func Run(cfg *config.Config) {
-	http.Handle("/static/", http.StripPrefix("/static/",
+	router := http.NewServeMux()
+	router.Handle("/static/", http.StripPrefix("/static/",
 		http.FileServer(http.Dir(staticDir))))
 
-	http.HandleFunc("/", handleHome)
+	loadRoutes(router)
 
-	http.HandleFunc("/api/simulate", makeHTTPHandler(handleSimulate))
+	stack := middleware.CreateStack(
+		middleware.Logging,
+	)
+
+	s := http.Server{
+		Addr:    cfg.Port,
+		Handler: stack(router),
+	}
 
 	log.Println("Starting server on ", cfg.Port)
-	log.Fatal(http.ListenAndServe(cfg.Port, nil))
+	log.Fatal(s.ListenAndServe())
+}
+
+func loadRoutes(router *http.ServeMux) {
+	router.HandleFunc("/", handleHome)
+
+	router.HandleFunc("POST /api/simulate", makeHTTPHandler(handleSimulate))
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
-	err := tpl.ExecuteTemplate(w, "index.templ", nil)
+	err := tpl.ExecuteTemplate(w, "indexTempl", nil)
 	if err != nil {
 		http.Error(w, "error parsing index template html", http.StatusInternalServerError)
 	}
 }
 
 func handleSimulate(w http.ResponseWriter, r *http.Request) error {
-	//TODO: duplicate logs in cpu
-	if r.Method != http.MethodPost {
-		http.Error(w, "Only POST requests are allowed", http.StatusMethodNotAllowed)
-		return apiError{Err: "only POST is allowed", Status: http.StatusMethodNotAllowed}
+	//FIX: duplicate tick logs in cpu
+
+	if err := r.ParseForm(); err != nil {
+		return apiError{Err: "Couldn't parse request form for simulation", Status: http.StatusBadRequest}
 	}
 
-	var req SimulateRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		return apiError{Err: "Couldn't decode json data for simulation", Status: http.StatusBadRequest}
+	src := r.Form.Get("src")
+	if strings.TrimSpace(src) == "" {
+		renderResult(w, SimulateResponse{Output: "Nothing to simulate!"})
+		return nil
 	}
-
-	src := req.Code
 	ast, pErr := parser.Parse(string(src))
 	if len(pErr) != 0 {
 		return apiError{Err: "Parsing Error", Status: http.StatusBadRequest, Errors: pErr}
 	}
 
 	cg := codegen.NewCodeGenerator()
-	imem, dmem, dbgAsm, cgErr := cg.Generate(ast)
+	memI, memD, dbgAsm, cgErr := cg.Generate(ast)
 	if len(cgErr) != 0 {
 		return apiError{Err: "code generation error", Status: http.StatusBadRequest, Errors: cgErr}
 	}
 
-	cfgBytes := []byte(req.Config)
+	if strings.TrimSpace(r.Form.Get("cfg")) == "" {
+		renderResult(w, SimulateResponse{Output: "Simulation config is empty!"})
+		return nil
+	}
+	cfgBytes := []byte(r.Form.Get("cfg"))
 	var cpuCFG *machine.CpuConfig
 	if err := yaml.Unmarshal(cfgBytes, &cpuCFG); err != nil {
 		return apiError{
@@ -93,8 +99,8 @@ func handleSimulate(w http.ResponseWriter, r *http.Request) error {
 	//TODO: just get the logs
 	lg := logger.New(true, cpuCFG.LogFilePath)
 
-	cpuCFG.MemD = dmem
-	cpuCFG.MemI = imem
+	cpuCFG.MemD = memD
+	cpuCFG.MemI = memI
 	cpuCFG.IOC = ioc
 	cpuCFG.Logger = lg
 
@@ -104,10 +110,17 @@ func handleSimulate(w http.ResponseWriter, r *http.Request) error {
 	resp := SimulateResponse{
 		Output:   output,
 		Ast:      litter.Sdump(ast),
-		MemI:     formatMemI(imem),
-		MemD:     formatMemD(dmem),
-		DebugAsm: dbgAsm,
+		MemI:     formatMemI(memI),
+		MemD:     formatMemD(memD),
+		DebugAsm: formatDebugAsm(dbgAsm),
 	}
 
-	return writeJson(w, http.StatusOK, resp)
+	renderResult(w, resp)
+
+	return nil
+}
+
+func renderResult(w http.ResponseWriter, resp SimulateResponse) {
+	w.Header().Set("Content-Type", "text/html")
+	_ = tpl.ExecuteTemplate(w, "resultTemplate", resp) // ⬅️ имя из {{define "result"}}
 }
