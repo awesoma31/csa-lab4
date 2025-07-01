@@ -1,0 +1,25 @@
+.result-div {
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  gap: 8px;
+}
+
+.result-div textarea {
+  width: 100%;
+  max-height: 30rem;     // ограничение сверху
+  height: fit-content;   // подстраивается под содержимое
+  resize: vertical;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 8px;
+  font-family: monospace;
+}
+
+/* ── 1st row ───────────────────────────── */
+.output-div      { grid-column: 1 / span 6; }   /* 40 % */
+.debug-asm-div   { grid-column: 7 / span 9; }   /* 60 % */
+
+/* ── 2nd row (equal thirds) ─────────────── */
+.ast-div         { grid-column: 1  / span 5; grid-row: 2; }
+.memI-div        { grid-column: 6  / span 5; grid-row: 2; }
+.memD-div        { grid-column: 11 / span 5; grid-row: 2; }

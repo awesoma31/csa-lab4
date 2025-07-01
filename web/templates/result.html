@@ -1,0 +1,20 @@
+{{define "resultTemplate"}}
+<div class="result-div">
+  <div class="output-div">
+    <textarea class="" readonly>{{.Output}}</textarea>
+  </div>
+  <div class="debug-asm-div">
+    <textarea class="output" readonly>{{.DebugAsm}}</textarea>
+  </div>
+  <div class="ast-div">
+    <textarea class="output" readonly>{{.Ast}}</textarea>
+  </div>
+  <div class="memI-div">
+    <textarea class="output" readonly>{{.MemI}}</textarea>
+  </div>
+  <div class="memD-div">
+    <textarea class="output" readonly>{{.MemD}}</textarea>
+  </div>
+</div>
+{{end}}
+

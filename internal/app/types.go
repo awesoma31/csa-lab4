@@ -1,6 +1,8 @@
 package app
 
-import "net/http"
+import (
+	"net/http"
+)
 
 type apiFunc func(http.ResponseWriter, *http.Request) error
 
@@ -15,14 +17,13 @@ type SimulateRequest struct {
 }
 
 type SimulateResponse struct {
-	Message    string   `json:"message"`
-	StatusCode int      `json:"status_code"`
-	Output     any      `json:"output,omitempty"`
-	MemI       []uint32 `json:"mem_i"`
-	MemD       []byte   `json:"mem_d"`
-	DebugAsm   []string `json:"debug_asm"`
-	CGErrors   []string `json:"cg_errors"`
-	Error      string   `json:"error,omitempty"`
+	Output   string `json:"output,omitempty"`
+	MemI     string `json:"mem_i"`
+	MemD     string `json:"mem_d"`
+	Ast      string `json:"ast"`
+	DebugAsm string `json:"debug_asm"`
+	//TODO:
+	// SymbolTable string `json:"symbol_table"`
 }
 
 type ErrorResponse struct {

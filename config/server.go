@@ -6,7 +6,6 @@ import (
 
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
-	"github.com/sanity-io/litter"
 )
 
 type (
@@ -32,6 +31,5 @@ func NewConfig() (*Config, error) {
 
 	cfg.Port = fmt.Sprintf(":%s", cfg.Port)
 
-	fmt.Println("Configured successfully, ", litter.Sdump(cfg))
 	return cfg, nil
 }
