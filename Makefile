@@ -74,6 +74,9 @@ docker-clean-web: docker-stop-web docker-rm-web ## Stop, remove web container, a
 	sudo docker rmi $(DOCKER_IMAGE_WEB):$(DOCKER_TAG) 2>/dev/null || true # Remove the specific image tag
 	sudo docker image prune -f # Remove any dangling images (including old layers)
 
+.PHONY: docker-logs
+docker-logs:
+	sudo docker logs csa-lab4-web-container
 
 .PHONY: test
 test:        ## go test ./...
