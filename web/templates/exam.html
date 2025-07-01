@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{.Title}}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        color: #cc0000;
+      }
+      ul {
+        list-style-type: decimal;
+        padding-left: 20px;
+      }
+      li {
+        margin-bottom: 10px;
+      }
+      .nav-link {
+        margin-right: 15px;
+        text-decoration: none;
+        color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-link">Home</a>
+      <a href="/exam" class="nav-link">Exam</a>
+    </nav>
+
+    <h1>{{.Title}}</h1>
+    <p>{{.Message}}</p>
+
+    <h2>Exam Questions:</h2>
+    <ul>
+      {{range .Items}}
+      <li>{{.}}</li>
+      {{end}}
+    </ul>
+
+    <p>Good luck!</p>
+  </body>
+</html>

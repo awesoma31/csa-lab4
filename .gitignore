@@ -62,3 +62,4 @@ logs/debugIntr.log
 logs/data.log
 logs/cpu.log
 logs/ast.log
+node_modules
