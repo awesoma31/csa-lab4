@@ -1,27 +1,20 @@
 {{define "resultTemplate"}}
-<div class="space-y-6">
-
-    <h4 class="font-bold text-lg">Output</h4>
+<div class="result-div">
+  <div class="output-div">
     <textarea class="" readonly>{{.Output}}</textarea>
-
-
-
-    <h4 class="font-bold text-lg">Instructions</h4>
-    <textarea class="" readonly>{{.DebugAsm}}</textarea>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-        <h4 class="font-bold text-lg">AST</h4>
-        <textarea class="" readonly>{{.Ast}}</textarea>
-
-        <h4 class="font-bold text-lg">Instruction Mem</h4>
-        <textarea class=""
-            readonly>{{.MemI}}</textarea>
-
-        <h4 class="font-bold text-lg">Data Mem</h4>
-        <textarea class=""
-            readonly>{{.MemD}}</textarea>
-
-    </div>
+  </div>
+  <div class="debug-asm-div">
+    <textarea class="output" readonly>{{.DebugAsm}}</textarea>
+  </div>
+  <div class="ast-div">
+    <textarea class="output" readonly>{{.Ast}}</textarea>
+  </div>
+  <div class="memI-div">
+    <textarea class="output" readonly>{{.MemI}}</textarea>
+  </div>
+  <div class="memD-div">
+    <textarea class="output" readonly>{{.MemD}}</textarea>
+  </div>
 </div>
 {{end}}
+
