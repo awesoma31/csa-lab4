@@ -1,5 +1,4 @@
 name: csa-lab4 CI
-
 on:
   push: { paths: ["**.go", ".github/workflows/**", "golden/**"] }
   pull_request:

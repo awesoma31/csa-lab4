@@ -110,6 +110,7 @@ help:
 	@echo "  docker-stop-web     - Stop the web application Docker container"
 	@echo "  docker-rm-web       - Remove the web application Docker container"
 	@echo "  docker-clean-web    - Stop, remove web container, and prune its image"
+	@echo "  docker-logs         - View app logs"
 	@echo "  test                - Run Go tests"
 	@echo "  ci                  - Run CI checks"
 	@echo "  clean               - Remove build artifacts and some Docker leftovers"
