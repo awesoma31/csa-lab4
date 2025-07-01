@@ -49,6 +49,10 @@ func loadRoutes(router *http.ServeMux) {
 	router.HandleFunc("/", handleHome)
 
 	router.HandleFunc("POST /api/simulate", makeHTTPHandler(handleSimulate))
+
+	router.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+		_ = writeJson(w, http.StatusOK, "test passed")
+	})
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
