@@ -1,4 +1,4 @@
-name: csa-lab4 CI
+name: lint-test
 on:
   push: { paths: ["**.go", ".github/workflows/**", "golden/**"] }
   pull_request:
