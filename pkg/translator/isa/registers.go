@@ -28,6 +28,6 @@ const (
 
 const (
 	PortD  Register = 0
-	PortCh          = 1
-	PortL           = 2
+	PortCh Register = 1
+	PortL  Register = 2
 )

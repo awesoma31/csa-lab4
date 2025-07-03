@@ -1,17 +1,18 @@
 package io
 
 import (
-	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
 	"reflect"
+
+	"github.com/awesoma31/csa-lab4/pkg/translator/isa"
 )
 
 type Controller struct {
 	Sched    map[int]Input
 	portsVal map[isa.Register]uint32
-	outBuf   map[uint8][]uint32
+	outBuf   map[isa.Register][]uint32
 }
 
-func (ioc *Controller) OutBufAll() map[uint8][]uint32 {
+func (ioc *Controller) OutBufAll() map[isa.Register][]uint32 {
 	return ioc.outBuf
 }
 
@@ -23,7 +24,7 @@ func NewIOController(entries []TickEntry) *Controller {
 	return &Controller{
 		Sched:    m,
 		portsVal: make(map[isa.Register]uint32),
-		outBuf:   make(map[uint8][]uint32),
+		outBuf:   make(map[isa.Register][]uint32),
 	}
 }
 
@@ -43,11 +44,11 @@ func (ioc *Controller) ReadPort(p isa.Register) uint32 {
 	return ioc.portsVal[p]
 }
 
-func (ioc *Controller) WritePort(p uint8, v uint32) {
+func (ioc *Controller) WritePort(p isa.Register, v uint32) {
 	ioc.outBuf[p] = append(ioc.outBuf[p], v)
 }
 
-func (ioc *Controller) Output(port uint8) []uint32 {
+func (ioc *Controller) Output(port isa.Register) []uint32 {
 	return ioc.outBuf[port]
 }
 

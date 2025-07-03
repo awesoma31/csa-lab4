@@ -153,7 +153,7 @@ func (c *CPU) GetFormattedPortOutputs() string {
 			}
 			sb.WriteByte('\n')
 
-		case uint8(isa.PortD):
+		case isa.PortD:
 			sb.WriteString(isa.GetPortMnem(isa.PortD))
 			sb.WriteString("| ")
 			for i, w := range buf {

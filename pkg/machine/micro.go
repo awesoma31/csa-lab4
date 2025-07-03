@@ -122,7 +122,7 @@ func uInD(_, _, _ isa.Register) microStep {
 
 func uOutCh(_, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
-		port := uint8(isa.PortCh)
+		port := isa.PortCh
 		data := c.Reg.GPR[isa.ROutData]
 		c.Ioc.WritePort(port, data)
 		c.log.Debugf("TICK % 4d - port %d <- %s(0x%02X) char | %v\n", c.Tick, port, isa.GetRegMnem(isa.ROutData), data, c.Ioc.Output(port))
@@ -132,7 +132,7 @@ func uOutCh(_, _, _ isa.Register) microStep {
 
 func uOutD(_, _, _ isa.Register) microStep {
 	return func(c *CPU) bool {
-		port := uint8(isa.PortD)
+		port := isa.PortD
 		data := c.Reg.GPR[isa.ROutData]
 		c.Ioc.WritePort(port, data)
 		c.log.Debugf("TICK % 4d - port %d <- %s(0x%02X) digit | %v\n", c.Tick, port, isa.GetRegMnem(isa.ROutData), data, c.Ioc.Output(port))
@@ -143,7 +143,7 @@ func uOutL(_, _, _ isa.Register) microStep {
 	var hi, lo uint32
 	stage := 0
 	readStage := 1
-	port := uint8(isa.PortL)
+	port := isa.PortL
 
 	return func(c *CPU) bool {
 		switch stage {
